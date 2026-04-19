@@ -1,10 +1,8 @@
-## Solo Developer - Adrian Justin J. Salinas
+## Full-Stack Developer - Adrian Justin J. Salinas
 
 # Commit — The Developer Learning Workspace
 
 > The missing personal workspace for beginner developers and CS/IT students.
-
-![Commit Banner](docs/assets/banner.png)
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
@@ -328,18 +326,6 @@ Commit uses a **Deep Dark Obsidian** design language inspired by premium develop
 | Text Muted   | `#71717A`   | Secondary text, captions          |
 | Danger       | `#FF4757`   | Error states, destructive actions |
 | Warning      | `#FFB347`   | Warnings, streak alerts           |
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
----
-
-## License
-
-MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
