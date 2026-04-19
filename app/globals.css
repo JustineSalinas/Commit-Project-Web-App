@@ -1,0 +1,19 @@
+/* Commit — Global Styles & Design System Tokens */
+/* Generated in Phase 0 */
+:root {
+  --bg-base:        #09090B;
+  --bg-surface:     #111113;
+  --bg-elevated:    #18181B;
+  --border:         #1A1A1F;
+  --border-muted:   #27272A;
+  --accent:         #00FFAA;
+  --accent-muted:   rgba(0, 255, 170, 0.10);
+  --accent-hover:   #00E599;
+  --text-primary:   #FAFAFA;
+  --text-secondary: #A1A1AA;
+  --text-muted:     #71717A;
+  --danger:         #FF4757;
+  --warning:        #FFB347;
+  --info:           #60A5FA;
+  --success:        #4ADE80;
+}
