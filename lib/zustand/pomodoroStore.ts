@@ -1,26 +1,38 @@
-// Pomodoro Timer Zustand store — Phase 3
-// Manages global timer state accessible across all components
+import { create } from 'zustand';
 
-export {};
-// Full implementation in Phase 3
+export type PomodoroMode = 'focus' | 'shortBreak' | 'longBreak';
 
-/**
- * Store shape:
- * {
- *   status: 'idle' | 'focus' | 'short_break' | 'long_break'
- *   timeRemaining: number   // seconds
- *   sessionCount: number    // pomos completed today
- *   weekCount: number       // pomos completed this week
- *   activeTaskId: string | null
- *   distractions: DistractionEntry[]
- *   
- *   // Actions
- *   start: () => void
- *   pause: () => void
- *   reset: () => void
- *   tick: () => void
- *   setActiveTask: (id: string | null) => void
- *   addDistraction: (text: string) => void
- *   completeSession: () => void
- * }
- */
+interface PomodoroState {
+  mode: PomodoroMode;
+  timeLeft: number; 
+  isActive: boolean;
+  sessionsCompleted: number;
+  expectedEndTime: number | null;
+  setMode: (mode: PomodoroMode) => void;
+  setTimeLeft: (time: number) => void;
+  setIsActive: (isActive: boolean) => void;
+  setExpectedEndTime: (time: number | null) => void;
+  incrementSessionsCompleted: () => void;
+  resetTimer: () => void;
+}
+
+const DEFAULT_FOCUS_TIME = 25 * 60;
+
+export const usePomodoroStore = create<PomodoroState>((set) => ({
+  mode: 'focus',
+  timeLeft: DEFAULT_FOCUS_TIME,
+  isActive: false,
+  sessionsCompleted: 0,
+  expectedEndTime: null,
+  setMode: (mode) => set({ mode }),
+  setTimeLeft: (timeLeft) => set({ timeLeft }),
+  setIsActive: (isActive) => set({ isActive }),
+  setExpectedEndTime: (expectedEndTime) => set({ expectedEndTime }),
+  incrementSessionsCompleted: () => set((state) => ({ sessionsCompleted: state.sessionsCompleted + 1 })),
+  resetTimer: () => set({ 
+    isActive: false, 
+    timeLeft: DEFAULT_FOCUS_TIME, 
+    mode: 'focus',
+    expectedEndTime: null
+  }),
+}));

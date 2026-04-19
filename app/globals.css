@@ -1,3 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--bg-base);
+  --color-foreground: var(--text-primary);
+  --color-primary: var(--accent);
+  --color-primary-foreground: #000000;
+  --color-muted: var(--bg-elevated);
+  --color-muted-foreground: var(--text-muted);
+  --color-card: var(--bg-surface);
+  --color-card-foreground: var(--text-primary);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-success: var(--success);
+}
+
 /* Commit — Global Styles & Design System Tokens */
 /* Generated in Phase 0 */
 :root {
@@ -16,4 +35,9 @@
   --warning:        #FFB347;
   --info:           #60A5FA;
   --success:        #4ADE80;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
