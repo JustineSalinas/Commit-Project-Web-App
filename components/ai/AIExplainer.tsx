@@ -44,7 +44,7 @@ export function AIExplainer() {
             <div className="bg-[#09090B] border border-[#27272A] rounded-lg p-4 font-mono text-xs text-[#FAFAFA]">
               // Zustand is fundamentally un-opinionated.<br/>
               // You create a store...<br/>
-              const useStore = create((set) ={'>'} ({{ count: 0 }}));<br/><br/>
+              const useStore = create((set) ={'>'} ({"{ count: 0 }"}));<br/><br/>
               // ...and bind it anywhere.<br/>
               const count = useStore((state) ={'>'} state.count);
             </div>
