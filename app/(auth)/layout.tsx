@@ -14,9 +14,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {/* Gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#09090B] via-[#0d1f1a] to-[#09090B]" />
 
-        {/* Glowing orb accents */}
-        <div className="absolute top-[-80px] left-[-80px] w-[400px] h-[400px] rounded-full bg-[#00FFAA]/10 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-[-100px] right-[-60px] w-[300px] h-[300px] rounded-full bg-[#00FFAA]/5 blur-[100px] pointer-events-none" />
+        {/* Glowing orb accents with custom breathing animations */}
+        <div className="absolute top-[-80px] left-[-80px] w-[400px] h-[400px] rounded-full bg-[#00FFAA]/20 blur-[120px] pointer-events-none animate-breathe" />
+        <div className="absolute bottom-[-100px] right-[-60px] w-[300px] h-[300px] rounded-full bg-[#00FFAA]/15 blur-[100px] pointer-events-none animate-breathe-slow" />
 
         {/* Grid pattern overlay */}
         <div
@@ -84,8 +84,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </Link>
         </div>
 
-        <div className="w-full max-w-md space-y-6">
-          <div className="text-center mb-6">
+        <div className="w-full max-w-md flex flex-col items-center space-y-6">
+          <div className="text-center w-full mb-2">
             <h1 className="text-2xl font-bold text-[#FAFAFA]">
               {isSignIn ? "Welcome back" : "Create your account"}
             </h1>
@@ -96,7 +96,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </p>
           </div>
 
-          {children}
+          <div className="w-full flex justify-center">
+            {children}
+          </div>
 
           <p className="text-center text-[#71717A] text-sm">
             {isSignIn ? (

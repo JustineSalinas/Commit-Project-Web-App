@@ -1,5 +1,6 @@
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { SettingsProvider } from "@/components/providers/SettingsProvider";
 
 // Root layout — ClerkProvider, ReactQueryProvider, ThemeProvider, fonts
 // Generated in Phase 0
@@ -8,7 +9,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body suppressHydrationWarning>
-          {children}
+          <SettingsProvider>
+            {children}
+          </SettingsProvider>
         </body>
       </html>
     </ClerkProvider>

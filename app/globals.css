@@ -41,3 +41,36 @@ body {
   background-color: var(--color-background);
   color: var(--color-foreground);
 }
+
+@keyframes breathe {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+.animate-breathe {
+  animation: breathe 8s infinite ease-in-out;
+}
+
+.animate-breathe-slow {
+  animation: breathe 12s infinite ease-in-out;
+}
+
+/* 3D utilities for Flashcards */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}

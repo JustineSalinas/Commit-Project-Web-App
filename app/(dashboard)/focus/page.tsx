@@ -17,7 +17,7 @@ export default function FocusPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-bold text-[#FAFAFA] flex items-center gap-2">
-          <TimerIcon className="w-6 h-6 text-[#00FFAA]" />
+          <TimerIcon className="w-6 h-6 text-[var(--accent)]" />
           Focus Session
         </h1>
         <p className="text-[#A1A1AA] text-sm">Deep work with integrated distraction tracking.</p>
@@ -58,7 +58,7 @@ export default function FocusPage() {
                 "font-bold px-8 py-3 rounded-md transition-colors flex items-center gap-2",
                 isActive 
                   ? "bg-transparent border border-[#27272A] text-[#FAFAFA] hover:bg-[#18181B]" 
-                  : mode === 'focus' ? "bg-[#00FFAA] text-black hover:bg-[#00E599]" : "bg-[#60A5FA] text-black hover:bg-[#3B82F6]"
+                  : mode === 'focus' ? "bg-[var(--accent)] text-black hover:brightness-110" : "bg-[#60A5FA] text-black hover:bg-[#3B82F6]"
               )}
             >
               {isActive ? <><Pause className="w-5 h-5" /> Pause</> : <><Play className="w-5 h-5" /> Start</>}
@@ -82,7 +82,7 @@ export default function FocusPage() {
           <p className="text-xs text-[#71717A] mb-4">Log passing thoughts without breaking focus.</p>
           <textarea 
             placeholder="Type and press enter to save..."
-            className="w-full bg-[#09090B] border border-[#27272A] rounded-md p-3 text-sm focus:outline-none focus:border-[#00FFAA] text-[#FAFAFA] h-32 resize-none"
+            className="w-full bg-[#09090B] border border-[#27272A] rounded-md p-3 text-sm focus:outline-none focus:border-[var(--accent)] text-[#FAFAFA] h-32 resize-none"
           />
         </div>
       </div>
