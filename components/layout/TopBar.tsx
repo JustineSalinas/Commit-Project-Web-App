@@ -7,15 +7,14 @@ import { Settings, Bell, Flame } from "lucide-react";
 
 export function TopBar() {
   return (
-    <header className="h-16 border-b border-[#1A1A1F] bg-[#09090B]/80 backdrop-blur-sm flex items-center px-6 justify-between sticky top-0 z-10">
+    <header className="h-16 border-b border-[var(--border)] bg-[var(--topbar-bg)] backdrop-blur-sm flex items-center px-6 justify-between sticky top-0 z-10">
       <div className="flex items-center gap-4">
-        {/* Page context label */}
-        <span className="text-[#A1A1AA] font-medium text-sm">Workspace</span>
+        <span className="text-[var(--text-secondary)] font-medium text-sm">Workspace</span>
       </div>
 
       <div className="flex items-center gap-3">
         {/* Streak Counter */}
-        <div className="flex items-center gap-1.5 bg-[#111113] border border-[var(--border)] rounded-full px-3 py-1 cursor-default hover:border-[var(--accent)] transition-colors" title="Current Day Streak">
+        <div className="flex items-center gap-1.5 bg-[var(--bg-surface)] border border-[var(--border)] rounded-full px-3 py-1 cursor-default hover:border-[var(--accent)] transition-colors" title="Current Day Streak">
           <Flame className="w-4 h-4 text-orange-500 fill-orange-500/20" />
           <span className="text-[var(--text-primary)] text-sm font-bold">12 Days</span>
         </div>

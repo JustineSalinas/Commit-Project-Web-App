@@ -1,7 +1,6 @@
 import { Calendar, Flame } from "lucide-react";
 
 export default function HeatmapPage() {
-  // Generate mock year blocks
   const weeks = Array.from({ length: 52 });
   const days = Array.from({ length: 7 });
 
@@ -43,7 +42,7 @@ export default function HeatmapPage() {
                 {days.map((__, d_idx) => (
                   <div 
                     key={d_idx} 
-                    className={`w-3 h-3 rounded-sm ${getColor()} hover:ring-1 hover:ring-white cursor-pointer transition-all`}
+                    className={`w-3 h-3 rounded-sm ${getColor()} hover:ring-1 hover:ring-[var(--text-muted)] cursor-pointer transition-all`}
                     title="4 contributions"
                   />
                 ))}

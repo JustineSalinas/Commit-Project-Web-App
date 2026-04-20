@@ -77,7 +77,7 @@ export function Sidebar() {
         <div className="bg-[var(--bg-surface)] rounded-lg p-4 border border-[var(--border)] relative overflow-hidden group">
           <div className="text-xs text-[var(--text-secondary)] uppercase font-bold mb-1 group-hover:text-[var(--accent)] transition-colors">Today's Focus</div>
           <div className="text-[var(--text-primary)] text-sm font-medium">0 / 4 Sessions</div>
-          <div className="mt-2 h-1.5 w-full bg-[#18181B] rounded-full overflow-hidden">
+          <div className="mt-2 h-1.5 w-full bg-[var(--bg-base)] rounded-full overflow-hidden">
             <div className="h-full bg-[var(--accent)] w-[0%]" />
           </div>
         </div>

@@ -35,6 +35,7 @@
   --warning:        #FFB347;
   --info:           #60A5FA;
   --success:        #4ADE80;
+  --topbar-bg:      rgba(9, 9, 11, 0.80);
 }
 
 body {
