@@ -3,7 +3,7 @@
 import { UserButton } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import Link from "next/link";
-import { Settings } from "lucide-react";
+import { Settings, Bell, Flame } from "lucide-react";
 
 export function TopBar() {
   return (
@@ -15,15 +15,21 @@ export function TopBar() {
 
       <div className="flex items-center gap-3">
         {/* Streak Counter */}
-        <div className="flex items-center gap-2 bg-[#111113] border border-[#1A1A1F] rounded-full px-3 py-1">
-          <span className="text-orange-500 text-sm">🔥</span>
-          <span className="text-[#FAFAFA] text-sm font-bold">12</span>
+        <div className="flex items-center gap-1.5 bg-[#111113] border border-[var(--border)] rounded-full px-3 py-1 cursor-default hover:border-[var(--accent)] transition-colors" title="Current Day Streak">
+          <Flame className="w-4 h-4 text-orange-500 fill-orange-500/20" />
+          <span className="text-[var(--text-primary)] text-sm font-bold">12 Days</span>
         </div>
+
+        {/* Notifications */}
+        <button className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-all relative">
+          <Bell className="w-4 h-4" />
+          <span className="absolute top-1.5 right-2 w-1.5 h-1.5 bg-[var(--accent)] rounded-full" />
+        </button>
 
         {/* Settings shortcut button */}
         <Link
           href="/settings"
-          className="w-8 h-8 rounded-full flex items-center justify-center text-[#71717A] hover:text-[#FAFAFA] hover:bg-[#18181B] transition-all"
+          className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-all"
           title="Settings"
         >
           <Settings className="w-4 h-4" />

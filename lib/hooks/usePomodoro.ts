@@ -18,7 +18,8 @@ export const usePomodoro = () => {
     setTimeLeft, 
     setIsActive, 
     setExpectedEndTime,
-    incrementSessionsCompleted 
+    incrementSessionsCompleted,
+    overrideTime
   } = usePomodoroStore();
 
   const handleTimerComplete = useCallback(() => {
@@ -78,5 +79,6 @@ export const usePomodoro = () => {
     sessionsCompleted,
     toggleTimer,
     switchMode,
+    overrideTime
   };
 };

@@ -14,6 +14,7 @@ interface PomodoroState {
   setExpectedEndTime: (time: number | null) => void;
   incrementSessionsCompleted: () => void;
   resetTimer: () => void;
+  overrideTime: (time: number) => void;
 }
 
 const DEFAULT_FOCUS_TIME = 25 * 60;
@@ -35,4 +36,5 @@ export const usePomodoroStore = create<PomodoroState>((set) => ({
     mode: 'focus',
     expectedEndTime: null
   }),
+  overrideTime: (time) => set({ timeLeft: time, isActive: false, expectedEndTime: null }),
 }));

@@ -44,7 +44,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <div>
             <h2 className="text-4xl font-bold text-[#FAFAFA] leading-tight">
               Learn.<br/>
-              <span className="text-[var(--accent)]">Document.</span><br/>
+              <span className="text-[#00FFAA]">Document.</span><br/>
               Grow.<br/>
               Repeat.
             </h2>
@@ -56,17 +56,17 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           {/* Stats row */}
           <div className="flex items-center gap-6">
             <div className="space-y-1">
-              <div className="text-[var(--accent)] font-medium text-sm">25-min</div>
+              <div className="text-[#00FFAA] font-medium text-sm">25-min</div>
               <div className="text-[#71717A] text-xs uppercase tracking-widest">Focus Loops</div>
             </div>
             <div className="w-px h-6 bg-[#1A1A1F]" />
             <div className="space-y-1">
-              <div className="text-[var(--accent)] font-medium text-sm">Daily</div>
+              <div className="text-[#00FFAA] font-medium text-sm">Daily</div>
               <div className="text-[#71717A] text-xs uppercase tracking-widest">TIL Logs</div>
             </div>
             <div className="w-px h-6 bg-[#1A1A1F]" />
             <div className="space-y-1">
-              <div className="text-[var(--accent)] font-medium text-sm">Built-in</div>
+              <div className="text-[#00FFAA] font-medium text-sm">Built-in</div>
               <div className="text-[#71717A] text-xs uppercase tracking-widest">Flashcards</div>
             </div>
           </div>
@@ -84,7 +84,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {/* Mobile logo */}
         <div className="lg:hidden mb-8">
           <Link href="/">
-            <span className="text-[var(--accent)] text-2xl font-bold tracking-widest">COMMIT</span>
+            <span className="text-[#00FFAA] text-2xl font-bold tracking-widest">COMMIT</span>
           </Link>
         </div>
 
@@ -109,14 +109,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             {isSignIn ? (
               <>
                 Don&apos;t have an account?{" "}
-                <Link href="/sign-up" className="text-[var(--accent)] hover:opacity-80 transition-colors font-medium">
+                <Link href="/sign-up" className="text-[#00FFAA] hover:opacity-80 transition-colors font-medium">
                   Sign up
                 </Link>
               </>
             ) : (
               <>
                 Already have an account?{" "}
-                <Link href="/sign-in" className="text-[var(--accent)] hover:opacity-80 transition-colors font-medium">
+                <Link href="/sign-in" className="text-[#00FFAA] hover:opacity-80 transition-colors font-medium">
                   Sign in
                 </Link>
               </>
