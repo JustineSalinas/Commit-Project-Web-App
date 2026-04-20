@@ -1,29 +1,41 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Lightbulb, Plus, Tag } from "lucide-react";
 import { addTil } from "@/app/actions/crud";
 
 export default function TILClient({ initialTils }: { initialTils: any[] }) {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !content) return;
+    setSaving(true);
+    setError("");
     
-    await addTil({ 
+    const result = await addTil({ 
       title, 
       content, 
       tags: tags.split(",").map(t => t.trim()).filter(Boolean) 
     });
     
-    setIsModalOpen(false);
-    setTitle("");
-    setContent("");
-    setTags("");
+    setSaving(false);
+    if (result.success) {
+      setIsModalOpen(false);
+      setTitle("");
+      setContent("");
+      setTags("");
+      router.refresh();
+    } else {
+      setError(result.error || "Failed to save");
+    }
   };
 
   return (
@@ -44,45 +56,27 @@ export default function TILClient({ initialTils }: { initialTils: any[] }) {
         </button>
       </header>
 
-      {/* Modal overlay */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-[var(--bg-elevated)] border border-[var(--border)] p-6 rounded-xl w-full max-w-lg">
+          <div className="bg-[var(--bg-elevated)] border border-[var(--border)] p-6 rounded-xl w-full max-w-lg shadow-2xl">
             <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">Log New Learning</h2>
+            {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-3 py-2 rounded-md mb-4">{error}</div>}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">Title</label>
-                <input 
-                  autoFocus
-                  type="text" 
-                  value={title} 
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md px-3 py-2 mt-1 text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" 
-                  placeholder="What did you learn?" 
-                />
+                <input autoFocus type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md px-3 py-2 mt-1 text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" placeholder="What did you learn?" />
               </div>
               <div>
                 <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">Content</label>
-                <textarea 
-                  value={content} 
-                  onChange={(e) => setContent(e.target.value)}
-                  className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md px-3 py-2 mt-1 text-[var(--text-primary)] focus:border-[var(--accent)] outline-none h-24 resize-none" 
-                  placeholder="Explain it briefly..." 
-                />
+                <textarea value={content} onChange={(e) => setContent(e.target.value)} className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md px-3 py-2 mt-1 text-[var(--text-primary)] focus:border-[var(--accent)] outline-none h-24 resize-none" placeholder="Explain it briefly..." />
               </div>
               <div>
                 <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">Tags (comma separated)</label>
-                <input 
-                  type="text" 
-                  value={tags} 
-                  onChange={(e) => setTags(e.target.value)}
-                  className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md px-3 py-2 mt-1 text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" 
-                  placeholder="react, state, typescript" 
-                />
+                <input type="text" value={tags} onChange={(e) => setTags(e.target.value)} className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md px-3 py-2 mt-1 text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" placeholder="react, state, typescript" />
               </div>
               <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-[var(--accent)] text-black rounded-lg font-bold hover:brightness-110">Save Record</button>
+                <button type="button" onClick={() => { setIsModalOpen(false); setError(""); }} className="px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold">Cancel</button>
+                <button type="submit" disabled={saving} className="px-4 py-2 bg-[var(--accent)] text-black rounded-lg font-bold hover:brightness-110 disabled:opacity-50">{saving ? "Saving..." : "Save Record"}</button>
               </div>
             </form>
           </div>
@@ -92,15 +86,14 @@ export default function TILClient({ initialTils }: { initialTils: any[] }) {
       {initialTils.length === 0 ? (
         <div className="text-center text-[var(--text-secondary)] py-12 border border-dashed border-[var(--border)] rounded-xl">
           <Lightbulb className="w-12 h-12 mx-auto mb-3 opacity-20" />
-          <p>You haven't logged any TILs yet. Start documenting your journey!</p>
+          <p>You haven&apos;t logged any TILs yet. Start documenting your journey!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {initialTils.map((t) => (
-            <div key={t.id} className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl p-5 hover:border-[var(--accent)] transition-all cursor-pointer shadow-sm relative group flex flex-col h-[200px]">
+            <div key={t.id} className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl p-5 hover:border-[var(--accent)] transition-all cursor-pointer shadow-sm relative group flex flex-col min-h-[180px]">
               <h3 className="font-bold text-lg text-[var(--text-primary)] mb-2 group-hover:text-[var(--accent)] transition-colors line-clamp-1">{t.title}</h3>
               <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-6 line-clamp-3">{t.content}</p>
-              
               <div className="flex items-center justify-between mt-auto">
                 <div className="flex gap-2 truncate">
                   {(t.tags || []).slice(0, 3).map((tag: string) => (

@@ -1,35 +1,45 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Code2, Files, Plus, Search } from "lucide-react";
 import { addSnippet } from "@/app/actions/crud";
 
 export default function SnippetsClient({ initialSnippets }: { initialSnippets: any[] }) {
+  const router = useRouter();
   const [snippets, setSnippets] = useState(initialSnippets);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeSnippet, setActiveSnippet] = useState<any>(initialSnippets[0] || null);
+  const [activeSnippet, setActiveSnippet] = useState<any>(initialSnippets.length > 0 ? initialSnippets[0] : null);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [language, setLanguage] = useState("TypeScript");
   const [code, setCode] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
-  const filteredSnippets = snippets.filter(s => 
+  const filteredSnippets = initialSnippets.filter(s => 
     s.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
     s.language?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !code) return;
+    if (!title || !code || saving) return;
+    setSaving(true);
+    setError("");
     
-    await addSnippet({ title, language, code });
-    // Assuming we would re-fetch, but typically we use Server Actions with revalidatePath 
-    // which triggers a new prop passing. We can rely on that!
+    const result = await addSnippet({ title, language, code });
+    setSaving(false);
     
-    setIsModalOpen(false);
-    setTitle("");
-    setCode("");
+    if (result.success) {
+      setIsModalOpen(false);
+      setTitle("");
+      setCode("");
+      router.refresh(); // Refresh data from server
+    } else {
+      setError(result.error || "Failed to save");
+    }
   };
 
   return (
@@ -50,8 +60,9 @@ export default function SnippetsClient({ initialSnippets }: { initialSnippets: a
       {/* Modal overlay */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-[var(--bg-elevated)] border border-[var(--border)] p-6 rounded-xl w-full max-w-2xl">
+          <div className="bg-[var(--bg-elevated)] border border-[var(--border)] p-6 rounded-xl w-full max-w-2xl shadow-2xl">
             <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">Add Code Snippet</h2>
+            {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-3 py-2 rounded-md mb-4">{error}</div>}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="flex gap-4">
                 <div className="flex-1">
@@ -65,16 +76,11 @@ export default function SnippetsClient({ initialSnippets }: { initialSnippets: a
               </div>
               <div>
                 <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">Code</label>
-                <textarea 
-                  value={code} 
-                  onChange={(e) => setCode(e.target.value)}
-                  className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md px-3 py-2 mt-1 text-[var(--text-primary)] focus:border-[var(--accent)] outline-none h-48 resize-none font-mono text-xs" 
-                  placeholder="Paste your code here..." 
-                />
+                <textarea value={code} onChange={(e) => setCode(e.target.value)} className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md px-3 py-2 mt-1 text-[var(--text-primary)] focus:border-[var(--accent)] outline-none h-48 resize-none font-mono text-xs" placeholder="Paste your code here..." />
               </div>
               <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-[var(--accent)] text-black rounded-lg font-bold hover:brightness-110">Save Snippet</button>
+                <button type="button" onClick={() => { setIsModalOpen(false); setError(""); }} className="px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold">Cancel</button>
+                <button type="submit" disabled={saving} className="px-4 py-2 bg-[var(--accent)] text-black rounded-lg font-bold hover:brightness-110 disabled:opacity-50">{saving ? "Saving..." : "Save Snippet"}</button>
               </div>
             </form>
           </div>
@@ -95,11 +101,7 @@ export default function SnippetsClient({ initialSnippets }: { initialSnippets: a
             </div>
             <div className="flex-1 overflow-y-auto p-2">
               {filteredSnippets.map(s => (
-                <div 
-                  key={s.id} 
-                  onClick={() => setActiveSnippet(s)}
-                  className={`p-3 border border-transparent hover:bg-[var(--bg-surface)] cursor-pointer rounded-md transition-colors ${activeSnippet?.id === s.id ? 'bg-[var(--accent)]/10 !border-[var(--accent)]/30' : ''}`}
-                >
+                <div key={s.id} onClick={() => setActiveSnippet(s)} className={`p-3 border border-transparent hover:bg-[var(--bg-surface)] cursor-pointer rounded-md transition-colors ${activeSnippet?.id === s.id ? 'bg-[var(--accent)]/10 !border-[var(--accent)]/30' : ''}`}>
                   <div className="font-bold text-sm text-[var(--text-primary)] truncate">{s.title}</div>
                   <div className="text-xs text-[var(--text-secondary)] mt-1">{s.language}</div>
                 </div>

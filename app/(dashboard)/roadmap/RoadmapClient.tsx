@@ -1,26 +1,42 @@
 "use client";
 
 import { useState } from "react";
-import { Map, Plus, CheckCircle, Circle, ArrowRight, MoreVertical } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Map, Plus, CheckCircle, Circle, ArrowRight } from "lucide-react";
 import { addRoadmapMilestone, markRoadmapStatus } from "@/app/actions/crud";
 
 export default function RoadmapClient({ initialRoadmap }: { initialRoadmap: any[] }) {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title) return;
+    if (!title || saving) return;
+    setSaving(true);
+    setError("");
     
-    await addRoadmapMilestone({ title, description });
-    setIsModalOpen(false);
-    setTitle("");
-    setDescription("");
+    const result = await addRoadmapMilestone({ title, description });
+    setSaving(false);
+    
+    if (result.success) {
+      setIsModalOpen(false);
+      setTitle("");
+      setDescription("");
+      router.refresh(); // Refresh data from server
+    } else {
+      setError(result.error || "Failed to save");
+    }
   };
 
   const handleStatusChange = async (id: number, status: 'pending' | 'in-progress' | 'complete') => {
-    await markRoadmapStatus(id, status);
+    const result = await markRoadmapStatus(id, status);
+    if (result.success) {
+      router.refresh();
+    }
   };
 
   return (
@@ -41,8 +57,9 @@ export default function RoadmapClient({ initialRoadmap }: { initialRoadmap: any[
       {/* Modal overlay */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-[var(--bg-elevated)] border border-[var(--border)] p-6 rounded-xl w-full max-w-lg">
+          <div className="bg-[var(--bg-elevated)] border border-[var(--border)] p-6 rounded-xl w-full max-w-lg shadow-2xl">
             <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">Add Project Milestone</h2>
+            {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-3 py-2 rounded-md mb-4">{error}</div>}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">Milestone Title</label>
@@ -53,8 +70,8 @@ export default function RoadmapClient({ initialRoadmap }: { initialRoadmap: any[
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md px-3 py-2 mt-1 text-[var(--text-primary)] focus:border-[var(--accent)] outline-none h-24 resize-none" placeholder="List key sub-tasks here..." />
               </div>
               <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-[var(--accent)] text-black rounded-lg font-bold hover:brightness-110">Save Milestone</button>
+                <button type="button" onClick={() => { setIsModalOpen(false); setError(""); }} className="px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold">Cancel</button>
+                <button type="submit" disabled={saving} className="px-4 py-2 bg-[var(--accent)] text-black rounded-lg font-bold hover:brightness-110 disabled:opacity-50">{saving ? "Saving..." : "Save Milestone"}</button>
               </div>
             </form>
           </div>
@@ -94,12 +111,12 @@ export default function RoadmapClient({ initialRoadmap }: { initialRoadmap: any[
                     
                     <div className="flex items-center gap-2 pointer-events-auto opacity-0 group-hover:opacity-100 transition-opacity">
                       {m.status !== 'complete' && (
-                        <button onClick={() => handleStatusChange(m.id, 'complete')} className="text-xs bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black px-3 py-1.5 rounded-md font-bold transition-colors">
+                        <button onClick={() => handleStatusChange(m.id, 'complete')} className="text-xs bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black px-3 py-1.5 rounded-md font-bold transition-colors cursor-pointer">
                           Complete
                         </button>
                       )}
                       {m.status === 'pending' && (
-                         <button onClick={() => handleStatusChange(m.id, 'in-progress')} className="text-xs bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white px-3 py-1.5 rounded-md font-bold transition-colors">
+                         <button onClick={() => handleStatusChange(m.id, 'in-progress')} className="text-xs bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white px-3 py-1.5 rounded-md font-bold transition-colors cursor-pointer">
                           Start
                         </button>
                       )}
