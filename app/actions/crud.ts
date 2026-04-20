@@ -14,8 +14,13 @@ async function getUserId() {
 
 // --- TILs Actions ---
 export async function getTils() {
-  const userId = await getUserId();
-  return db.query.tils.findMany({ where: eq(tils.userId, userId), orderBy: (t, { desc }) => [desc(t.createdAt)] });
+  try {
+    const userId = await getUserId();
+    return await db.query.tils.findMany({ where: eq(tils.userId, userId), orderBy: (t, { desc }) => [desc(t.createdAt)] });
+  } catch (error) {
+    console.error("Failed to fetch TILs (Schema missing?):", error);
+    return [];
+  }
 }
 export async function addTil(data: { title: string; content: string; tags: string[] }) {
   const userId = await getUserId();
@@ -25,8 +30,13 @@ export async function addTil(data: { title: string; content: string; tags: strin
 
 // --- Bugs Actions ---
 export async function getBugs() {
-  const userId = await getUserId();
-  return db.query.bugs.findMany({ where: eq(bugs.userId, userId), orderBy: (b, { desc }) => [desc(b.createdAt)] });
+  try {
+    const userId = await getUserId();
+    return await db.query.bugs.findMany({ where: eq(bugs.userId, userId), orderBy: (b, { desc }) => [desc(b.createdAt)] });
+  } catch (error) {
+    console.error("Failed to fetch Bugs:", error);
+    return [];
+  }
 }
 export async function addBug(data: { title: string; description: string }) {
   const userId = await getUserId();
@@ -41,8 +51,13 @@ export async function resolveBug(id: number) {
 
 // --- Snippets Actions ---
 export async function getSnippets() {
-  const userId = await getUserId();
-  return db.query.snippets.findMany({ where: eq(snippets.userId, userId), orderBy: (s, { desc }) => [desc(s.createdAt)] });
+  try {
+    const userId = await getUserId();
+    return await db.query.snippets.findMany({ where: eq(snippets.userId, userId), orderBy: (s, { desc }) => [desc(s.createdAt)] });
+  } catch (error) {
+    console.error("Failed to fetch Snippets:", error);
+    return [];
+  }
 }
 export async function addSnippet(data: { title: string; code: string; language: string }) {
   const userId = await getUserId();
@@ -52,8 +67,13 @@ export async function addSnippet(data: { title: string; code: string; language: 
 
 // --- Flashcards Actions ---
 export async function getFlashcards() {
-  const userId = await getUserId();
-  return db.query.flashcards.findMany({ where: eq(flashcards.userId, userId) });
+  try {
+    const userId = await getUserId();
+    return await db.query.flashcards.findMany({ where: eq(flashcards.userId, userId) });
+  } catch (error) {
+    console.error("Failed to fetch Flashcards:", error);
+    return [];
+  }
 }
 export async function addFlashcard(data: { question: string; answer: string }) {
   const userId = await getUserId();
@@ -74,8 +94,13 @@ export async function updateFlashcardScore(id: number, scoreChange: number) {
 
 // --- Roadmap Actions ---
 export async function getRoadmap() {
-  const userId = await getUserId();
-  return db.query.roadmap.findMany({ where: eq(roadmap.userId, userId), orderBy: (r, { asc }) => [asc(r.createdAt)] });
+  try {
+    const userId = await getUserId();
+    return await db.query.roadmap.findMany({ where: eq(roadmap.userId, userId), orderBy: (r, { asc }) => [asc(r.createdAt)] });
+  } catch (error) {
+    console.error("Failed to fetch Roadmap:", error);
+    return [];
+  }
 }
 export async function addRoadmapMilestone(data: { title: string; description: string }) {
   const userId = await getUserId();

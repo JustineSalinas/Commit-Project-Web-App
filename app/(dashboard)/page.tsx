@@ -24,14 +24,14 @@ function TypewriterEffect({ text }: { text: string }) {
 
 export default function DashboardPage() {
   const { user, isLoaded } = useUser();
-  const firstName = user?.firstName || "Developer";
+  const userName = user?.username || user?.firstName || "Developer";
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-[var(--text-primary)]">
-            Welcome back, {isLoaded ? <TypewriterEffect text={firstName} /> : <span className="opacity-0">Loading</span>}
+            Welcome back, {isLoaded ? <TypewriterEffect text={`${userName}!`} /> : <span className="opacity-0">Loading</span>}
           </h1>
           <p className="text-[var(--text-secondary)] mt-1 text-sm">Here's your learning progress today.</p>
         </div>

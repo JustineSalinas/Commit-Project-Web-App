@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { 
   Home, 
   Timer, 
@@ -29,41 +32,51 @@ const navItems = [
 ];
 
 export function Sidebar() {
+  const pathname = usePathname();
+
   return (
-    <aside className="w-64 border-r border-[#1A1A1F] bg-[#09090B] h-screen flex flex-col hidden md:flex">
-      <div className="p-6">
+    <aside className="w-64 bg-[var(--bg-base)] h-screen flex flex-col hidden md:flex border-r border-[var(--border)]">
+      <div className="p-4 border-t border-[var(--border)] bg-[var(--bg-base)]">
         <h1 className="text-[var(--accent)] text-xl font-bold tracking-wider">COMMIT</h1>
-        <p className="text-[#71717A] text-xs mt-1 uppercase tracking-widest">Workspace</p>
+        <p className="text-[var(--text-secondary)] text-xs mt-1 uppercase tracking-widest">Workspace</p>
       </div>
 
-      <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto bg-[var(--bg-base)] border-r border-[var(--border)] w-full">
         {navItems.map((item) => (
           <Link
             key={item.name}
             href={item.href}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-[#A1A1AA] hover:bg-[#111113] hover:text-[#FAFAFA] transition-colors"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors 
+              ${pathname === item.href 
+                ? "bg-[var(--accent)]/10 text-[var(--accent)] font-bold border border-[var(--accent)]/20" 
+                : "text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--accent)]"
+              }`}
           >
-            <item.icon className="w-5 h-5 text-[#71717A]" />
-            <span className="text-sm font-medium">{item.name}</span>
+            <item.icon className={`w-5 h-5 ${pathname === item.href ? "text-[var(--accent)]" : "text-[var(--text-secondary)] group-hover:text-[var(--accent)]"}`} />
+            <span className="text-sm">{item.name}</span>
           </Link>
         ))}
       </nav>
 
       {/* Bottom Section */}
-      <div className="px-4 pb-2 border-t border-[#1A1A1F] pt-2">
+      <div className="px-4 pb-4 border-t border-[var(--border)] bg-[var(--bg-base)] border-r pt-4 w-full">
         <Link
           href="/settings"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-md text-[#A1A1AA] hover:bg-[#111113] hover:text-[#FAFAFA] transition-colors"
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors 
+            ${pathname === "/settings" 
+              ? "bg-[var(--accent)]/10 text-[var(--accent)] font-bold border border-[var(--accent)]/20" 
+              : "text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--accent)]"
+            }`}
         >
-          <Settings className="w-5 h-5 text-[#71717A]" />
-          <span className="text-sm font-medium">Settings</span>
+          <Settings className={`w-5 h-5 ${pathname === "/settings" ? "text-[var(--accent)]" : "text-[var(--text-secondary)] group-hover:text-[var(--accent)]"}`} />
+          <span className="text-sm">Settings</span>
         </Link>
       </div>
 
-      <div className="p-4 border-t border-[#1A1A1F]">
-        <div className="bg-[#111113] rounded-lg p-4 border border-[#1A1A1F]">
-          <div className="text-xs text-[#71717A] uppercase font-bold mb-1">Today's Focus</div>
-          <div className="text-[#FAFAFA] text-sm font-medium">0 / 4 Sessions</div>
+      <div className="p-4 border-t border-[var(--border)]">
+        <div className="bg-[var(--bg-surface)] rounded-lg p-4 border border-[var(--border)] relative overflow-hidden group">
+          <div className="text-xs text-[var(--text-secondary)] uppercase font-bold mb-1 group-hover:text-[var(--accent)] transition-colors">Today's Focus</div>
+          <div className="text-[var(--text-primary)] text-sm font-medium">0 / 4 Sessions</div>
           <div className="mt-2 h-1.5 w-full bg-[#18181B] rounded-full overflow-hidden">
             <div className="h-full bg-[var(--accent)] w-[0%]" />
           </div>
