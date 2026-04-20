@@ -1,0 +1,120 @@
+"use client";
+
+import { useState } from "react";
+import { Map, Plus, CheckCircle, Circle, ArrowRight, MoreVertical } from "lucide-react";
+import { addRoadmapMilestone, markRoadmapStatus } from "@/app/actions/crud";
+
+export default function RoadmapClient({ initialRoadmap }: { initialRoadmap: any[] }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title) return;
+    
+    await addRoadmapMilestone({ title, description });
+    setIsModalOpen(false);
+    setTitle("");
+    setDescription("");
+  };
+
+  const handleStatusChange = async (id: number, status: 'pending' | 'in-progress' | 'complete') => {
+    await markRoadmapStatus(id, status);
+  };
+
+  return (
+    <div className="space-y-6 relative h-full">
+      <header className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2 text-[var(--text-primary)]">
+            <Map className="w-6 h-6 text-[var(--accent)]" />
+            Learning Roadmap
+          </h1>
+          <p className="text-[var(--text-secondary)] text-sm mt-1">Track your macro project milestones and course paths.</p>
+        </div>
+        <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 bg-[var(--accent)] text-black px-4 py-2 rounded-lg font-bold hover:brightness-110 transition-all">
+          <Plus className="w-4 h-4" /> Add Milestone
+        </button>
+      </header>
+
+      {/* Modal overlay */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-[var(--bg-elevated)] border border-[var(--border)] p-6 rounded-xl w-full max-w-lg">
+            <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">Add Project Milestone</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">Milestone Title</label>
+                <input autoFocus type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md px-3 py-2 mt-1 text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" placeholder="e.g. Build authentication" />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">Description / Deliverables</label>
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md px-3 py-2 mt-1 text-[var(--text-primary)] focus:border-[var(--accent)] outline-none h-24 resize-none" placeholder="List key sub-tasks here..." />
+              </div>
+              <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-[var(--accent)] text-black rounded-lg font-bold hover:brightness-110">Save Milestone</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {initialRoadmap.length === 0 ? (
+        <div className="text-center text-[var(--text-secondary)] py-20 border border-dashed border-[var(--border)] rounded-xl mt-8">
+          <Map className="w-12 h-12 mx-auto mb-3 opacity-20" />
+          <p>No milestones created yet. Map out your next big project!</p>
+        </div>
+      ) : (
+        <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl p-8 relative mt-8 shadow-sm">
+          <div className="absolute left-[55px] top-8 bottom-8 w-1 bg-[var(--bg-base)] border-l border-r border-[var(--border)]" />
+          
+          <div className="space-y-10 relative z-10">
+            {initialRoadmap.map((m) => (
+              <div key={m.id} className="flex gap-8 items-start group">
+                <div className={`mt-1.5 bg-[var(--bg-base)] rounded-full p-2 border-[3px] shadow-sm transition-colors ${
+                  m.status === "complete" ? "border-[var(--accent)] text-[var(--accent)] ring-4 ring-[var(--accent)]/10" : 
+                  m.status === "in-progress" ? "border-blue-500 text-blue-500 ring-4 ring-blue-500/10" : "border-[var(--text-secondary)] text-[var(--text-secondary)]"
+                }`}>
+                  {m.status === "complete" ? <CheckCircle className="w-5 h-5" /> : 
+                   m.status === "in-progress" ? <ArrowRight className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
+                </div>
+                
+                <div className={`flex-1 bg-[var(--bg-surface)] border ${
+                  m.status === "in-progress" ? "border-blue-500/30" : "border-[var(--border)]"
+                } rounded-xl p-6 transition-all shadow-sm group-hover:shadow-md group-hover:border-[var(--accent)]/50 relative overflow-hidden`}>
+                  
+                  {m.status === "complete" && <div className="absolute inset-0 bg-[var(--bg-base)]/50 pointer-events-none" />}
+                  
+                  <div className="flex items-center justify-between relative z-10">
+                    <h3 className={`font-bold text-xl tracking-tight ${m.status === "complete" ? "line-through text-[var(--text-secondary)]" : "text-[var(--text-primary)]"}`}>
+                      {m.title}
+                    </h3>
+                    
+                    <div className="flex items-center gap-2 pointer-events-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                      {m.status !== 'complete' && (
+                        <button onClick={() => handleStatusChange(m.id, 'complete')} className="text-xs bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black px-3 py-1.5 rounded-md font-bold transition-colors">
+                          Complete
+                        </button>
+                      )}
+                      {m.status === 'pending' && (
+                         <button onClick={() => handleStatusChange(m.id, 'in-progress')} className="text-xs bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white px-3 py-1.5 rounded-md font-bold transition-colors">
+                          Start
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <p className={`mt-3 text-sm leading-relaxed ${m.status === "complete" ? "text-[var(--text-secondary)]" : "text-[var(--text-secondary)]"}`}>
+                    {m.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

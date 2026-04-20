@@ -20,10 +20,15 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         {/* Grid pattern overlay */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.1]"
           style={{
-            backgroundImage: `linear-gradient(#00FFAA 1px, transparent 1px), linear-gradient(90deg, #00FFAA 1px, transparent 1px)`,
+            backgroundImage: `
+              linear-gradient(rgba(0, 255, 170, 0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(0, 255, 170, 0.1) 1px, transparent 1px)
+            `,
             backgroundSize: "40px 40px",
+            maskImage: "radial-gradient(circle at top left, black, transparent)",
+            WebkitMaskImage: "radial-gradient(circle at top left, black, transparent)"
           }}
         />
 
@@ -38,32 +43,31 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="relative z-10 space-y-8">
           <div>
             <h2 className="text-4xl font-bold text-[#FAFAFA] leading-tight">
-              Build your
-              <br />
-              <span className="text-[#00FFAA]">deep work</span>
-              <br />
-              rhythm.
+              Learn.<br/>
+              <span className="text-[var(--accent)]">Document.</span><br/>
+              Grow.<br/>
+              Repeat.
             </h2>
             <p className="mt-4 text-[#71717A] text-lg leading-relaxed max-w-sm">
-              Track your focus sessions, document your breakthroughs, and master the skills that matter.
+              Track your focus sessions, log deep-work insights, and master the exact skills your career needs.
             </p>
           </div>
 
           {/* Stats row */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-6">
             <div className="space-y-1">
-              <div className="text-[#00FFAA] text-2xl font-bold">10k+</div>
-              <div className="text-[#71717A] text-xs uppercase tracking-widest">Focus Sessions</div>
+              <div className="text-[var(--accent)] font-medium text-sm">25-min</div>
+              <div className="text-[#71717A] text-xs uppercase tracking-widest">Focus Loops</div>
             </div>
-            <div className="w-px h-10 bg-[#1A1A1F]" />
+            <div className="w-px h-6 bg-[#1A1A1F]" />
             <div className="space-y-1">
-              <div className="text-[#00FFAA] text-2xl font-bold">500+</div>
-              <div className="text-[#71717A] text-xs uppercase tracking-widest">Concepts Learned</div>
+              <div className="text-[var(--accent)] font-medium text-sm">Daily</div>
+              <div className="text-[#71717A] text-xs uppercase tracking-widest">TIL Logs</div>
             </div>
-            <div className="w-px h-10 bg-[#1A1A1F]" />
+            <div className="w-px h-6 bg-[#1A1A1F]" />
             <div className="space-y-1">
-              <div className="text-[#00FFAA] text-2xl font-bold">99%</div>
-              <div className="text-[#71717A] text-xs uppercase tracking-widest">Satisfaction</div>
+              <div className="text-[var(--accent)] font-medium text-sm">Built-in</div>
+              <div className="text-[#71717A] text-xs uppercase tracking-widest">Flashcards</div>
             </div>
           </div>
         </div>
@@ -80,12 +84,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {/* Mobile logo */}
         <div className="lg:hidden mb-8">
           <Link href="/">
-            <span className="text-[#00FFAA] text-2xl font-bold tracking-widest">COMMIT</span>
+            <span className="text-[var(--accent)] text-2xl font-bold tracking-widest">COMMIT</span>
           </Link>
         </div>
 
-        <div className="w-full max-w-md flex flex-col items-center space-y-6">
-          <div className="text-center w-full mb-2">
+        {/* Elevated Form Panel */}
+        <div className="w-full max-w-md flex flex-col items-center bg-[#111113] p-8 rounded-2xl border border-[#1A1A1F] shadow-2xl relative z-10">
+          <div className="text-center w-full mb-4">
             <h1 className="text-2xl font-bold text-[#FAFAFA]">
               {isSignIn ? "Welcome back" : "Create your account"}
             </h1>
@@ -96,7 +101,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </p>
           </div>
 
-          <div className="w-full flex justify-center">
+          <div className="w-full flex justify-center mb-6">
             {children}
           </div>
 
@@ -104,14 +109,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             {isSignIn ? (
               <>
                 Don&apos;t have an account?{" "}
-                <Link href="/sign-up" className="text-[#00FFAA] hover:text-[#00E599] transition-colors font-medium">
+                <Link href="/sign-up" className="text-[var(--accent)] hover:opacity-80 transition-colors font-medium">
                   Sign up
                 </Link>
               </>
             ) : (
               <>
                 Already have an account?{" "}
-                <Link href="/sign-in" className="text-[#00FFAA] hover:text-[#00E599] transition-colors font-medium">
+                <Link href="/sign-in" className="text-[var(--accent)] hover:opacity-80 transition-colors font-medium">
                   Sign in
                 </Link>
               </>

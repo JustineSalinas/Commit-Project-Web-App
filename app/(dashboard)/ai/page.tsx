@@ -11,16 +11,38 @@ export default function AITab() {
   const [input, setInput] = useState("");
   const aiModel = useSettingsStore(state => state.aiModel);
 
-  const handleSend = (e: React.FormEvent) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
 
-    setMessages([...messages, { role: "user", content: input }]);
+    const userMessage = { role: "user", content: input };
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setIsLoading(true);
 
-    setTimeout(() => {
-      setMessages(prev => [...prev, { role: "assistant", content: "This is a local prototype! To get real answers from Claude, we will connect the Anthropic API in the next phase." }]);
-    }, 600);
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [...messages, userMessage],
+          model: aiModel === "claude-opus-4" ? "claude-3-opus-20240229" 
+               : aiModel === "claude-sonnet-4" ? "claude-3-sonnet-20240229" 
+               : "claude-3-haiku-20240307",
+        }),
+      });
+
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      setMessages((prev) => [...prev, { role: "assistant", content: data.result }]);
+    } catch (error: any) {
+      setMessages((prev) => [...prev, { role: "assistant", content: `Error: ${error.message}` }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -59,10 +81,11 @@ export default function AITab() {
               type="text" 
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask me to explain a concept or debug an error..." 
-              className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-xl pl-4 pr-12 py-3 text-sm focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] outline-none text-[var(--text-primary)]"
+              disabled={isLoading}
+              placeholder={isLoading ? "Thinking..." : "Ask me to explain a concept or debug an error..."}
+              className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-xl pl-4 pr-12 py-3 text-sm focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] outline-none text-[var(--text-primary)] disabled:opacity-50"
             />
-            <button type="submit" disabled={!input.trim()} className="absolute right-2 p-2 bg-[var(--accent)] text-black rounded-lg hover:brightness-110 transition-all disabled:opacity-50 disabled:hover:brightness-100">
+            <button type="submit" disabled={!input.trim() || isLoading} className="absolute right-2 p-2 bg-[var(--accent)] text-black rounded-lg hover:brightness-110 transition-all disabled:opacity-50 disabled:hover:brightness-100">
               <Send className="w-4 h-4" />
             </button>
           </form>

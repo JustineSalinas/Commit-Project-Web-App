@@ -34,11 +34,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     root.style.setProperty("--editor-ligatures", ligatures ? "normal" : "none");
 
     if (theme === "light") {
-      root.style.setProperty("--bg-base", "#FAFAFA");
-      root.style.setProperty("--bg-surface", "#F4F4F5");
-      root.style.setProperty("--bg-elevated", "#E4E4E7");
+      root.style.setProperty("--bg-base", "#F4F4F5");
+      root.style.setProperty("--bg-surface", "#FAFAFA");
+      root.style.setProperty("--bg-elevated", "#FFFFFF");
       root.style.setProperty("--border", "#E4E4E7");
-      root.style.setProperty("--text-primary", "#09090B");
+      root.style.setProperty("--text-primary", "#18181B");
       root.style.setProperty("--text-secondary", "#71717A");
     } else {
       // Revert to dark
