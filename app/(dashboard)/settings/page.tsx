@@ -259,8 +259,8 @@ function AppearanceTab() {
               }`}
               style={{
                 backgroundColor: a.color,
-                ringColor: accent === a.color ? a.color : undefined,
-              }}
+                "--tw-ring-color": accent === a.color ? a.color : undefined,
+              } as React.CSSProperties}
             />
           ))}
         </div>
