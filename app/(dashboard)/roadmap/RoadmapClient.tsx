@@ -48,6 +48,13 @@ export default function RoadmapClient({ initialRoadmap }: { initialRoadmap: any[
     router.refresh();
   };
 
+  const handleStatusChange = async (id: number, status: 'pending' | 'in-progress' | 'complete') => {
+    const result = await markRoadmapStatus(id, status);
+    if (result.success) {
+      router.refresh();
+    }
+  };
+
   return (
     <div className="space-y-6 relative h-full">
       <header className="flex items-center justify-between">
