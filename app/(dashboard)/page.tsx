@@ -3,6 +3,8 @@
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { getDashboardStats } from "@/app/actions/crud";
+import { Loader2 } from "lucide-react";
 
 function TypewriterEffect({ text }: { text: string }) {
   const [displayedText, setDisplayedText] = useState("");
@@ -29,7 +31,26 @@ function TypewriterEffect({ text }: { text: string }) {
 
 export default function DashboardPage() {
   const { user, isLoaded } = useUser();
+  const [stats, setStats] = useState({ focusTime: "0h 0m", cardsDue: 0, streak: "0 Days", heatmap: [] as string[] });
+  const [loading, setLoading] = useState(true);
+
   const userName = user?.fullName || user?.username || user?.firstName || "Developer";
+
+  useEffect(() => {
+    async function fetchStats() {
+      const data = await getDashboardStats();
+      setStats(data);
+      setLoading(false);
+    }
+    if (isLoaded) {
+      fetchStats();
+    }
+  }, [isLoaded]);
+
+  // Heatmap calculation
+  const activitySet = new Set(stats.heatmap);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   return (
     <div className="space-y-6">
@@ -47,14 +68,18 @@ export default function DashboardPage() {
         {/* Focus Time */}
         <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl p-5">
           <h3 className="text-[var(--text-secondary)] text-sm font-medium mb-2">Focus Time Today</h3>
-          <p className="text-2xl font-bold text-[var(--text-primary)]">2h 30m</p>
+          {loading ? <Loader2 className="w-5 h-5 animate-spin text-[var(--text-muted)]" /> : (
+            <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.focusTime}</p>
+          )}
         </div>
         
         {/* Flashcards */}
         <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl p-5 flex flex-col justify-between">
           <div>
             <h3 className="text-[var(--text-secondary)] text-sm font-medium mb-2">Flashcards Due</h3>
-            <p className="text-2xl font-bold text-[var(--text-primary)]">14</p>
+            {loading ? <Loader2 className="w-5 h-5 animate-spin text-[var(--text-muted)]" /> : (
+              <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.cardsDue}</p>
+            )}
           </div>
           <Link href="/flashcards" className="text-sm text-[var(--accent)] hover:underline mt-2 font-medium inline-block">
             Jump to review &rarr;
@@ -64,7 +89,9 @@ export default function DashboardPage() {
         {/* Streak */}
         <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl p-5">
           <h3 className="text-[var(--text-secondary)] text-sm font-medium mb-2">Current Streak</h3>
-          <p className="text-2xl font-bold text-[var(--text-primary)]">12 Days</p>
+          {loading ? <Loader2 className="w-5 h-5 animate-spin text-[var(--text-muted)]" /> : (
+            <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.streak}</p>
+          )}
         </div>
       </div>
 
@@ -75,17 +102,19 @@ export default function DashboardPage() {
           {Array.from({ length: 13 }).map((_, w_idx) => (
             <div key={w_idx} className="flex flex-col gap-1">
               {Array.from({ length: 7 }).map((__, d_idx) => {
-                const r = Math.random();
-                let colorClass = "bg-[var(--bg-elevated)]";
-                if (r > 0.8) colorClass = "bg-[var(--accent)]";
-                else if (r > 0.6) colorClass = "bg-[var(--accent)]/70";
-                else if (r > 0.4) colorClass = "bg-[var(--accent)]/40";
-                else if (r > 0.2) colorClass = "bg-[var(--accent)]/20";
+                // Calculate date for this cell
+                const date = new Date(today);
+                const dayOffset = ((12 - w_idx) * 7) + (6 - d_idx);
+                date.setDate(today.getDate() - dayOffset);
+                
+                const isActive = activitySet.has(date.toDateString());
+                const colorClass = isActive ? "bg-[var(--accent)]" : "bg-[var(--bg-elevated)]";
 
                 return (
                   <div 
                     key={d_idx} 
                     className={`w-4 h-4 rounded-sm ${colorClass} hover:ring-1 hover:ring-black/20 dark:hover:ring-white/20 cursor-pointer transition-all`}
+                    title={date.toDateString()}
                   />
                 );
               })}

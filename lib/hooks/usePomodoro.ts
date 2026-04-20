@@ -1,5 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { usePomodoroStore, PomodoroMode } from '../zustand/pomodoroStore';
+import { logFocusSession } from "@/app/actions/crud";
 
 const TIMES: Record<PomodoroMode, number> = {
   focus: 25 * 60,
@@ -22,11 +23,14 @@ export const usePomodoro = () => {
     overrideTime
   } = usePomodoroStore();
 
-  const handleTimerComplete = useCallback(() => {
+  const handleTimerComplete = useCallback(async () => {
     setIsActive(false);
     setExpectedEndTime(null);
     
     if (mode === 'focus') {
+      const durationInMinutes = Math.round(TIMES[mode] / 60);
+      await logFocusSession({ durationMinutes: durationInMinutes, focusType: 'pomodoro' });
+      
       incrementSessionsCompleted();
       const nextMode = (sessionsCompleted + 1) % 4 === 0 ? 'longBreak' : 'shortBreak';
       setMode(nextMode);
@@ -35,7 +39,7 @@ export const usePomodoro = () => {
       setMode('focus');
       setTimeLeft(TIMES['focus']);
     }
-  }, [mode, sessionsCompleted, incrementSessionsCompleted, setMode, setTimeLeft, setIsActive, setExpectedEndTime]);
+  }, [mode, sessionsCompleted, incrementSessionsCompleted, setMode, setTimeLeft, setIsActive, setExpectedEndTime, logFocusSession]);
 
   const toggleTimer = useCallback(() => {
     if (isActive) {

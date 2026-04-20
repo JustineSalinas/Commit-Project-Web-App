@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/db";
-import { tils, bugs, snippets, flashcards, roadmap, journals } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { tils, bugs, snippets, flashcards, roadmap, journals, focusSessions } from "@/db/schema";
+import { eq, gte, sql } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
@@ -211,5 +211,78 @@ export async function deleteJournalEntry(id: number) {
   } catch (error: any) {
     console.error("Failed to delete Journal Entry:", error);
     return { success: false, error: error.message };
+  }
+}
+
+// --- Stats & Dashboard ---
+export async function logFocusSession(data: { durationMinutes: number; focusType: string }) {
+  try {
+    const userId = await getUserId();
+    await db.insert(focusSessions).values({ 
+      userId, 
+      durationMinutes: data.durationMinutes, 
+      focusType: data.focusType 
+    });
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to log focus session:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function getDashboardStats() {
+  try {
+    const userId = await getUserId();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // 1. Focus Time Today
+    const sessionsToday = await db.query.focusSessions.findMany({
+      where: sql`${focusSessions.userId} = ${userId} AND ${focusSessions.createdAt} >= ${today}`
+    });
+    const focusTimeToday = sessionsToday.reduce((acc, s) => acc + s.durationMinutes, 0);
+
+    // 2. Flashcards Due (simplified: count all if none reviewed recently, or those with low score)
+    const cards = await db.query.flashcards.findMany({ where: eq(flashcards.userId, userId) });
+    const cardsDue = cards.filter(c => !c.lastReviewed || (c.score || 0) < 3).length;
+
+    // 3. Streak Calculation (Aggregate activity dates)
+    const activityDates = new Set<string>();
+    
+    const [tilsData, sessionsData, journalsData] = await Promise.all([
+      db.query.tils.findMany({ where: eq(tils.userId, userId), columns: { createdAt: true } }),
+      db.query.focusSessions.findMany({ where: eq(focusSessions.userId, userId), columns: { createdAt: true } }),
+      db.query.journals.findMany({ where: eq(journals.userId, userId), columns: { createdAt: true } })
+    ]);
+
+    [...tilsData, ...sessionsData, ...journalsData].forEach(item => {
+      if (item.createdAt) {
+        activityDates.add(new Date(item.createdAt).toDateString());
+      }
+    });
+
+    let streak = 0;
+    const checkDate = new Date();
+    checkDate.setHours(0, 0, 0, 0);
+
+    // If no activity today, check if there was activity yesterday to continue the streak
+    if (!activityDates.has(checkDate.toDateString())) {
+      checkDate.setDate(checkDate.getDate() - 1);
+    }
+
+    while (activityDates.has(checkDate.toDateString())) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    }
+
+    return {
+      focusTime: `${Math.floor(focusTimeToday / 60)}h ${focusTimeToday % 60}m`,
+      cardsDue,
+      streak: `${streak} Days`,
+      heatmap: Array.from(activityDates) // Raw dates for heatmap
+    };
+  } catch (error) {
+    console.error("Failed to fetch dashboard stats:", error);
+    return { focusTime: "0h 0m", cardsDue: 0, streak: "0 Days", heatmap: [] };
   }
 }
