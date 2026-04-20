@@ -8,14 +8,18 @@ function TypewriterEffect({ text }: { text: string }) {
 
   useEffect(() => {
     let index = 0;
-    setDisplayedText(""); // Reset text if prop changes
+    setDisplayedText(""); 
+    
+    if (!text) return;
+
     const timer = setInterval(() => {
-      setDisplayedText((old) => old + text.charAt(index));
+      setDisplayedText(text.substring(0, index + 1));
       index++;
-      if (index === text.length) {
+      if (index >= text.length) {
         clearInterval(timer);
       }
-    }, 50); // Typing speed
+    }, 40); 
+    
     return () => clearInterval(timer);
   }, [text]);
 

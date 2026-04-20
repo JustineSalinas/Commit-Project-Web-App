@@ -35,11 +35,14 @@ export default function AITab() {
       });
 
       const data = await res.json();
-      if (data.error) throw new Error(data.error);
+      
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to communicate with the assistant");
+      }
 
       setMessages((prev) => [...prev, { role: "assistant", content: data.result }]);
     } catch (error: any) {
-      setMessages((prev) => [...prev, { role: "assistant", content: `Error: ${error.message}` }]);
+      setMessages((prev) => [...prev, { role: "assistant", content: error.message }]);
     } finally {
       setIsLoading(false);
     }

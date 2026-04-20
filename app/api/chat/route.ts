@@ -37,6 +37,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ result: responseContent });
   } catch (error: any) {
     console.error('Claude API Error:', error);
+    
+    // Specific handling for Anthropic balance errors
+    if (error.status === 400 && error.message?.includes('credit balance is too low')) {
+      return NextResponse.json(
+        { error: 'Your Anthropic API balance is zero. Please add credits at console.anthropic.com to use the AI Explainer.' },
+        { status: 402 } // Payment Required
+      );
+    }
+
     return NextResponse.json(
       { error: error.message || 'Internal Server Error' },
       { status: 500 }
