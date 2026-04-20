@@ -24,7 +24,7 @@ function TypewriterEffect({ text }: { text: string }) {
 
 export default function DashboardPage() {
   const { user, isLoaded } = useUser();
-  const userName = user?.username || user?.firstName || "Developer";
+  const userName = user?.fullName || user?.username || user?.firstName || "Developer";
 
   return (
     <div className="space-y-6">
