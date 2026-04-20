@@ -1,8 +1,14 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
 import * as schema from './schema';
 
-// Disable prefetch as it is not supported for "Transaction" pool mode
-const client = postgres(process.env.DATABASE_URL as string, { prepare: false });
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL as string,
+  // For Supabase transaction pooling, we limit the pool size 
+  // and handle potential connection issues gracefully
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
 
-export const db = drizzle(client, { schema });
+export const db = drizzle(pool, { schema });
