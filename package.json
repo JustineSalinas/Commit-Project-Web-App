@@ -14,6 +14,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.36.0",
     "@clerk/nextjs": "^6.0.0",
+    "@clerk/themes": "^2.4.57",
     "@radix-ui/react-dialog": "^1.0.0",
     "@radix-ui/react-progress": "^1.0.0",
     "@radix-ui/react-scroll-area": "^1.0.0",

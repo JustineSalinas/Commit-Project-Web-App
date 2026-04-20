@@ -10,7 +10,8 @@ import {
   Target, 
   Code2, 
   Activity, 
-  Bot 
+  Bot,
+  Settings
 } from "lucide-react";
 
 const navItems = [
@@ -47,6 +48,17 @@ export function Sidebar() {
           </Link>
         ))}
       </nav>
+
+      {/* Bottom Section */}
+      <div className="px-4 pb-2 border-t border-[#1A1A1F] pt-2">
+        <Link
+          href="/settings"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-md text-[#A1A1AA] hover:bg-[#111113] hover:text-[#FAFAFA] transition-colors"
+        >
+          <Settings className="w-5 h-5 text-[#71717A]" />
+          <span className="text-sm font-medium">Settings</span>
+        </Link>
+      </div>
 
       <div className="p-4 border-t border-[#1A1A1F]">
         <div className="bg-[#111113] rounded-lg p-4 border border-[#1A1A1F]">
