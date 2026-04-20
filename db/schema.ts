@@ -61,3 +61,13 @@ export const roadmap = pgTable('roadmap', {
   status: text('status').default('pending'), // pending, in-progress, complete
   createdAt: timestamp('created_at').defaultNow(),
 });
+
+export const journals = pgTable('journals', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+

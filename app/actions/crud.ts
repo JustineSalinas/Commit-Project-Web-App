@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { tils, bugs, snippets, flashcards, roadmap } from "@/db/schema";
+import { tils, bugs, snippets, flashcards, roadmap, journals } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -154,6 +154,62 @@ export async function markRoadmapStatus(id: number, status: 'pending' | 'in-prog
     return { success: true };
   } catch (error: any) {
     console.error("Failed to update Roadmap status:", error);
+    return { success: false, error: error.message };
+  }
+}
+// --- Journal Actions ---
+export async function getJournals() {
+  try {
+    const userId = await getUserId();
+    return await db.query.journals.findMany({ 
+      where: eq(journals.userId, userId), 
+      orderBy: (j, { desc }) => [desc(j.createdAt)] 
+    });
+  } catch (error) {
+    console.error("Failed to fetch Journals:", error);
+    return [];
+  }
+}
+
+export async function addJournalEntry(data: { title: string; content: string }) {
+  try {
+    const userId = await getUserId();
+    const [result] = await db.insert(journals).values({ 
+      userId, 
+      title: data.title, 
+      content: data.content 
+    }).returning();
+    revalidatePath('/journal');
+    return { success: true, entry: result };
+  } catch (error: any) {
+    console.error("Failed to add Journal Entry:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateJournalEntry(id: number, data: { title?: string; content?: string }) {
+  try {
+    const userId = await getUserId();
+    await db.update(journals).set({ 
+      ...data,
+      updatedAt: new Date()
+    }).where(eq(journals.id, id));
+    revalidatePath('/journal');
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to update Journal Entry:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteJournalEntry(id: number) {
+  try {
+    const userId = await getUserId();
+    await db.delete(journals).where(eq(journals.id, id));
+    revalidatePath('/journal');
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to delete Journal Entry:", error);
     return { success: false, error: error.message };
   }
 }

@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Map, Plus, CheckCircle, Circle, ArrowRight } from "lucide-react";
+import { Map, Plus, CheckCircle, Circle, ArrowRight, BookOpen } from "lucide-react";
 import { addRoadmapMilestone, markRoadmapStatus } from "@/app/actions/crud";
+import { ROADMAP_TEMPLATES } from "@/lib/data/roadmapTemplates";
 
 export default function RoadmapClient({ initialRoadmap }: { initialRoadmap: any[] }) {
   const router = useRouter();
@@ -32,11 +33,19 @@ export default function RoadmapClient({ initialRoadmap }: { initialRoadmap: any[
     }
   };
 
-  const handleStatusChange = async (id: number, status: 'pending' | 'in-progress' | 'complete') => {
-    const result = await markRoadmapStatus(id, status);
-    if (result.success) {
-      router.refresh();
+  const handleApplyTemplate = async (templateName: string) => {
+    const template = ROADMAP_TEMPLATES.find(t => t.name === templateName);
+    if (!template || saving) return;
+    
+    setSaving(true);
+    for (const milestone of template.milestones) {
+      await addRoadmapMilestone({ 
+        title: milestone.title, 
+        description: milestone.description 
+      });
     }
+    setSaving(false);
+    router.refresh();
   };
 
   return (
@@ -49,9 +58,24 @@ export default function RoadmapClient({ initialRoadmap }: { initialRoadmap: any[
           </h1>
           <p className="text-[var(--text-secondary)] text-sm mt-1">Track your macro project milestones and course paths.</p>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 bg-[var(--accent)] text-black px-4 py-2 rounded-lg font-bold hover:brightness-110 transition-all">
-          <Plus className="w-4 h-4" /> Add Milestone
-        </button>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg px-3 py-1.5 overflow-hidden">
+            <BookOpen className="w-4 h-4 text-[var(--accent)]" />
+            <select 
+              disabled={saving}
+              onChange={(e) => handleApplyTemplate(e.target.value)}
+              className="bg-transparent text-xs font-bold text-[var(--text-secondary)] outline-none cursor-pointer"
+            >
+              <option value="">Apply Template...</option>
+              {ROADMAP_TEMPLATES.map(t => (
+                <option key={t.name} value={t.name}>{t.name}</option>
+              ))}
+            </select>
+          </div>
+          <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 bg-[var(--accent)] text-black px-4 py-2 rounded-lg font-bold hover:brightness-110 transition-all flex-shrink-0">
+            <Plus className="w-4 h-4" /> Add Milestone
+          </button>
+        </div>
       </header>
 
       {/* Modal overlay */}
