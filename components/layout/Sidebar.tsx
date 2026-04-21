@@ -38,7 +38,7 @@ export function Sidebar() {
     <aside className="w-64 bg-[var(--bg-base)] h-screen flex flex-col hidden md:flex border-r border-[var(--border)]">
       <div className="p-4 border-t border-[var(--border)] bg-[var(--bg-base)]">
         <h1 className="text-[var(--accent)] text-xl font-bold tracking-wider">COMMIT</h1>
-        <p className="text-[var(--text-secondary)] text-xs mt-1 uppercase tracking-widest">Workspace</p>
+
       </div>
 
       <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto bg-[var(--bg-base)] border-r border-[var(--border)] w-full">

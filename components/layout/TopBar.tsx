@@ -8,9 +8,7 @@ import { Settings, Bell, Flame } from "lucide-react";
 export function TopBar() {
   return (
     <header className="h-16 border-b border-[var(--border)] bg-[var(--topbar-bg)] backdrop-blur-sm flex items-center px-6 justify-between sticky top-0 z-10">
-      <div className="flex items-center gap-4">
-        <span className="text-[var(--text-secondary)] font-medium text-sm">Workspace</span>
-      </div>
+
 
       <div className="flex items-center gap-3">
         {/* Streak Counter */}
