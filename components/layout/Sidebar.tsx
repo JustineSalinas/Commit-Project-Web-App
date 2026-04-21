@@ -36,7 +36,7 @@ export function Sidebar() {
 
   return (
     <aside className="w-64 bg-[var(--bg-base)] h-screen flex flex-col hidden md:flex border-r border-[var(--border)]">
-      <div className="p-4 border-t border-[var(--border)] bg-[var(--bg-base)]">
+      <div className="px-7 py-4 border-t border-[var(--border)] bg-[var(--bg-base)]">
         <h1 className="text-[var(--accent)] text-xl font-bold tracking-wider">COMMIT</h1>
 
       </div>
