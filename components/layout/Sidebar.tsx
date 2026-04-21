@@ -60,7 +60,7 @@ export function Sidebar() {
         <h1 className="text-[var(--accent)] text-xl font-bold tracking-wider">COMMIT</h1>
       </div>
 
-      <nav className="flex-1 px-4 py-2 space-y-6 overflow-y-auto bg-[var(--bg-base)] border-r border-[var(--border)] w-full custom-scrollbar">
+      <nav className="flex-1 px-4 py-2 space-y-6 overflow-y-auto bg-transparent w-full custom-scrollbar">
         {navGroups.map((group, groupIdx) => (
           <div key={group.label} className="space-y-1">
             <h3 className="px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)] mb-2 opacity-50">
