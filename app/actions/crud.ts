@@ -14,8 +14,8 @@ async function getUserId() {
 
 // --- TILs Actions ---
 export async function getTils() {
+  const userId = await getUserId();
   try {
-    const userId = await getUserId();
     return await db.query.tils.findMany({ where: eq(tils.userId, userId), orderBy: (t, { desc }) => [desc(t.createdAt)] });
   } catch (error) {
     console.error("Failed to fetch TILs:", error);
@@ -36,8 +36,8 @@ export async function addTil(data: { title: string; content: string; tags: strin
 
 // --- Bugs Actions ---
 export async function getBugs() {
+  const userId = await getUserId();
   try {
-    const userId = await getUserId();
     return await db.query.bugs.findMany({ where: eq(bugs.userId, userId), orderBy: (b, { desc }) => [desc(b.createdAt)] });
   } catch (error) {
     console.error("Failed to fetch Bugs:", error);
@@ -68,8 +68,8 @@ export async function resolveBug(id: number) {
 
 // --- Snippets Actions ---
 export async function getSnippets() {
+  const userId = await getUserId();
   try {
-    const userId = await getUserId();
     return await db.query.snippets.findMany({ where: eq(snippets.userId, userId), orderBy: (s, { desc }) => [desc(s.createdAt)] });
   } catch (error) {
     console.error("Failed to fetch Snippets:", error);
@@ -90,8 +90,8 @@ export async function addSnippet(data: { title: string; code: string; language: 
 
 // --- Flashcards Actions ---
 export async function getFlashcards() {
+  const userId = await getUserId();
   try {
-    const userId = await getUserId();
     return await db.query.flashcards.findMany({ where: eq(flashcards.userId, userId) });
   } catch (error) {
     console.error("Failed to fetch Flashcards:", error);
@@ -128,8 +128,8 @@ export async function updateFlashcardScore(id: number, scoreChange: number) {
 
 // --- Roadmap Actions ---
 export async function getRoadmap() {
+  const userId = await getUserId();
   try {
-    const userId = await getUserId();
     return await db.query.roadmap.findMany({ where: eq(roadmap.userId, userId), orderBy: (r, { asc }) => [asc(r.createdAt)] });
   } catch (error) {
     console.error("Failed to fetch Roadmap:", error);
@@ -159,8 +159,8 @@ export async function markRoadmapStatus(id: number, status: 'pending' | 'in-prog
 }
 // --- Journal Actions ---
 export async function getJournals() {
+  const userId = await getUserId();
   try {
-    const userId = await getUserId();
     return await db.query.journals.findMany({ 
       where: eq(journals.userId, userId), 
       orderBy: (j, { desc }) => [desc(j.createdAt)] 
@@ -231,8 +231,8 @@ export async function logFocusSession(data: { durationMinutes: number; focusType
 }
 
 export async function getDashboardStats() {
+  const userId = await getUserId();
   try {
-    const userId = await getUserId();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
