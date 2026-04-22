@@ -5,6 +5,12 @@ export const users = pgTable('users', {
   clerkId: text('clerk_id').unique().notNull(), // Clerk User ID
   name: text('name'),
   email: text('email').unique().notNull(),
+  hasCompletedOnboarding: boolean('has_completed_onboarding').default(false),
+  preferences: json('preferences').$type<{
+    preferredIDE?: string;
+    languages?: string[];
+    workflow?: string;
+  }>(),
   createdAt: timestamp('created_at').defaultNow(),
 });
 

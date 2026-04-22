@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { tils, bugs, snippets, flashcards, roadmap, journals, focusSessions } from "@/db/schema";
+import { tils, bugs, snippets, flashcards, roadmap, journals, focusSessions, users } from "@/db/schema";
 import { eq, gte, sql } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -10,6 +10,36 @@ async function getUserId() {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
   return userId;
+}
+
+export async function getUserProfile() {
+  const userId = await getUserId();
+  try {
+    const user = await db.query.users.findFirst({
+      where: eq(users.clerkId, userId)
+    });
+    return user;
+  } catch (error) {
+    console.error("Failed to fetch user profile:", error);
+    return null;
+  }
+}
+
+export async function completeOnboarding(preferences: any) {
+  const userId = await getUserId();
+  try {
+    await db.update(users)
+      .set({ 
+        hasCompletedOnboarding: true,
+        preferences: preferences
+      })
+      .where(eq(users.clerkId, userId));
+    revalidatePath('/');
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to complete onboarding:", error);
+    return { success: false, error: error.message };
+  }
 }
 
 // --- TILs Actions ---
