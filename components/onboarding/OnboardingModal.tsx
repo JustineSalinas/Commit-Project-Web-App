@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { completeOnboarding } from "@/app/actions/crud";
 import { toast } from "sonner";
-import { Rocket, Code2, Layout, Sparkles } from "lucide-react";
+import { Rocket, Code2, Layout, Sparkles, Target, CheckCircle2 } from "lucide-react";
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -69,12 +69,12 @@ export function OnboardingModal({ isOpen, onComplete, userName }: OnboardingModa
           <DialogTitle className="text-2xl font-bold">
             {step === 1 && `Welcome, ${userName}!`}
             {step === 2 && "The Developer's Workspace"}
-            {step === 3 && "Unleash Your Potential"}
+            {step === 3 && "The Developer's Pledge"}
           </DialogTitle>
           <DialogDescription className="text-[var(--text-secondary)]">
             {step === 1 && "Commit is your secondary brain, designed to help you master your craft and track your growth as a developer."}
             {step === 2 && "Focus timers, smart flashcards, code journals, and a roadmap tracker—all in one place."}
-            {step === 3 && "Finalize your setup to begin your journey toward mastery."}
+            {step === 3 && "Before we begin, let's set the foundation for your growth."}
           </DialogDescription>
         </DialogHeader>
 
@@ -103,7 +103,7 @@ export function OnboardingModal({ isOpen, onComplete, userName }: OnboardingModa
               ].map((feature) => (
                 <div 
                   key={feature.title} 
-                  className="p-3 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] transition-all duration-300 hover:scale-[1.02] hover:border-[var(--accent)] hover:shadow-lg hover:shadow-[var(--accent)]/10 cursor-default group"
+                  className="p-3 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--accent)] hover:shadow-lg hover:shadow-[var(--accent)]/10 cursor-default group will-change-transform"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <div className="text-[var(--accent)] group-hover:scale-110 transition-transform">
@@ -119,33 +119,35 @@ export function OnboardingModal({ isOpen, onComplete, userName }: OnboardingModa
 
           {step === 3 && (
             <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-[var(--text-muted)]">Preferred IDE</label>
-                <Select onValueChange={(v) => setPreferences({ ...preferences, preferredIDE: v })}>
-                  <SelectTrigger className="bg-[var(--bg-elevated)] border-[var(--border)]">
-                    <SelectValue placeholder="Select an IDE" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[var(--bg-surface)] border-[var(--border)]">
-                    <SelectItem value="vscode">VS Code</SelectItem>
-                    <SelectItem value="cursor">Cursor</SelectItem>
-                    <SelectItem value="neovim">Neovim</SelectItem>
-                    <SelectItem value="intellij">IntelliJ</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="p-4 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border)] space-y-4">
+                <div className="flex items-center gap-2 text-[var(--accent)]">
+                  <Target className="w-5 h-5" />
+                  <h4 className="text-sm font-bold uppercase tracking-wider">The Commit Mindset</h4>
+                </div>
+                
+                <div className="space-y-3">
+                  {[
+                    { text: "Consistency over Intensity", sub: "I will show up for my craft every single day." },
+                    { text: "Mastery through Reflection", sub: "I will journal my learnings and review my progress." },
+                    { text: "Focused Deep Work", sub: "I will minimize distractions during learning sessions." }
+                  ].map((item, i) => (
+                    <div key={i} className="flex gap-3 items-start group">
+                      <div className="mt-1">
+                        <CheckCircle2 className="w-4 h-4 text-[var(--accent)] opacity-50 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-[var(--text-primary)]">{item.text}</p>
+                        <p className="text-[10px] text-[var(--text-muted)]">{item.sub}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-[var(--text-muted)]">Primary Workflow</label>
-                <Select onValueChange={(v) => setPreferences({ ...preferences, workflow: v })}>
-                  <SelectTrigger className="bg-[var(--bg-elevated)] border-[var(--border)]">
-                    <SelectValue placeholder="Select workflow style" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[var(--bg-surface)] border-[var(--border)]">
-                    <SelectItem value="frontend">Frontend Focused</SelectItem>
-                    <SelectItem value="backend">Backend Focused</SelectItem>
-                    <SelectItem value="fullstack">Fullstack / Generalist</SelectItem>
-                    <SelectItem value="devops">DevOps / Cloud</SelectItem>
-                  </SelectContent>
-                </Select>
+              
+              <div className="p-3 rounded-lg bg-[var(--accent-muted)]/10 border border-[var(--accent)]/20 text-center">
+                <p className="text-xs font-medium text-[var(--accent)]">
+                  Ready to start your journey?
+                </p>
               </div>
             </div>
           )}
