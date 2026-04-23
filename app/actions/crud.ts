@@ -33,12 +33,14 @@ export async function completeOnboarding(preferences: any) {
     
     const name = user.fullName || `${user.firstName || ""} ${user.lastName || ""}`.trim();
 
-    // Simplified query: removing limit to avoid potential param issues
-    const results = await db.select().from(users).where(
-      or(eq(users.clerkId, user.id), eq(users.email, email))
-    );
-    
-    const existingUser = results[0];
+    // Split into two simple queries to avoid OR issues in some drivers
+    const resultsById = await db.select().from(users).where(eq(users.clerkId, user.id));
+    let existingUser = resultsById[0];
+
+    if (!existingUser) {
+      const resultsByEmail = await db.select().from(users).where(eq(users.email, email));
+      existingUser = resultsByEmail[0];
+    }
 
     if (existingUser) {
       await db.update(users)

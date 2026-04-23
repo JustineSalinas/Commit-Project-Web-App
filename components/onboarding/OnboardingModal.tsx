@@ -158,14 +158,14 @@ export function OnboardingModal({ isOpen, onComplete, userName }: OnboardingModa
             variant="ghost" 
             onClick={() => setStep(s => Math.max(1, s - 1))}
             disabled={step === 1 || loading}
-            className="text-[var(--text-muted)]"
+            className="text-[var(--text-muted)] cursor-pointer"
           >
             Back
           </Button>
           {step < totalSteps ? (
             <Button 
               onClick={handleNext}
-              className="bg-[var(--accent)] text-black hover:bg-[var(--accent)]/90"
+              className="bg-[var(--accent)] text-black hover:bg-[var(--accent)]/90 cursor-pointer"
             >
               Continue
             </Button>
@@ -173,7 +173,7 @@ export function OnboardingModal({ isOpen, onComplete, userName }: OnboardingModa
             <Button 
               onClick={handleFinish}
               disabled={loading}
-              className="bg-[var(--accent)] text-black hover:bg-[var(--accent)]/90"
+              className="bg-[var(--accent)] text-black hover:bg-[var(--accent)]/90 cursor-pointer"
             >
               {loading ? "Saving..." : "Get Started"}
             </Button>
