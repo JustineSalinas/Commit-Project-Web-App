@@ -15,10 +15,8 @@ async function getUserId() {
 export async function getUserProfile() {
   const userId = await getUserId();
   try {
-    const user = await db.query.users.findFirst({
-      where: eq(users.clerkId, userId)
-    });
-    return user;
+    const results = await db.select().from(users).where(eq(users.clerkId, userId)).limit(1);
+    return results[0] || null;
   } catch (error) {
     console.error("Failed to fetch user profile:", error);
     return null;
@@ -36,9 +34,11 @@ export async function completeOnboarding(preferences: any) {
     const name = user.fullName || `${user.firstName || ""} ${user.lastName || ""}`.trim();
 
     // Resilient upsert: Check if user exists by clerkId OR email
-    const existingUser = await db.query.users.findFirst({
-      where: or(eq(users.clerkId, user.id), eq(users.email, email))
-    });
+    const results = await db.select().from(users).where(
+      or(eq(users.clerkId, user.id), eq(users.email, email))
+    ).limit(1);
+    
+    const existingUser = results[0];
 
     if (existingUser) {
       await db.update(users)
