@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { tils, bugs, snippets, flashcards, roadmap, journals, focusSessions, users } from "@/db/schema";
 import { eq, gte, sql } from "drizzle-orm";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
 async function getUserId() {
@@ -26,14 +26,32 @@ export async function getUserProfile() {
 }
 
 export async function completeOnboarding(preferences: any) {
-  const userId = await getUserId();
   try {
-    await db.update(users)
-      .set({ 
+    const user = await currentUser();
+    if (!user) return { success: false, error: "No user found" };
+
+    const email = user.emailAddresses[0]?.emailAddress;
+    const name = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+
+    // Use upsert logic to ensure user exists
+    await db.insert(users)
+      .values({
+        clerkId: user.id,
+        email: email,
+        name: name,
         hasCompletedOnboarding: true,
         preferences: preferences
       })
-      .where(eq(users.clerkId, userId));
+      .onConflictDoUpdate({
+        target: users.clerkId,
+        set: {
+          hasCompletedOnboarding: true,
+          preferences: preferences,
+          name: name,
+          email: email
+        }
+      });
+
     revalidatePath('/');
     return { success: true };
   } catch (error: any) {

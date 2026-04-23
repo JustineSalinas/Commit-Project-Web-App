@@ -69,12 +69,12 @@ export function OnboardingModal({ isOpen, onComplete, userName }: OnboardingModa
           <DialogTitle className="text-2xl font-bold">
             {step === 1 && `Welcome, ${userName}!`}
             {step === 2 && "The Developer's Workspace"}
-            {step === 3 && "Tailor Your Experience"}
+            {step === 3 && "Unleash Your Potential"}
           </DialogTitle>
           <DialogDescription className="text-[var(--text-secondary)]">
             {step === 1 && "Commit is your secondary brain, designed to help you master your craft and track your growth as a developer."}
             {step === 2 && "Focus timers, smart flashcards, code journals, and a roadmap tracker—all in one place."}
-            {step === 3 && "Tell us a bit about your workflow so we can customize your workspace."}
+            {step === 3 && "Finalize your setup to begin your journey toward mastery."}
           </DialogDescription>
         </DialogHeader>
 
@@ -96,14 +96,22 @@ export function OnboardingModal({ isOpen, onComplete, userName }: OnboardingModa
           {step === 2 && (
             <div className="grid grid-cols-2 gap-3">
               {[
-                { title: "Journal", desc: "Log daily learnings" },
-                { title: "Flashcards", desc: "Retain knowledge" },
-                { title: "Roadmap", desc: "Track milestones" },
-                { title: "Snippets", desc: "Save reusable code" }
+                { title: "Journal", desc: "Log daily learnings", icon: <Code2 className="w-4 h-4" /> },
+                { title: "Flashcards", desc: "Retain knowledge", icon: <Sparkles className="w-4 h-4" /> },
+                { title: "Roadmap", desc: "Track milestones", icon: <Layout className="w-4 h-4" /> },
+                { title: "Snippets", desc: "Save reusable code", icon: <Rocket className="w-4 h-4" /> }
               ].map((feature) => (
-                <div key={feature.title} className="p-3 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)]">
-                  <h4 className="text-sm font-semibold mb-1">{feature.title}</h4>
-                  <p className="text-[10px] text-[var(--text-muted)]">{feature.desc}</p>
+                <div 
+                  key={feature.title} 
+                  className="p-3 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] transition-all duration-300 hover:scale-[1.02] hover:border-[var(--accent)] hover:shadow-lg hover:shadow-[var(--accent)]/10 cursor-default group"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="text-[var(--accent)] group-hover:scale-110 transition-transform">
+                      {feature.icon}
+                    </div>
+                    <h4 className="text-sm font-semibold group-hover:text-[var(--accent)] transition-colors">{feature.title}</h4>
+                  </div>
+                  <p className="text-[10px] text-[var(--text-muted)] leading-tight">{feature.desc}</p>
                 </div>
               ))}
             </div>
