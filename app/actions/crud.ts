@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { tils, bugs, snippets, flashcards, roadmap, journals, focusSessions, users } from "@/db/schema";
-import { eq, gte, sql } from "drizzle-orm";
+import { eq, gte, sql, or } from "drizzle-orm";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
@@ -33,26 +33,32 @@ export async function completeOnboarding(preferences: any) {
     const email = user.emailAddresses[0]?.emailAddress;
     if (!email) return { success: false, error: "Primary email address not found" };
     
-    const name = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    const name = user.fullName || `${user.firstName || ""} ${user.lastName || ""}`.trim();
 
-    // Use upsert logic to ensure user exists
-    await db.insert(users)
-      .values({
+    // Resilient upsert: Check if user exists by clerkId OR email
+    const existingUser = await db.query.users.findFirst({
+      where: or(eq(users.clerkId, user.id), eq(users.email, email))
+    });
+
+    if (existingUser) {
+      await db.update(users)
+        .set({ 
+          clerkId: user.id, // Sync clerkId in case we found them by email
+          name: name,
+          email: email,
+          hasCompletedOnboarding: true,
+          preferences: preferences
+        })
+        .where(eq(users.id, existingUser.id));
+    } else {
+      await db.insert(users).values({
         clerkId: user.id,
         email: email,
         name: name,
         hasCompletedOnboarding: true,
         preferences: preferences
-      })
-      .onConflictDoUpdate({
-        target: users.clerkId,
-        set: {
-          hasCompletedOnboarding: true,
-          preferences: preferences,
-          name: name,
-          email: email
-        }
       });
+    }
 
     revalidatePath('/');
     return { success: true };

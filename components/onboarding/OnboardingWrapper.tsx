@@ -54,7 +54,7 @@ export function OnboardingWrapper({ children }: { children: React.ReactNode }) {
         <OnboardingModal 
           isOpen={showOnboarding} 
           onComplete={handleOnboardingComplete}
-          userName={user.firstName || "Developer"}
+          userName={user.fullName || user.username || user.firstName || "Developer"}
         />
       )}
     </>
