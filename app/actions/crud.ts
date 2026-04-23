@@ -15,7 +15,7 @@ async function getUserId() {
 export async function getUserProfile() {
   const userId = await getUserId();
   try {
-    const results = await db.select().from(users).where(eq(users.clerkId, userId)).limit(1);
+    const results = await db.select().from(users).where(eq(users.clerkId, userId));
     return results[0] || null;
   } catch (error) {
     console.error("Failed to fetch user profile:", error);
@@ -33,10 +33,10 @@ export async function completeOnboarding(preferences: any) {
     
     const name = user.fullName || `${user.firstName || ""} ${user.lastName || ""}`.trim();
 
-    // Resilient upsert: Check if user exists by clerkId OR email
+    // Simplified query: removing limit to avoid potential param issues
     const results = await db.select().from(users).where(
       or(eq(users.clerkId, user.id), eq(users.email, email))
-    ).limit(1);
+    );
     
     const existingUser = results[0];
 

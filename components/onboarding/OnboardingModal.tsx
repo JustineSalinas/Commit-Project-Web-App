@@ -103,7 +103,7 @@ export function OnboardingModal({ isOpen, onComplete, userName }: OnboardingModa
               ].map((feature) => (
                 <div 
                   key={feature.title} 
-                  className="p-3 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--accent)] hover:shadow-lg hover:shadow-[var(--accent)]/10 cursor-default group will-change-transform"
+                  className="p-3 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--accent)] hover:shadow-lg hover:shadow-[var(--accent)]/10 cursor-pointer group will-change-transform"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <div className="text-[var(--accent)] group-hover:scale-110 transition-transform">
