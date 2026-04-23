@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { tils, bugs, snippets, flashcards, roadmap, journals, focusSessions, users } from "@/db/schema";
+import { tils, bugs, snippets, flashcards, roadmap, journals, focusSessions, profiles } from "@/db/schema";
 import { eq, gte, sql, or } from "drizzle-orm";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -15,7 +15,7 @@ async function getUserId() {
 export async function getUserProfile() {
   const userId = await getUserId();
   try {
-    const results = await db.select().from(users).where(eq(users.clerkId, userId));
+    const results = await db.select().from(profiles).where(eq(profiles.clerkId, userId));
     return results[0] || null;
   } catch (error) {
     console.error("Failed to fetch user profile:", error);
@@ -34,16 +34,16 @@ export async function completeOnboarding(preferences: any) {
     const name = user.fullName || `${user.firstName || ""} ${user.lastName || ""}`.trim();
 
     // Split into two simple queries to avoid OR issues in some drivers
-    const resultsById = await db.select().from(users).where(eq(users.clerkId, user.id));
+    const resultsById = await db.select().from(profiles).where(eq(profiles.clerkId, user.id));
     let existingUser = resultsById[0];
 
     if (!existingUser) {
-      const resultsByEmail = await db.select().from(users).where(eq(users.email, email));
+      const resultsByEmail = await db.select().from(profiles).where(eq(profiles.email, email));
       existingUser = resultsByEmail[0];
     }
 
     if (existingUser) {
-      await db.update(users)
+      await db.update(profiles)
         .set({ 
           clerkId: user.id, // Sync clerkId in case we found them by email
           name: name,
@@ -51,9 +51,9 @@ export async function completeOnboarding(preferences: any) {
           hasCompletedOnboarding: true,
           preferences: preferences
         })
-        .where(eq(users.id, existingUser.id));
+        .where(eq(profiles.id, existingUser.id));
     } else {
-      await db.insert(users).values({
+      await db.insert(profiles).values({
         clerkId: user.id,
         email: email,
         name: name,
