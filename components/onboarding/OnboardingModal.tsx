@@ -39,7 +39,7 @@ export function OnboardingModal({ isOpen, onComplete, userName }: OnboardingModa
         toast.success("Onboarding complete! Welcome to Commit.");
         onComplete();
       } else {
-        toast.error("Failed to save preferences.");
+        toast.error(res.error || "Failed to save preferences.");
       }
     } catch (err) {
       toast.error("An error occurred.");
@@ -146,7 +146,7 @@ export function OnboardingModal({ isOpen, onComplete, userName }: OnboardingModa
               
               <div className="p-3 rounded-lg bg-[var(--accent-muted)]/10 border border-[var(--accent)]/20 text-center">
                 <p className="text-xs font-medium text-[var(--accent)]">
-                  Ready to start your journey?
+                  Your growth engine is primed and ready for takeoff
                 </p>
               </div>
             </div>

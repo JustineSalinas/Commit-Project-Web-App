@@ -31,6 +31,8 @@ export async function completeOnboarding(preferences: any) {
     if (!user) return { success: false, error: "No user found" };
 
     const email = user.emailAddresses[0]?.emailAddress;
+    if (!email) return { success: false, error: "Primary email address not found" };
+    
     const name = `${user.firstName || ""} ${user.lastName || ""}`.trim();
 
     // Use upsert logic to ensure user exists
@@ -56,7 +58,7 @@ export async function completeOnboarding(preferences: any) {
     return { success: true };
   } catch (error: any) {
     console.error("Failed to complete onboarding:", error);
-    return { success: false, error: error.message };
+    return { success: false, error: error.message || "An unexpected database error occurred" };
   }
 }
 
