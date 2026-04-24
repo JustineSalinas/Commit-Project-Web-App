@@ -7,17 +7,7 @@ export default async function ProfilePage() {
   const profileData = await getProfileData();
 
   if (!profileData || !profileData.user) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] text-center space-y-4 animate-fade-in">
-        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl max-w-md">
-          <h2 className="text-red-400 font-bold mb-2">Database Schema Mismatch</h2>
-          <p className="text-[#A1A1AA] text-sm">
-            It looks like the new profile fields haven't been synchronized to your database yet. 
-            Please run <code className="text-[#FAFAFA] bg-[#18181B] px-1.5 py-0.5 rounded">npm run db:push</code> in your terminal and refresh the page.
-          </p>
-        </div>
-      </div>
-    );
+    redirect("/");
   }
 
   const {

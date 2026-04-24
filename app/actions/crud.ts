@@ -15,9 +15,29 @@ async function getUserId() {
 export async function getUserProfile() {
   const userId = await getUserId();
   try {
+    // We use a try-catch for the specific query to handle missing columns gracefully
     const results = await db.select().from(profiles).where(eq(profiles.clerkId, userId));
     return results[0] || null;
-  } catch (error) {
+  } catch (error: any) {
+    // If the error is about missing columns (title/bio), try a limited selection
+    if (error.code === '42703' || error.message?.includes('column')) {
+      try {
+        console.warn("Detected missing columns in profiles table, falling back to limited selection.");
+        // Only select columns we are sure exist
+        const limitedResults = await db.execute(sql`SELECT id, clerk_id, name, email, has_completed_onboarding FROM profiles WHERE clerk_id = ${userId}`);
+        const user = limitedResults.rows[0] as any;
+        if (user) {
+          return {
+            ...user,
+            clerkId: user.clerk_id, // Map snake_case to camelCase
+            title: null,
+            bio: null
+          };
+        }
+      } catch (innerError) {
+        console.error("Failed even limited profile fetch:", innerError);
+      }
+    }
     console.error("Failed to fetch user profile:", error);
     return null;
   }
