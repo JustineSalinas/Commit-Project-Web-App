@@ -31,7 +31,6 @@ export async function getUserProfile() {
 
     // Create profile
     const newProfile = await db.insert(profiles).values({
-      id: crypto.randomUUID(),
       clerkId: userId,
       name,
       email,

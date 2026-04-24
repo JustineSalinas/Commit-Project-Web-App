@@ -12,6 +12,9 @@ export const profiles = pgTable('profiles', {
     preferredIDE?: string;
     languages?: string[];
     workflow?: string;
+    theme?: string;
+    aiEnabled?: boolean;
+    notifications?: boolean;
   }>(),
   createdAt: timestamp('created_at').defaultNow(),
 });
