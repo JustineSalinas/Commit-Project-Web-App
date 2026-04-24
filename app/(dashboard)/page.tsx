@@ -33,6 +33,11 @@ export default function DashboardPage() {
   const { user, isLoaded } = useUser();
   const [stats, setStats] = useState({ focusTime: "0h 0m", cardsDue: 0, streak: "0 Days", heatmap: [] as string[] });
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const userName = user?.fullName || user?.username || user?.firstName || "Developer";
 
@@ -51,6 +56,10 @@ export default function DashboardPage() {
   const activitySet = new Set(stats.heatmap);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
+  if (!mounted) {
+    return <div className="animate-pulse bg-[var(--bg-base)] min-h-screen" />;
+  }
 
   return (
     <div className="space-y-6">

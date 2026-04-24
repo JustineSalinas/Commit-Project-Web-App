@@ -2,10 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isSignIn = pathname?.includes("sign-in");
+  const [year, setYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
 
   return (
     <div className="min-h-screen flex bg-[#09090B]">
@@ -74,7 +80,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         <div className="relative z-10">
           <p className="text-[#71717A] text-xs">
-            © {new Date().getFullYear()} Commit. Built for developers.
+            © {year || "2026"} Commit. Built for developers.
           </p>
         </div>
       </div>
