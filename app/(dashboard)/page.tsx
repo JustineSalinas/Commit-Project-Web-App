@@ -258,7 +258,7 @@ export default function DashboardPage() {
               <Clock className="w-4 h-4 text-[var(--text-muted)]" />
               <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--text-primary)]">Today's Log</h3>
             </div>
-            <Link href="/history" className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest hover:underline">View All</Link>
+            <Link href="/journal" className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest hover:underline">View All</Link>
           </div>
 
           <div className="flex-1 space-y-8 overflow-y-auto custom-scrollbar pr-2">
@@ -278,10 +278,10 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <button className="mt-8 w-full py-3 border border-dashed border-[#27272A] rounded-xl text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest hover:border-[var(--accent)]/50 hover:text-[var(--text-primary)] transition-all flex items-center justify-center gap-2">
+          <Link href="/journal" className="mt-8 w-full py-3 border border-dashed border-[#27272A] rounded-xl text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest hover:border-[var(--accent)]/50 hover:text-[var(--text-primary)] transition-all flex items-center justify-center gap-2">
             <Plus className="w-3 h-3" />
             Quick Entry
-          </button>
+          </Link>
         </div>
       </div>
     </div>

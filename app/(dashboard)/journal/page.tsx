@@ -31,35 +31,47 @@ export default function JournalPage() {
 
   const handleNewEntry = async () => {
     setIsSaving(true);
-    const res = await addJournalEntry({ 
-      title: "Untitled Entry", 
-      content: "Start writing here..." 
-    });
-    
-    if (res.success && res.entry) {
-      setEntries([res.entry, ...entries]);
-      setActiveId(res.entry.id);
-      toast.success("New entry created");
-    } else {
-      toast.error("Failed to create entry");
+    try {
+      const res = await addJournalEntry({ 
+        title: "Untitled Entry", 
+        content: "Start writing here..." 
+      });
+      
+      if (res.success && res.entry) {
+        setEntries([res.entry, ...entries]);
+        setActiveId(res.entry.id);
+        toast.success("New entry created");
+      } else {
+        toast.error(res?.error || "Failed to create entry");
+      }
+    } catch (err) {
+      toast.error("An unexpected error occurred");
+      console.error(err);
+    } finally {
+      setIsSaving(false);
     }
-    setIsSaving(false);
   };
 
   const handleSave = async () => {
     if (!activeEntry || isSaving) return;
     setIsSaving(true);
-    const res = await updateJournalEntry(activeEntry.id, {
-      title: activeEntry.title,
-      content: activeEntry.content
-    });
-    
-    if (res.success) {
-      toast.success("Saved successfully");
-    } else {
-      toast.error("Failed to save");
+    try {
+      const res = await updateJournalEntry(activeEntry.id, {
+        title: activeEntry.title,
+        content: activeEntry.content
+      });
+      
+      if (res.success) {
+        toast.success("Saved successfully");
+      } else {
+        toast.error(res?.error || "Failed to save");
+      }
+    } catch (err) {
+      toast.error("An unexpected error occurred");
+      console.error(err);
+    } finally {
+      setIsSaving(false);
     }
-    setIsSaving(false);
   };
 
   const handleDelete = async (id: number) => {

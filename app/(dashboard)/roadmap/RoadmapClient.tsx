@@ -20,16 +20,21 @@ export default function RoadmapClient({ initialRoadmap }: { initialRoadmap: any[
     setSaving(true);
     setError("");
     
-    const result = await addRoadmapMilestone({ title, description });
-    setSaving(false);
-    
-    if (result.success) {
-      setIsModalOpen(false);
-      setTitle("");
-      setDescription("");
-      router.refresh(); // Refresh data from server
-    } else {
-      setError(result.error || "Failed to save");
+    try {
+      const result = await addRoadmapMilestone({ title, description });
+      
+      if (result.success) {
+        setIsModalOpen(false);
+        setTitle("");
+        setDescription("");
+        router.refresh(); // Refresh data from server
+      } else {
+        setError(result.error || "Failed to save");
+      }
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -38,14 +43,19 @@ export default function RoadmapClient({ initialRoadmap }: { initialRoadmap: any[
     if (!template || saving) return;
     
     setSaving(true);
-    for (const milestone of template.milestones) {
-      await addRoadmapMilestone({ 
-        title: milestone.title, 
-        description: milestone.description 
-      });
+    try {
+      for (const milestone of template.milestones) {
+        await addRoadmapMilestone({ 
+          title: milestone.title, 
+          description: milestone.description 
+        });
+      }
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    router.refresh();
   };
 
   const handleStatusChange = async (id: number, status: 'pending' | 'in-progress' | 'complete') => {
