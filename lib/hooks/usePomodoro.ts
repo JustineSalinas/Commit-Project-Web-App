@@ -15,6 +15,7 @@ export const usePomodoro = () => {
     setIsActive, 
     setExpectedEndTime,
     incrementSessionsCompleted,
+    resetTimer,
     overrideTime,
     setLastSessionDuration
   } = usePomodoroStore();
@@ -72,6 +73,7 @@ export const usePomodoro = () => {
     settings,
     toggleTimer,
     switchMode,
+    resetTimer,
     overrideTime
   };
 };
