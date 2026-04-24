@@ -357,15 +357,39 @@ export async function getDashboardStats() {
       checkDate.setDate(checkDate.getDate() - 1);
     }
  
+    // 4. Recent Logs (Today's activity)
+    const recentLogs = await db.query.sessionLogs.findMany({
+      where: sql`${sessionLogs.userId} = ${userId} AND ${sessionLogs.timestamp} >= ${today}`,
+      orderBy: (s, { desc }) => [desc(s.timestamp)],
+      limit: 5
+    });
+
+    // 5. Roadmap Progress
+    const roadmapItems = await db.query.roadmap.findMany({ where: eq(roadmap.userId, userId) });
+    const completedRoadmap = roadmapItems.filter(r => r.status === 'complete').length;
+    const roadmapProgress = roadmapItems.length > 0 ? Math.round((completedRoadmap / roadmapItems.length) * 100) : 0;
+
     return {
       focusTime: `${Math.floor(focusTimeToday / 60)}h ${focusTimeToday % 60}m`,
       cardsDue,
       streak: `${streak} Days`,
-      heatmap: activityMap // Return counts per day
+      heatmap: activityMap,
+      recentLogs: recentLogs.map(log => ({
+        id: log.id,
+        time: log.timestamp ? new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "",
+        message: log.commitMessage
+      })),
+      roadmapProgress,
+      mastery: {
+        teach: 15, // Mock values for now, can be calculated from flashcard scores later
+        use: 40,
+        explain: 25,
+        heard: 20
+      }
     };
   } catch (error) {
     console.error("Failed to fetch dashboard stats:", error);
-    return { focusTime: "0h 0m", cardsDue: 0, streak: "0 Days", heatmap: {} };
+    return { focusTime: "0h 0m", cardsDue: 0, streak: "0 Days", heatmap: {}, recentLogs: [], roadmapProgress: 0, mastery: { teach: 0, use: 0, explain: 0, heard: 0 } };
   }
 }
 
