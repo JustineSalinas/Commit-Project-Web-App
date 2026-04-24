@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { usePomodoroStore } from "@/lib/zustand/pomodoroStore";
-import { createSessionLog, getTasks, updateTask } from "@/app/actions/crud";
+import { createSessionLog, getTasks, updateTask, logFocusSession } from "@/app/actions/crud";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
