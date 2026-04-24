@@ -41,7 +41,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
       setEstimatedPomos(1);
       router.refresh();
     } else {
-      toast.error("Failed to create task");
+      toast.error(res.error || "Failed to create task");
     }
   };
 
@@ -174,7 +174,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
               </div>
               <div>
                 <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">Estimated Pomodoros</label>
-                <input type="number" min="1" value={estimatedPomos} onChange={(e) => setEstimatedPomos(parseInt(e.target.value))} className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md px-3 py-2 mt-1 text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" />
+                <input type="number" min="1" value={estimatedPomos} onChange={(e) => setEstimatedPomos(parseInt(e.target.value) || 0)} className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md px-3 py-2 mt-1 text-[var(--text-primary)] focus:border-[var(--accent)] outline-none" />
               </div>
               <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold">Cancel</button>

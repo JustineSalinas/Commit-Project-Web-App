@@ -82,7 +82,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         <div className="relative z-10">
           <p className="text-[#71717A] text-xs">
-            © {year || "2026"} Commit. Built for developers.
+            © {year || "2026"} Commit. Designed & built by Adrian Salinas.
           </p>
         </div>
       </div>

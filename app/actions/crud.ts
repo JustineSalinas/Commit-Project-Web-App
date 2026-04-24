@@ -324,44 +324,48 @@ export async function getDashboardStats() {
     const cards = await db.query.flashcards.findMany({ where: eq(flashcards.userId, userId) });
     const cardsDue = cards.filter(c => !c.lastReviewed || (c.score || 0) < 3).length;
 
-    // 3. Streak Calculation (Aggregate activity dates)
-    const activityDates = new Set<string>();
+    // 3. Activity Calculation (Aggregate activity counts per day)
+    const activityMap: Record<string, number> = {};
     
-    const [tilsData, sessionsData, journalsData] = await Promise.all([
+    const [tilsData, sessionsData, journalsData, bugsData, snippetsData, roadmapData] = await Promise.all([
       db.query.tils.findMany({ where: eq(tils.userId, userId), columns: { createdAt: true } }),
       db.query.focusSessions.findMany({ where: eq(focusSessions.userId, userId), columns: { createdAt: true } }),
-      db.query.journals.findMany({ where: eq(journals.userId, userId), columns: { createdAt: true } })
+      db.query.journals.findMany({ where: eq(journals.userId, userId), columns: { createdAt: true } }),
+      db.query.bugs.findMany({ where: eq(bugs.userId, userId), columns: { createdAt: true } }),
+      db.query.snippets.findMany({ where: eq(snippets.userId, userId), columns: { createdAt: true } }),
+      db.query.roadmap.findMany({ where: eq(roadmap.userId, userId), columns: { createdAt: true } }),
     ]);
-
-    [...tilsData, ...sessionsData, ...journalsData].forEach(item => {
+ 
+    [...tilsData, ...sessionsData, ...journalsData, ...bugsData, ...snippetsData, ...roadmapData].forEach(item => {
       if (item.createdAt) {
-        activityDates.add(new Date(item.createdAt).toDateString());
+        const d = new Date(item.createdAt).toDateString();
+        activityMap[d] = (activityMap[d] || 0) + 1;
       }
     });
-
+ 
     let streak = 0;
     const checkDate = new Date();
     checkDate.setHours(0, 0, 0, 0);
-
+ 
     // If no activity today, check if there was activity yesterday to continue the streak
-    if (!activityDates.has(checkDate.toDateString())) {
+    if (!activityMap[checkDate.toDateString()]) {
       checkDate.setDate(checkDate.getDate() - 1);
     }
-
-    while (activityDates.has(checkDate.toDateString())) {
+ 
+    while (activityMap[checkDate.toDateString()]) {
       streak++;
       checkDate.setDate(checkDate.getDate() - 1);
     }
-
+ 
     return {
       focusTime: `${Math.floor(focusTimeToday / 60)}h ${focusTimeToday % 60}m`,
       cardsDue,
       streak: `${streak} Days`,
-      heatmap: Array.from(activityDates) // Raw dates for heatmap
+      heatmap: activityMap // Return counts per day
     };
   } catch (error) {
     console.error("Failed to fetch dashboard stats:", error);
-    return { focusTime: "0h 0m", cardsDue: 0, streak: "0 Days", heatmap: [] };
+    return { focusTime: "0h 0m", cardsDue: 0, streak: "0 Days", heatmap: {} };
   }
 }
 
@@ -381,11 +385,13 @@ export async function getProfileData() {
       where: sql`${roadmap.userId} = ${userId} AND ${roadmap.status} = 'complete'`
     });
 
-    // Get heatmap activity dates (all TILs, sessions, journals, snippets)
-    const [sessionsData, journalsData, snippetsData] = await Promise.all([
+    // Get heatmap activity dates (all TILs, sessions, journals, snippets, bugs, roadmap)
+    const [sessionsData, journalsData, snippetsData, bugsData, roadmapData] = await Promise.all([
       db.query.focusSessions.findMany({ where: eq(focusSessions.userId, userId), columns: { createdAt: true } }),
       db.query.journals.findMany({ where: eq(journals.userId, userId), columns: { createdAt: true } }),
-      db.query.snippets.findMany({ where: eq(snippets.userId, userId), columns: { createdAt: true } })
+      db.query.snippets.findMany({ where: eq(snippets.userId, userId), columns: { createdAt: true } }),
+      db.query.bugs.findMany({ where: eq(bugs.userId, userId), columns: { createdAt: true } }),
+      db.query.roadmap.findMany({ where: eq(roadmap.userId, userId), columns: { createdAt: true } }),
     ]);
 
     const activityDates = new Map<string, number>();
@@ -397,7 +403,7 @@ export async function getProfileData() {
       activityDates.set(d, (activityDates.get(d) || 0) + 1);
     };
 
-    [...userTils, ...sessionsData, ...journalsData, ...snippetsData].forEach(item => {
+    [...userTils, ...sessionsData, ...journalsData, ...snippetsData, ...bugsData, ...roadmapData].forEach(item => {
       incrementDate(item.createdAt);
     });
 
@@ -435,19 +441,25 @@ export async function getTasks() {
 export async function createTask(data: { id: string; title: string; description?: string; estimatedPomos?: number }) {
   try {
     const userId = await getUserId();
+    if (!data.title) throw new Error("Title is required");
+
     await db.insert(tasks).values({ 
-      id: data.id,
+      id: data.id || crypto.randomUUID(),
       userId, 
       title: data.title, 
       description: data.description || '', 
-      estimatedPomos: data.estimatedPomos || 1,
+      estimatedPomos: Number(data.estimatedPomos) || 1,
       status: 'todo'
     });
     revalidatePath('/tasks');
     return { success: true };
   } catch (error: any) {
     console.error("Failed to create Task:", error);
-    return { success: false, error: error.message };
+    // Return a more user-friendly error if it's a known database issue
+    const message = error.message?.includes('relation "tasks" does not exist') 
+      ? "Database table missing. Please contact support." 
+      : (error.message || "An unexpected error occurred");
+    return { success: false, error: message };
   }
 }
 

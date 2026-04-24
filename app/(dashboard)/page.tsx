@@ -31,7 +31,7 @@ function TypewriterEffect({ text }: { text: string }) {
 
 export default function DashboardPage() {
   const { user, isLoaded } = useUser();
-  const [stats, setStats] = useState({ focusTime: "0h 0m", cardsDue: 0, streak: "0 Days", heatmap: [] as string[] });
+  const [stats, setStats] = useState({ focusTime: "0h 0m", cardsDue: 0, streak: "0 Days", heatmap: {} as Record<string, number> });
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
 
@@ -39,7 +39,7 @@ export default function DashboardPage() {
     setMounted(true);
   }, []);
 
-  const userName = user?.fullName || user?.username || user?.firstName || "Developer";
+  const userName = user?.firstName || "Developer";
 
   useEffect(() => {
     async function fetchStats() {
@@ -52,8 +52,14 @@ export default function DashboardPage() {
     }
   }, [isLoaded]);
 
-  // Heatmap calculation
-  const activitySet = new Set(stats.heatmap);
+  // Heatmap intensity logic
+  const getIntensityColor = (count: number) => {
+    if (count === 0) return "bg-[var(--bg-elevated)]";
+    if (count <= 2) return "bg-[var(--accent)] opacity-40";
+    if (count <= 5) return "bg-[var(--accent)] opacity-70";
+    return "bg-[var(--accent)]"; // High intensity
+  };
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -104,26 +110,37 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Mini Heatmap Strip (Last 3 Months roughly 13 weeks) */}
+      {/* Mini Heatmap Strip */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 overflow-hidden">
-        <h3 className="text-[var(--text-secondary)] text-sm font-medium mb-4">Last 3 Months Activity</h3>
-        <div className="flex gap-1 overflow-x-auto pb-2">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-[var(--text-secondary)] text-sm font-medium">Activity Heatmap</h3>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-[var(--text-muted)]">Less</span>
+            <div className="flex gap-1">
+              <div className="w-3 h-3 rounded-sm bg-[var(--bg-elevated)]" />
+              <div className="w-3 h-3 rounded-sm bg-[var(--accent)] opacity-40" />
+              <div className="w-3 h-3 rounded-sm bg-[var(--accent)] opacity-70" />
+              <div className="w-3 h-3 rounded-sm bg-[var(--accent)]" />
+            </div>
+            <span className="text-[10px] text-[var(--text-muted)]">More</span>
+          </div>
+        </div>
+        <div className="flex gap-1 overflow-x-auto pb-2 custom-scrollbar">
           {Array.from({ length: 13 }).map((_, w_idx) => (
             <div key={w_idx} className="flex flex-col gap-1">
               {Array.from({ length: 7 }).map((__, d_idx) => {
-                // Calculate date for this cell
                 const date = new Date(today);
                 const dayOffset = ((12 - w_idx) * 7) + (6 - d_idx);
                 date.setDate(today.getDate() - dayOffset);
                 
-                const isActive = activitySet.has(date.toDateString());
-                const colorClass = isActive ? "bg-[var(--accent)]" : "bg-[var(--bg-elevated)]";
+                const count = stats.heatmap[date.toDateString()] || 0;
+                const colorClass = getIntensityColor(count);
 
                 return (
                   <div 
                     key={d_idx} 
-                    className={`w-4 h-4 rounded-sm ${colorClass} hover:ring-1 hover:ring-black/20 dark:hover:ring-white/20 cursor-pointer transition-all`}
-                    title={date.toDateString()}
+                    className={`w-4 h-4 rounded-sm ${colorClass} hover:ring-1 hover:ring-[var(--accent)] cursor-pointer transition-all`}
+                    title={`${date.toDateString()}: ${count} contribution${count === 1 ? '' : 's'}`}
                   />
                 );
               })}
