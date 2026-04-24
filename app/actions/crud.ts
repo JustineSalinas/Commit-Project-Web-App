@@ -103,6 +103,7 @@ export async function completeOnboarding(preferences: any) {
 export async function getTils() {
   const userId = await getUserId();
   try {
+    await ensureTablesExist();
     return await db.query.tils.findMany({ where: eq(tils.userId, userId), orderBy: (t, { desc }) => [desc(t.createdAt)] });
   } catch (error) {
     console.error("Failed to fetch TILs:", error);
@@ -112,6 +113,7 @@ export async function getTils() {
 export async function addTil(data: { title: string; content: string; tags: string[] }) {
   try {
     const userId = await getUserId();
+    await ensureTablesExist();
     await db.insert(tils).values({ userId, title: data.title, content: data.content, tags: data.tags });
     revalidatePath('/til');
     return { success: true };
@@ -125,6 +127,7 @@ export async function addTil(data: { title: string; content: string; tags: strin
 export async function getBugs() {
   const userId = await getUserId();
   try {
+    await ensureTablesExist();
     return await db.query.bugs.findMany({ where: eq(bugs.userId, userId), orderBy: (b, { desc }) => [desc(b.createdAt)] });
   } catch (error) {
     console.error("Failed to fetch Bugs:", error);
@@ -134,6 +137,7 @@ export async function getBugs() {
 export async function addBug(data: { title: string; description: string }) {
   try {
     const userId = await getUserId();
+    await ensureTablesExist();
     await db.insert(bugs).values({ userId, title: data.title, description: data.description });
     revalidatePath('/bugs');
     return { success: true };
@@ -157,6 +161,7 @@ export async function resolveBug(id: number) {
 export async function getSnippets() {
   const userId = await getUserId();
   try {
+    await ensureTablesExist();
     return await db.query.snippets.findMany({ where: eq(snippets.userId, userId), orderBy: (s, { desc }) => [desc(s.createdAt)] });
   } catch (error) {
     console.error("Failed to fetch Snippets:", error);
@@ -166,6 +171,7 @@ export async function getSnippets() {
 export async function addSnippet(data: { title: string; code: string; language: string }) {
   try {
     const userId = await getUserId();
+    await ensureTablesExist();
     await db.insert(snippets).values({ userId, title: data.title, code: data.code, language: data.language });
     revalidatePath('/snippets');
     return { success: true };
@@ -179,6 +185,7 @@ export async function addSnippet(data: { title: string; code: string; language: 
 export async function getFlashcards() {
   const userId = await getUserId();
   try {
+    await ensureTablesExist();
     return await db.query.flashcards.findMany({ where: eq(flashcards.userId, userId) });
   } catch (error) {
     console.error("Failed to fetch Flashcards:", error);
@@ -188,6 +195,7 @@ export async function getFlashcards() {
 export async function addFlashcard(data: { question: string; answer: string }) {
   try {
     const userId = await getUserId();
+    await ensureTablesExist();
     await db.insert(flashcards).values({ userId, question: data.question, answer: data.answer });
     revalidatePath('/flashcards');
     return { success: true };
@@ -223,10 +231,15 @@ export async function getRoadmap() {
     return [];
   }
 }
-export async function addRoadmapMilestone(data: { title: string; description: string }) {
+export async function addRoadmapMilestone(data: { title: string; description?: string }) {
   try {
     const userId = await getUserId();
-    await db.insert(roadmap).values({ userId, title: data.title, description: data.description });
+    await ensureTablesExist();
+    await db.insert(roadmap).values({
+      userId,
+      title: data.title,
+      description: data.description,
+    });
     revalidatePath('/roadmap');
     return { success: true };
   } catch (error: any) {
@@ -236,6 +249,7 @@ export async function addRoadmapMilestone(data: { title: string; description: st
 }
 export async function markRoadmapStatus(id: number, status: 'pending' | 'in-progress' | 'complete') {
   try {
+    await ensureTablesExist();
     await db.update(roadmap).set({ status }).where(eq(roadmap.id, id));
     revalidatePath('/roadmap');
     return { success: true };
@@ -248,6 +262,7 @@ export async function markRoadmapStatus(id: number, status: 'pending' | 'in-prog
 export async function getJournals() {
   const userId = await getUserId();
   try {
+    await ensureTablesExist();
     return await db.query.journals.findMany({ 
       where: eq(journals.userId, userId), 
       orderBy: (j, { desc }) => [desc(j.createdAt)] 
@@ -261,6 +276,7 @@ export async function getJournals() {
 export async function addJournalEntry(data: { title: string; content: string }) {
   try {
     const userId = await getUserId();
+    await ensureTablesExist();
     const [result] = await db.insert(journals).values({ 
       userId, 
       title: data.title, 
@@ -277,6 +293,7 @@ export async function addJournalEntry(data: { title: string; content: string }) 
 export async function updateJournalEntry(id: number, data: { title?: string; content?: string }) {
   try {
     const userId = await getUserId();
+    await ensureTablesExist();
     await db.update(journals).set({ 
       ...data,
       updatedAt: new Date()
@@ -317,27 +334,109 @@ export async function logFocusSession(data: { durationMinutes: number; focusType
   }
 }
 
+// --- SELF-HEALING DATABASE UTILITY ---
+async function ensureTablesExist() {
+  const tables = [
+    {
+      name: 'profiles',
+      sql: sql`CREATE TABLE IF NOT EXISTS "profiles" (
+        "id" serial PRIMARY KEY, "clerk_id" text UNIQUE NOT NULL, "name" text, "email" text UNIQUE NOT NULL, 
+        "title" text, "bio" text, "has_completed_onboarding" boolean DEFAULT false, 
+        "preferences" json, "created_at" timestamp DEFAULT now()
+      )`
+    },
+    {
+      name: 'focus_sessions',
+      sql: sql`CREATE TABLE IF NOT EXISTS "focus_sessions" (
+        "id" serial PRIMARY KEY, "user_id" text NOT NULL, "duration_minutes" integer NOT NULL, 
+        "focus_type" text, "created_at" timestamp DEFAULT now()
+      )`
+    },
+    {
+      name: 'tils',
+      sql: sql`CREATE TABLE IF NOT EXISTS "tils" (
+        "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
+        "content" text NOT NULL, "tags" json, "created_at" timestamp DEFAULT now()
+      )`
+    },
+    {
+      name: 'flashcards',
+      sql: sql`CREATE TABLE IF NOT EXISTS "flashcards" (
+        "id" serial PRIMARY KEY, "user_id" text NOT NULL, "question" text NOT NULL, 
+        "answer" text NOT NULL, "score" integer DEFAULT 0, "last_reviewed" timestamp, 
+        "created_at" timestamp DEFAULT now()
+      )`
+    },
+    {
+      name: 'bugs',
+      sql: sql`CREATE TABLE IF NOT EXISTS "bugs" (
+        "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
+        "description" text, "status" text DEFAULT 'open', "created_at" timestamp DEFAULT now()
+      )`
+    },
+    {
+      name: 'snippets',
+      sql: sql`CREATE TABLE IF NOT EXISTS "snippets" (
+        "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
+        "code" text NOT NULL, "language" text NOT NULL, "description" text, "created_at" timestamp DEFAULT now()
+      )`
+    },
+    {
+      name: 'roadmap',
+      sql: sql`CREATE TABLE IF NOT EXISTS "roadmap" (
+        "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
+        "description" text, "status" text DEFAULT 'pending', "created_at" timestamp DEFAULT now()
+      )`
+    },
+    {
+      name: 'journals',
+      sql: sql`CREATE TABLE IF NOT EXISTS "journals" (
+        "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
+        "content" text NOT NULL, "created_at" timestamp DEFAULT now(), "updated_at" timestamp DEFAULT now()
+      )`
+    },
+    {
+      name: 'tasks',
+      sql: sql`CREATE TABLE IF NOT EXISTS "tasks" (
+        "id" text PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, "description" text, 
+        "estimated_pomos" integer DEFAULT 1, "actual_pomos" integer DEFAULT 0, "status" text DEFAULT 'todo', 
+        "notes" text DEFAULT '', "created_at" timestamp DEFAULT now()
+      )`
+    },
+    {
+      name: 'session_logs',
+      sql: sql`CREATE TABLE IF NOT EXISTS "session_logs" (
+        "id" text PRIMARY KEY, "user_id" text NOT NULL, "task_id" text, "task_title" text, 
+        "commit_message" text NOT NULL, "duration" integer NOT NULL, "timestamp" timestamp DEFAULT now(), "timezone" text
+      )`
+    },
+    {
+      name: 'distractions',
+      sql: sql`CREATE TABLE IF NOT EXISTS "distractions" (
+        "id" text PRIMARY KEY, "user_id" text NOT NULL, "content" text NOT NULL, 
+        "resolved" boolean DEFAULT false, "timestamp" timestamp DEFAULT now()
+      )`
+    }
+  ];
+
+  for (const table of tables) {
+    try {
+      console.log(`Verifying table: ${table.name}`);
+      await db.execute(table.sql);
+    } catch (e) {
+      console.warn(`Failed to ensure table ${table.name} exists:`, e);
+    }
+  }
+}
+
 export async function getDashboardStats() {
   const userId = await getUserId();
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Self-healing: Ensure all V2 tables exist before querying
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "tasks" (
-        "id" text PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, "description" text, 
-        "estimated_pomos" integer DEFAULT 1, "actual_pomos" integer DEFAULT 0, "status" text DEFAULT 'todo', 
-        "notes" text DEFAULT '', "created_at" timestamp DEFAULT now()
-      );
-      CREATE TABLE IF NOT EXISTS "session_logs" (
-        "id" text PRIMARY KEY, "user_id" text NOT NULL, "task_id" text, "task_title" text, 
-        "commit_message" text NOT NULL, "duration" integer NOT NULL, "timestamp" timestamp DEFAULT now(), "timezone" text
-      );
-      CREATE TABLE IF NOT EXISTS "distractions" (
-        "id" text PRIMARY KEY, "user_id" text NOT NULL, "content" text NOT NULL, "resolved" boolean DEFAULT false, "timestamp" timestamp DEFAULT now()
-      );
-    `);
+    // Self-healing: Ensure all tables exist before querying
+    await ensureTablesExist();
 
     // 1. Focus Time Today
     const sessionsToday = await db.query.focusSessions.findMany({
@@ -480,20 +579,7 @@ export async function getProfileData() {
 export async function getTasks() {
   const userId = await getUserId();
   try {
-    // Ensure table exists
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "tasks" (
-        "id" text PRIMARY KEY,
-        "user_id" text NOT NULL,
-        "title" text NOT NULL,
-        "description" text,
-        "estimated_pomos" integer DEFAULT 1,
-        "actual_pomos" integer DEFAULT 0,
-        "status" text DEFAULT 'todo',
-        "notes" text DEFAULT '',
-        "created_at" timestamp DEFAULT now()
-      )
-    `);
+    await ensureTablesExist();
     return await db.query.tasks.findMany({ where: eq(tasks.userId, userId), orderBy: (t, { desc }) => [desc(t.createdAt)] });
   } catch (error) {
     console.error("Failed to fetch Tasks:", error);
@@ -506,20 +592,7 @@ export async function createTask(data: { id: string; title: string; description?
     const userId = await getUserId();
     if (!data.title) throw new Error("Title is required");
 
-    // Self-healing: Ensure table exists (for environments where migrations haven't run)
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "tasks" (
-        "id" text PRIMARY KEY,
-        "user_id" text NOT NULL,
-        "title" text NOT NULL,
-        "description" text,
-        "estimated_pomos" integer DEFAULT 1,
-        "actual_pomos" integer DEFAULT 0,
-        "status" text DEFAULT 'todo',
-        "notes" text DEFAULT '',
-        "created_at" timestamp DEFAULT now()
-      )
-    `);
+    await ensureTablesExist();
 
     await db.insert(tasks).values({ 
       id: data.id || crypto.randomUUID(),
@@ -563,18 +636,7 @@ export async function deleteTask(id: string) {
 export async function getSessionLogs() {
   const userId = await getUserId();
   try {
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "session_logs" (
-        "id" text PRIMARY KEY,
-        "user_id" text NOT NULL,
-        "task_id" text,
-        "task_title" text,
-        "commit_message" text NOT NULL,
-        "duration" integer NOT NULL,
-        "timestamp" timestamp DEFAULT now(),
-        "timezone" text
-      )
-    `);
+    await ensureTablesExist();
     return await db.query.sessionLogs.findMany({ where: eq(sessionLogs.userId, userId), orderBy: (s, { desc }) => [desc(s.timestamp)] });
   } catch (error) {
     console.error("Failed to fetch Session Logs:", error);
@@ -605,15 +667,7 @@ export async function createSessionLog(data: { id: string; taskId?: string; task
 export async function getDistractions() {
   const userId = await getUserId();
   try {
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "distractions" (
-        "id" text PRIMARY KEY,
-        "user_id" text NOT NULL,
-        "content" text NOT NULL,
-        "resolved" boolean DEFAULT false,
-        "timestamp" timestamp DEFAULT now()
-      )
-    `);
+    await ensureTablesExist();
     // Return unresolved first
     return await db.query.distractions.findMany({ 
       where: eq(distractions.userId, userId),
