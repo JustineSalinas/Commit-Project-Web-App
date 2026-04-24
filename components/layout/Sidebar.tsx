@@ -15,7 +15,8 @@ import {
   Activity, 
   Bot,
   Settings,
-  User
+  User,
+  Layout
 } from "lucide-react";
 
 const navGroups = [
@@ -30,6 +31,7 @@ const navGroups = [
     label: "Productivity",
     items: [
       { name: "Focus", href: "/focus", icon: Timer },
+      { name: "Tasks", href: "/tasks", icon: Layout },
       { name: "Roadmap", href: "/roadmap", icon: Map },
       { name: "Mastery", href: "/mastery", icon: Target },
     ]

@@ -28,18 +28,14 @@ export const usePomodoro = () => {
     setExpectedEndTime(null);
     
     if (mode === 'focus') {
-      const durationInMinutes = Math.round(TIMES[mode] / 60);
-      await logFocusSession({ durationMinutes: durationInMinutes, focusType: 'pomodoro' });
-      
-      incrementSessionsCompleted();
-      const nextMode = (sessionsCompleted + 1) % 4 === 0 ? 'longBreak' : 'shortBreak';
-      setMode(nextMode);
-      setTimeLeft(TIMES[nextMode]);
+      // Instead of automatically advancing, we open the commit modal
+      // The modal will be responsible for advancing the timer after submission
+      usePomodoroStore.getState().setIsCommitModalOpen(true);
     } else {
       setMode('focus');
       setTimeLeft(TIMES['focus']);
     }
-  }, [mode, sessionsCompleted, incrementSessionsCompleted, setMode, setTimeLeft, setIsActive, setExpectedEndTime, logFocusSession]);
+  }, [mode, setMode, setTimeLeft, setIsActive, setExpectedEndTime]);
 
   const toggleTimer = useCallback(() => {
     if (isActive) {

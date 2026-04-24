@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { tils, bugs, snippets, flashcards, roadmap, journals, focusSessions, profiles } from "@/db/schema";
+import { tils, bugs, snippets, flashcards, roadmap, journals, focusSessions, profiles, tasks, sessionLogs, distractions } from "@/db/schema";
 import { eq, gte, sql, or } from "drizzle-orm";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -418,5 +418,127 @@ export async function getProfileData() {
   } catch (error) {
     console.error("Failed to fetch profile data:", error);
     return null;
+  }
+}
+
+// --- TASKS ACTIONS ---
+export async function getTasks() {
+  const userId = await getUserId();
+  try {
+    return await db.query.tasks.findMany({ where: eq(tasks.userId, userId), orderBy: (t, { desc }) => [desc(t.createdAt)] });
+  } catch (error) {
+    console.error("Failed to fetch Tasks:", error);
+    return [];
+  }
+}
+
+export async function createTask(data: { id: string; title: string; description?: string; estimatedPomos?: number }) {
+  try {
+    const userId = await getUserId();
+    await db.insert(tasks).values({ 
+      id: data.id,
+      userId, 
+      title: data.title, 
+      description: data.description || '', 
+      estimatedPomos: data.estimatedPomos || 1,
+      status: 'todo'
+    });
+    revalidatePath('/tasks');
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to create Task:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateTask(id: string, updates: any) {
+  try {
+    await db.update(tasks).set(updates).where(eq(tasks.id, id));
+    revalidatePath('/tasks');
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to update Task:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteTask(id: string) {
+  try {
+    await db.delete(tasks).where(eq(tasks.id, id));
+    revalidatePath('/tasks');
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to delete Task:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// --- SESSION LOGS ACTIONS ---
+export async function getSessionLogs() {
+  const userId = await getUserId();
+  try {
+    return await db.query.sessionLogs.findMany({ where: eq(sessionLogs.userId, userId), orderBy: (s, { desc }) => [desc(s.timestamp)] });
+  } catch (error) {
+    console.error("Failed to fetch Session Logs:", error);
+    return [];
+  }
+}
+
+export async function createSessionLog(data: { id: string; taskId?: string; taskTitle?: string; commitMessage: string; duration: number; timezone: string }) {
+  try {
+    const userId = await getUserId();
+    await db.insert(sessionLogs).values({ 
+      id: data.id,
+      userId, 
+      taskId: data.taskId,
+      taskTitle: data.taskTitle,
+      commitMessage: data.commitMessage,
+      duration: data.duration,
+      timezone: data.timezone
+    });
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to create Session Log:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// --- DISTRACTION ACTIONS ---
+export async function getDistractions() {
+  const userId = await getUserId();
+  try {
+    // Return unresolved first
+    return await db.query.distractions.findMany({ 
+      where: eq(distractions.userId, userId),
+      orderBy: (d, { asc, desc }) => [asc(d.resolved), desc(d.timestamp)]
+    });
+  } catch (error) {
+    console.error("Failed to fetch Distractions:", error);
+    return [];
+  }
+}
+
+export async function createDistraction(data: { id: string; content: string }) {
+  try {
+    const userId = await getUserId();
+    await db.insert(distractions).values({ 
+      id: data.id,
+      userId, 
+      content: data.content 
+    });
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to create Distraction:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function resolveDistraction(id: string) {
+  try {
+    await db.update(distractions).set({ resolved: true }).where(eq(distractions.id, id));
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to resolve Distraction:", error);
+    return { success: false, error: error.message };
   }
 }

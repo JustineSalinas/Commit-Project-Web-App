@@ -3,7 +3,8 @@
 import { Timer as TimerIcon, AlertCircle, Play, Pause, RotateCcw, Check, RefreshCcw } from "lucide-react";
 import { usePomodoro } from "@/lib/hooks/usePomodoro";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getDistractions, createDistraction, resolveDistraction } from "@/app/actions/crud";
 
 const formatTime = (seconds: number) => {
   const mins = Math.floor(seconds / 60);
@@ -14,19 +15,43 @@ const formatTime = (seconds: number) => {
 export default function FocusPage() {
   const { mode, timeLeft, isActive, toggleTimer, switchMode, overrideTime } = usePomodoro();
   const [dumpText, setDumpText] = useState("");
-  const [dumpSaved, setDumpSaved] = useState(false);
-  
-  const [isEditingTime, setIsEditingTime] = useState(false);
-  const [customTimeInput, setCustomTimeInput] = useState("");
+  const [distractions, setDistractions] = useState<any[]>([]);
 
-  const handleDumpKeyDown = (e: React.KeyboardEvent) => {
+  useEffect(() => {
+    fetchDistractions();
+  }, []);
+
+  const fetchDistractions = async () => {
+    const data = await getDistractions();
+    setDistractions(data);
+  };
+
+  const handleDumpKeyDown = async (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (!dumpText.trim()) return;
+      
+      const content = dumpText.trim();
       setDumpText("");
-      setDumpSaved(true);
-      setTimeout(() => setDumpSaved(false), 2000);
+      
+      // Optimistic update
+      const tempId = crypto.randomUUID();
+      setDistractions([{ id: tempId, content, resolved: false, timestamp: new Date() }, ...distractions]);
+      
+      const res = await createDistraction({ id: crypto.randomUUID(), content });
+      if (res.success) {
+        setDumpSaved(true);
+        setTimeout(() => setDumpSaved(false), 2000);
+        fetchDistractions(); // Refresh to get proper ID and order
+      }
     }
+  };
+
+  const handleResolve = async (id: string) => {
+    // Optimistic
+    setDistractions(distractions.map(d => d.id === id ? { ...d, resolved: true } : d));
+    await resolveDistraction(id);
+    fetchDistractions();
   };
 
   const handleTimeSubmit = (e: React.FormEvent) => {
@@ -140,24 +165,50 @@ export default function FocusPage() {
           </div>
         </div>
 
-        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-4 text-[var(--text-secondary)]">
+        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 flex flex-col max-h-[500px]">
+          <div className="flex items-center gap-2 mb-4 text-[var(--text-secondary)] shrink-0">
             <AlertCircle className="w-4 h-4" />
             <h3 className="font-medium text-sm">Distraction Dump</h3>
           </div>
-          <p className="text-xs text-[var(--text-muted)] mb-4">Log passing thoughts without breaking focus.</p>
-          <div className="relative">
+          <p className="text-xs text-[var(--text-muted)] mb-4 shrink-0">Log passing thoughts without breaking focus.</p>
+          <div className="relative shrink-0 mb-4">
             <textarea 
               value={dumpText}
               onChange={(e) => setDumpText(e.target.value)}
               onKeyDown={handleDumpKeyDown}
               placeholder="Type and press enter to save..."
-              className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md p-3 text-sm focus:outline-none focus:border-[var(--accent)] text-[var(--text-primary)] h-32 resize-none transition-colors"
+              className="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-md p-3 text-sm focus:outline-none focus:border-[var(--accent)] text-[var(--text-primary)] h-20 resize-none transition-colors"
             />
             {dumpSaved && (
-              <div className="absolute top-2 right-2 bg-green-500/20 text-green-400 text-xs px-2 py-1 flex items-center gap-1 rounded animate-pulse">
+              <div className="absolute top-2 right-2 bg-green-500/20 text-green-400 text-[10px] px-2 py-1 flex items-center gap-1 rounded animate-pulse">
                 <Check className="w-3 h-3" /> Saved
               </div>
+            )}
+          </div>
+
+          <div className="flex-1 overflow-y-auto space-y-2 custom-scrollbar pr-2">
+            {distractions.map(d => (
+              <div key={d.id} className={`p-3 rounded-lg border text-sm flex justify-between items-start gap-3 transition-colors ${d.resolved ? 'bg-transparent border-transparent opacity-50' : 'bg-[var(--bg-base)] border-[var(--border)]'}`}>
+                <div className="flex-1">
+                  <div className={`text-[var(--text-primary)] ${d.resolved ? 'line-through' : ''}`}>
+                    {d.content}
+                  </div>
+                  <div className="text-[10px] text-[var(--text-muted)] mt-1">
+                    {new Date(d.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+                {!d.resolved && (
+                  <button 
+                    onClick={() => handleResolve(d.id)}
+                    className="text-xs bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black px-2 py-1 rounded transition-colors"
+                  >
+                    Resolve
+                  </button>
+                )}
+              </div>
+            ))}
+            {distractions.length === 0 && (
+              <div className="text-center text-[var(--text-muted)] text-sm py-4">No distractions yet. Keep focusing!</div>
             )}
           </div>
         </div>

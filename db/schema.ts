@@ -79,3 +79,36 @@ export const journals = pgTable('journals', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// --- NEW TABLES FOR V2 FEATURES ---
+
+export const tasks = pgTable('tasks', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  title: text('title').notNull(),
+  description: text('description'),
+  estimatedPomos: integer('estimated_pomos').default(1),
+  actualPomos: integer('actual_pomos').default(0),
+  status: text('status').default('todo'), // 'todo' | 'in-progress' | 'done'
+  notes: text('notes').default(''),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const sessionLogs = pgTable('session_logs', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  taskId: text('task_id'), // Removed strict foreign key to avoid breaking if task is deleted loosely
+  taskTitle: text('task_title'),
+  commitMessage: text('commit_message').notNull(),
+  duration: integer('duration').notNull(),
+  timestamp: timestamp('timestamp').defaultNow(),
+  timezone: text('timezone'),
+});
+
+export const distractions = pgTable('distractions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  content: text('content').notNull(),
+  resolved: boolean('resolved').default(false),
+  timestamp: timestamp('timestamp').defaultNow(),
+});
+

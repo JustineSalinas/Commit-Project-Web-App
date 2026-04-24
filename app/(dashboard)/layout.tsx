@@ -1,6 +1,8 @@
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TopBar } from "@/components/layout/TopBar";
 import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
+import { CommitModal } from "@/components/focus/CommitModal";
+import { SyncQueueProvider } from "@/components/layout/SyncQueueProvider";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +13,7 @@ export default function DashboardLayout({
 }) {
   return (
     <OnboardingWrapper>
+      <SyncQueueProvider />
       <div className="flex bg-[var(--bg-base)] min-h-screen text-[var(--text-primary)] font-sans">
         <Sidebar />
         <div className="flex-1 flex flex-col min-w-0">
@@ -22,6 +25,7 @@ export default function DashboardLayout({
           </main>
         </div>
       </div>
+      <CommitModal />
     </OnboardingWrapper>
   );
 }
