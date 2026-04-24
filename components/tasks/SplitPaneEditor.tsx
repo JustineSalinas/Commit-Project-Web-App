@@ -23,15 +23,6 @@ export function SplitPaneEditor({ task }: SplitPaneEditorProps) {
   // Render markdown with debounce
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Configure marked to use highlight.js
-      marked.setOptions({
-        highlight: function(code, lang) {
-          const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-          return hljs.highlight(code, { language }).value;
-        },
-        langPrefix: 'hljs language-',
-      });
-
       const rawHtml = marked.parse(content) as string;
       const sanitizedHtml = DOMPurify.sanitize(rawHtml);
       setHtml(sanitizedHtml);
@@ -44,6 +35,15 @@ export function SplitPaneEditor({ task }: SplitPaneEditorProps) {
 
     return () => clearTimeout(timer);
   }, [content, task.id, task.notes]);
+
+  // Apply syntax highlighting after HTML is rendered
+  useEffect(() => {
+    if (html) {
+      document.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightElement(block as HTMLElement);
+      });
+    }
+  }, [html]);
 
   return (
     <div className="flex h-full border border-[var(--border)] rounded-xl overflow-hidden bg-[var(--bg-surface)]">
