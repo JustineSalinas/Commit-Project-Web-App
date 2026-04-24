@@ -15,6 +15,7 @@ const formatTime = (seconds: number) => {
 export default function FocusPage() {
   const { mode, timeLeft, isActive, toggleTimer, switchMode, overrideTime } = usePomodoro();
   const [dumpText, setDumpText] = useState("");
+  const [dumpSaved, setDumpSaved] = useState(false);
   const [distractions, setDistractions] = useState<any[]>([]);
 
   useEffect(() => {
