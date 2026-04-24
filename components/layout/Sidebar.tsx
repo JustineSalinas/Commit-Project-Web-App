@@ -75,10 +75,10 @@ export function Sidebar() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 group
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 group border
                     ${pathname === item.href 
-                      ? "bg-[var(--accent)]/10 text-[var(--accent)] font-bold border border-[var(--accent)]/10 shadow-sm" 
-                      : "text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--accent)] hover:translate-x-1"
+                      ? "bg-[var(--accent)]/10 text-[var(--accent)] font-bold border-[var(--accent)]/10 shadow-sm" 
+                      : "text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--accent)] hover:translate-x-1 border-transparent"
                     }`}
                 >
                   <item.icon className={`w-4 h-4 transition-transform duration-200 group-hover:scale-110 ${pathname === item.href ? "text-[var(--accent)]" : "text-[var(--text-muted)] group-hover:text-[var(--accent)]"}`} />
@@ -97,10 +97,10 @@ export function Sidebar() {
       <div className="px-4 pb-4 border-t border-[var(--border)] bg-[var(--bg-base)] border-r pt-4 w-full flex flex-col gap-1">
         <Link
           href="/profile"
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors 
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors border
             ${pathname === "/profile" 
-              ? "bg-[var(--accent)]/10 text-[var(--accent)] font-bold border border-[var(--accent)]/20" 
-              : "text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--accent)]"
+              ? "bg-[var(--accent)]/10 text-[var(--accent)] font-bold border-[var(--accent)]/20" 
+              : "text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--accent)] border-transparent"
             }`}
         >
           <User className={`w-5 h-5 ${pathname === "/profile" ? "text-[var(--accent)]" : "text-[var(--text-secondary)] group-hover:text-[var(--accent)]"}`} />
@@ -108,10 +108,10 @@ export function Sidebar() {
         </Link>
         <Link
           href="/settings"
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors 
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors border
             ${pathname === "/settings" 
-              ? "bg-[var(--accent)]/10 text-[var(--accent)] font-bold border border-[var(--accent)]/20" 
-              : "text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--accent)]"
+              ? "bg-[var(--accent)]/10 text-[var(--accent)] font-bold border-[var(--accent)]/20" 
+              : "text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--accent)] border-transparent"
             }`}
         >
           <Settings className={`w-5 h-5 ${pathname === "/settings" ? "text-[var(--accent)]" : "text-[var(--text-secondary)] group-hover:text-[var(--accent)]"}`} />
