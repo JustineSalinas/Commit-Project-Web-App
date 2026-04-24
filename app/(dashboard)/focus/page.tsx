@@ -17,6 +17,8 @@ export default function FocusPage() {
   const [dumpText, setDumpText] = useState("");
   const [dumpSaved, setDumpSaved] = useState(false);
   const [distractions, setDistractions] = useState<any[]>([]);
+  const [isEditingTime, setIsEditingTime] = useState(false);
+  const [customTimeInput, setCustomTimeInput] = useState("");
 
   useEffect(() => {
     fetchDistractions();
