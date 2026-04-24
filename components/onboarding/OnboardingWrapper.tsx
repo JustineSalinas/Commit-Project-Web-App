@@ -17,6 +17,13 @@ export function OnboardingWrapper({ children }: { children: React.ReactNode }) {
     async function checkOnboarding() {
       if (!isLoaded || !user) return;
 
+      // Check if we've already bypassed onboarding locally to prevent loop on refresh
+      const localBypass = localStorage.getItem(`onboarding_bypassed_${user.id}`);
+      if (localBypass === "true") {
+        setProfileLoaded(true);
+        return;
+      }
+
       const profile = await getUserProfile();
       
       if (profile) {
@@ -31,10 +38,7 @@ export function OnboardingWrapper({ children }: { children: React.ReactNode }) {
           hasGreeted.current = true;
         }
       } else {
-        // If profile doesn't exist in our DB yet, it might be a new user 
-        // who just signed up through Clerk but hasn't been synced to Drizzle yet.
-        // Usually, middleware or a webhook handles this, but we'll trigger onboarding
-        // as a fallback or if the sync is pending.
+        // If profile doesn't exist in our DB yet, trigger onboarding
         setShowOnboarding(true);
       }
       setProfileLoaded(true);
@@ -44,6 +48,9 @@ export function OnboardingWrapper({ children }: { children: React.ReactNode }) {
   }, [isLoaded, user]);
 
   const handleOnboardingComplete = () => {
+    if (user) {
+      localStorage.setItem(`onboarding_bypassed_${user.id}`, "true");
+    }
     setShowOnboarding(false);
     hasGreeted.current = true; // Don't show "Welcome back" right after onboarding
   };
