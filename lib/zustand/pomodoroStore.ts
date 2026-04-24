@@ -65,6 +65,7 @@ export const usePomodoroStore = create<PomodoroState>()(
       setExpectedEndTime: (expectedEndTime) => set({ expectedEndTime }),
       setActiveTaskId: (activeTaskId) => set({ activeTaskId }),
       setIsCommitModalOpen: (isCommitModalOpen) => set({ isCommitModalOpen }),
+      setLastSessionDuration: (lastSessionDuration) => set({ lastSessionDuration }),
       
       updateSettings: (newSettings) => {
         const currentSettings = get().settings;
