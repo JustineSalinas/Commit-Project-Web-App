@@ -1,13 +1,34 @@
 import { getProfileData } from "@/app/actions/crud";
 import { ProfileHeatmap } from "@/components/profile/ProfileHeatmap";
-import { UserPlus, Activity, BookOpen, Layers } from "lucide-react";
-import { redirect } from "next/navigation";
+import { UserPlus, Activity, BookOpen, Layers, User } from "lucide-react";
+import Link from "next/link";
 
 export default async function ProfilePage() {
   const profileData = await getProfileData();
 
   if (!profileData || !profileData.user) {
-    redirect("/");
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4 text-center">
+        <div className="w-16 h-16 bg-[#111113] border border-[#1A1A1F] rounded-full flex items-center justify-center">
+          <User className="w-8 h-8 text-[#71717A]" />
+        </div>
+        <h1 className="text-2xl font-bold text-[#FAFAFA]">Profile Not Found</h1>
+        <p className="text-[#A1A1AA] max-w-md">
+          Your developer profile hasn't been initialized yet. This can happen if onboarding wasn't completed or there was a database sync error.
+        </p>
+        <div className="flex gap-4">
+          <Link 
+            href="/"
+            className="bg-[#00FFAA] text-black px-6 py-2 rounded-lg font-medium hover:brightness-110 transition-all"
+          >
+            Return to Dashboard
+          </Link>
+        </div>
+        <p className="text-xs text-[#71717A]">
+          Note: If you've already completed onboarding, try refreshing the page.
+        </p>
+      </div>
+    );
   }
 
   const {

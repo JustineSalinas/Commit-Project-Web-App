@@ -1,10 +1,11 @@
 "use client";
 
-import { Timer as TimerIcon, AlertCircle, Play, Pause, RotateCcw, Check, RefreshCcw } from "lucide-react";
+import { Timer as TimerIcon, AlertCircle, Play, Pause, RotateCcw, Check, Settings } from "lucide-react";
 import { usePomodoro } from "@/lib/hooks/usePomodoro";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { getDistractions, createDistraction, resolveDistraction } from "@/app/actions/crud";
+import { usePomodoroStore } from "@/lib/zustand/pomodoroStore";
 
 const formatTime = (seconds: number) => {
   const mins = Math.floor(seconds / 60);
@@ -13,16 +14,33 @@ const formatTime = (seconds: number) => {
 };
 
 export default function FocusPage() {
-  const { mode, timeLeft, isActive, toggleTimer, switchMode, overrideTime } = usePomodoro();
+  const { mode, timeLeft, isActive, settings, toggleTimer, switchMode, overrideTime } = usePomodoro();
+  const updateSettings = usePomodoroStore(state => state.updateSettings);
   const [dumpText, setDumpText] = useState("");
   const [dumpSaved, setDumpSaved] = useState(false);
   const [distractions, setDistractions] = useState<any[]>([]);
   const [isEditingTime, setIsEditingTime] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [customTimeInput, setCustomTimeInput] = useState("");
+  
+  // Local settings state for the form
+  const [localSettings, setLocalSettings] = useState({
+    focus: settings.focusTime / 60,
+    short: settings.shortBreakTime / 60,
+    long: settings.longBreakTime / 60
+  });
 
   useEffect(() => {
     fetchDistractions();
   }, []);
+
+  useEffect(() => {
+    setLocalSettings({
+      focus: settings.focusTime / 60,
+      short: settings.shortBreakTime / 60,
+      long: settings.longBreakTime / 60
+    });
+  }, [settings]);
 
   const fetchDistractions = async () => {
     const data = await getDistractions();
@@ -35,26 +53,40 @@ export default function FocusPage() {
       if (!dumpText.trim()) return;
       
       const content = dumpText.trim();
+      const id = crypto.randomUUID();
       setDumpText("");
       
       // Optimistic update
-      const tempId = crypto.randomUUID();
-      setDistractions([{ id: tempId, content, resolved: false, timestamp: new Date() }, ...distractions]);
+      setDistractions(prev => [{ id, content, resolved: false, timestamp: new Date() }, ...prev]);
       
-      const res = await createDistraction({ id: crypto.randomUUID(), content });
+      const res = await createDistraction({ id, content });
       if (res.success) {
         setDumpSaved(true);
         setTimeout(() => setDumpSaved(false), 2000);
-        fetchDistractions(); // Refresh to get proper ID and order
+        // We don't necessarily need to fetch here if we trust the optimistic update,
+        // but it helps keep timestamps in sync with the server
+        fetchDistractions(); 
       }
     }
   };
 
   const handleResolve = async (id: string) => {
     // Optimistic
-    setDistractions(distractions.map(d => d.id === id ? { ...d, resolved: true } : d));
-    await resolveDistraction(id);
-    fetchDistractions();
+    setDistractions(prev => prev.map(d => d.id === id ? { ...d, resolved: true } : d));
+    const res = await resolveDistraction(id);
+    if (res.success) {
+      fetchDistractions();
+    }
+  };
+
+  const handleSettingsSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateSettings({
+      focusTime: localSettings.focus * 60,
+      shortBreakTime: localSettings.short * 60,
+      longBreakTime: localSettings.long * 60
+    });
+    setShowSettings(false);
   };
 
   const handleTimeSubmit = (e: React.FormEvent) => {
@@ -165,7 +197,68 @@ export default function FocusPage() {
             >
               <RotateCcw className="w-5 h-5" />
             </button>
+
+            <button 
+              onClick={() => setShowSettings(!showSettings)}
+              className={cn(
+                "bg-transparent border border-[var(--border)] text-[var(--text-secondary)] font-medium p-3 rounded-md hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)] transition-colors",
+                showSettings && "bg-[var(--bg-elevated)] text-[var(--accent)] border-[var(--accent)]"
+              )}
+              title="Timer Settings"
+            >
+              <Settings className="w-5 h-5" />
+            </button>
           </div>
+
+          {showSettings && (
+            <form onSubmit={handleSettingsSubmit} className="mt-8 p-4 bg-[var(--bg-base)] border border-[var(--border)] rounded-xl w-full max-w-sm space-y-4">
+              <h3 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-wider">Timer Settings (Minutes)</h3>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-[var(--text-secondary)] uppercase">Focus</label>
+                  <input 
+                    type="number" 
+                    value={localSettings.focus} 
+                    onChange={e => setLocalSettings(prev => ({ ...prev, focus: parseInt(e.target.value) || 0 }))}
+                    className="w-full bg-[var(--bg-elevated)] border border-[var(--border)] rounded p-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-[var(--text-secondary)] uppercase">Short</label>
+                  <input 
+                    type="number" 
+                    value={localSettings.short} 
+                    onChange={e => setLocalSettings(prev => ({ ...prev, short: parseInt(e.target.value) || 0 }))}
+                    className="w-full bg-[var(--bg-elevated)] border border-[var(--border)] rounded p-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-[var(--text-secondary)] uppercase">Long</label>
+                  <input 
+                    type="number" 
+                    value={localSettings.long} 
+                    onChange={e => setLocalSettings(prev => ({ ...prev, long: parseInt(e.target.value) || 0 }))}
+                    className="w-full bg-[var(--bg-elevated)] border border-[var(--border)] rounded p-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  type="submit"
+                  className="flex-1 bg-[var(--accent)] text-black text-xs font-bold py-2 rounded hover:brightness-110 transition-all"
+                >
+                  Save Settings
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setShowSettings(false)}
+                  className="flex-1 bg-[var(--bg-elevated)] text-[var(--text-secondary)] text-xs font-medium py-2 rounded hover:text-[var(--text-primary)] transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
         </div>
 
         <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 flex flex-col max-h-[500px]">

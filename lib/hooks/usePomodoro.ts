@@ -2,12 +2,6 @@ import { useEffect, useCallback } from 'react';
 import { usePomodoroStore, PomodoroMode } from '../zustand/pomodoroStore';
 import { logFocusSession } from "@/app/actions/crud";
 
-const TIMES: Record<PomodoroMode, number> = {
-  focus: 25 * 60,
-  shortBreak: 5 * 60,
-  longBreak: 15 * 60,
-};
-
 export const usePomodoro = () => {
   const { 
     mode, 
@@ -15,6 +9,7 @@ export const usePomodoro = () => {
     isActive, 
     sessionsCompleted,
     expectedEndTime,
+    settings,
     setMode, 
     setTimeLeft, 
     setIsActive, 
@@ -29,13 +24,11 @@ export const usePomodoro = () => {
     
     if (mode === 'focus') {
       // Instead of automatically advancing, we open the commit modal
-      // The modal will be responsible for advancing the timer after submission
       usePomodoroStore.getState().setIsCommitModalOpen(true);
     } else {
-      setMode('focus');
-      setTimeLeft(TIMES['focus']);
+      setMode('focus'); // This will automatically set the time from settings
     }
-  }, [mode, setMode, setTimeLeft, setIsActive, setExpectedEndTime]);
+  }, [mode, setMode, setIsActive, setExpectedEndTime]);
 
   const toggleTimer = useCallback(() => {
     if (isActive) {
@@ -48,11 +41,8 @@ export const usePomodoro = () => {
   }, [isActive, timeLeft, setIsActive, setExpectedEndTime]);
 
   const switchMode = useCallback((newMode: PomodoroMode) => {
-    setIsActive(false);
-    setExpectedEndTime(null);
-    setMode(newMode);
-    setTimeLeft(TIMES[newMode]);
-  }, [setIsActive, setExpectedEndTime, setMode, setTimeLeft]);
+    setMode(newMode); // This will automatically handle time and reset active state
+  }, [setMode]);
 
   useEffect(() => {
     if (!isActive || !expectedEndTime) return;
@@ -77,6 +67,7 @@ export const usePomodoro = () => {
     timeLeft,
     isActive,
     sessionsCompleted,
+    settings,
     toggleTimer,
     switchMode,
     overrideTime
