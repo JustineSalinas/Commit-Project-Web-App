@@ -73,7 +73,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
                   {task.title}
                 </h4>
                 {isOverEstimate(task) && (
-                  <AlertTriangle className="w-4 h-4 text-orange-500 flex-shrink-0" title="Over Estimate" />
+                  <AlertTriangle className="w-4 h-4 text-orange-500 flex-shrink-0" />
                 )}
               </div>
               <p className="text-xs text-[var(--text-secondary)] line-clamp-2 mb-4">
