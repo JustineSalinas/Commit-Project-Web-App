@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { InteractiveGrid } from "@/components/auth/InteractiveGrid";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -14,7 +15,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   }, []);
 
   return (
-    <div className="min-h-screen flex bg-[#09090B]">
+    <div className="min-h-screen flex bg-[#09090B] relative">
+      <InteractiveGrid />
       {/* Left Panel — Branded Hero */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden">
         {/* Gradient background */}
