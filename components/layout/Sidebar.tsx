@@ -18,6 +18,7 @@ import {
   User,
   Layout
 } from "lucide-react";
+import { usePomodoroStore } from "@/lib/zustand/pomodoroStore";
 
 const navGroups = [
   {
@@ -120,13 +121,29 @@ export function Sidebar() {
 
       <div className="p-4 border-t border-[var(--border)]">
         <div className="bg-[var(--bg-surface)] rounded-lg p-4 border border-[var(--border)] relative overflow-hidden group">
-          <div className="text-xs text-[var(--text-secondary)] uppercase font-bold mb-1 group-hover:text-[var(--accent)] transition-colors">Today's Focus</div>
-          <div className="text-[var(--text-primary)] text-sm font-medium">0 / 4 Sessions</div>
-          <div className="mt-2 h-1.5 w-full bg-[var(--bg-base)] rounded-full overflow-hidden">
-            <div className="h-full bg-[var(--accent)] w-[0%]" />
-          </div>
+          <TodayFocusCounter />
         </div>
       </div>
     </aside>
+  );
+}
+
+function TodayFocusCounter() {
+  const { sessionsCompleted } = usePomodoroStore();
+  const currentCycle = sessionsCompleted % 4;
+  const displayCount = currentCycle === 0 && sessionsCompleted > 0 ? 4 : currentCycle;
+  const percentage = (displayCount / 4) * 100;
+
+  return (
+    <>
+      <div className="text-xs text-[var(--text-secondary)] uppercase font-bold mb-1 group-hover:text-[var(--accent)] transition-colors">Today's Focus</div>
+      <div className="text-[var(--text-primary)] text-sm font-medium">{displayCount} / 4 Sessions</div>
+      <div className="mt-2 h-1.5 w-full bg-[var(--bg-base)] rounded-full overflow-hidden">
+        <div 
+          className="h-full bg-[var(--accent)] transition-all duration-500 ease-out" 
+          style={{ width: `${percentage}%` }} 
+        />
+      </div>
+    </>
   );
 }

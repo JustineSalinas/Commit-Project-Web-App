@@ -17,7 +17,9 @@ export function CommitModal() {
     sessionsCompleted, 
     incrementSessionsCompleted,
     setMode,
-    setTimeLeft
+    setTimeLeft,
+    lastSessionDuration,
+    settings
   } = usePomodoroStore();
   
   const [commitMessage, setCommitMessage] = useState("");
@@ -37,35 +39,39 @@ export function CommitModal() {
 
     setIsSubmitting(true);
     try {
-      // 1. Create SessionLog
+      // 1. Create SessionLog (Actual time in seconds)
       await createSessionLog({
         id: crypto.randomUUID(),
         taskId: activeTaskId || undefined,
         taskTitle: activeTask?.title || "Focus Session",
         commitMessage,
-        duration: 1500, // 25 min in seconds
+        duration: lastSessionDuration,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
       });
 
-      // 2. Increment actualPomos if a task is active
+      // 2. Log Focus Session for Dashboard (Actual time in minutes)
+      // Rounding up to at least 1 minute if duration > 0
+      const durationMinutes = Math.max(1, Math.ceil(lastSessionDuration / 60));
+      await logFocusSession({
+        durationMinutes,
+        focusType: 'pomodoro'
+      });
+
+      // 3. Increment actualPomos if a task is active
       if (activeTask) {
         await updateTask(activeTask.id, {
           actualPomos: (activeTask.actualPomos || 0) + 1
         });
       }
 
-      // 3. Advance the timer to break mode
+      // 4. Advance the timer to break mode
       incrementSessionsCompleted();
       const nextMode = (sessionsCompleted + 1) % 4 === 0 ? 'longBreak' : 'shortBreak';
       
-      const TIMES = {
-        focus: 25 * 60,
-        shortBreak: 5 * 60,
-        longBreak: 15 * 60,
-      };
+      const nextTime = nextMode === 'longBreak' ? settings.longBreakTime : settings.shortBreakTime;
 
       setMode(nextMode);
-      setTimeLeft(TIMES[nextMode]);
+      setTimeLeft(nextTime);
       
       // Close modal
       setCommitMessage("");

@@ -1,10 +1,10 @@
 "use client";
 
-import { Timer as TimerIcon, AlertCircle, Play, Pause, RotateCcw, Check, Settings } from "lucide-react";
+import { Timer as TimerIcon, AlertCircle, Play, Pause, RotateCcw, Check, Settings, Trash2 } from "lucide-react";
 import { usePomodoro } from "@/lib/hooks/usePomodoro";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import { getDistractions, createDistraction, resolveDistraction } from "@/app/actions/crud";
+import { getDistractions, createDistraction, resolveDistraction, deleteDistraction } from "@/app/actions/crud";
 import { usePomodoroStore } from "@/lib/zustand/pomodoroStore";
 
 const formatTime = (seconds: number) => {
@@ -76,6 +76,15 @@ export default function FocusPage() {
     const res = await resolveDistraction(id);
     if (res.success) {
       fetchDistractions();
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    // Optimistic
+    setDistractions(prev => prev.filter(d => d.id !== id));
+    const res = await deleteDistraction(id);
+    if (!res.success) {
+      fetchDistractions(); // Revert if failed
     }
   };
 
@@ -286,21 +295,30 @@ export default function FocusPage() {
             {distractions.map(d => (
               <div key={d.id} className={`p-3 rounded-lg border text-sm flex justify-between items-start gap-3 transition-colors ${d.resolved ? 'bg-transparent border-transparent opacity-50' : 'bg-[var(--bg-base)] border-[var(--border)]'}`}>
                 <div className="flex-1">
-                  <div className={`text-[var(--text-primary)] ${d.resolved ? 'line-through' : ''}`}>
+                  <div className={`text-[var(--text-primary)] ${d.resolved ? 'line-through text-[var(--text-muted)]' : ''}`}>
                     {d.content}
                   </div>
                   <div className="text-[10px] text-[var(--text-muted)] mt-1">
                     {new Date(d.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
-                {!d.resolved && (
+                <div className="flex gap-2 shrink-0">
+                  {!d.resolved && (
+                    <button 
+                      onClick={() => handleResolve(d.id)}
+                      className="text-[10px] bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black px-2 py-1 rounded transition-colors uppercase font-bold"
+                    >
+                      Done
+                    </button>
+                  )}
                   <button 
-                    onClick={() => handleResolve(d.id)}
-                    className="text-xs bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black px-2 py-1 rounded transition-colors"
+                    onClick={() => handleDelete(d.id)}
+                    className="text-[var(--text-muted)] hover:text-red-400 p-1 rounded transition-colors"
+                    title="Delete distraction"
                   >
-                    Resolve
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
-                )}
+                </div>
               </div>
             ))}
             {distractions.length === 0 && (

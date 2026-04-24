@@ -15,7 +15,8 @@ export const usePomodoro = () => {
     setIsActive, 
     setExpectedEndTime,
     incrementSessionsCompleted,
-    overrideTime
+    overrideTime,
+    setLastSessionDuration
   } = usePomodoroStore();
 
   const handleTimerComplete = useCallback(async () => {
@@ -37,8 +38,9 @@ export const usePomodoro = () => {
     } else {
       setIsActive(true);
       setExpectedEndTime(Date.now() + timeLeft * 1000);
+      setLastSessionDuration(timeLeft);
     }
-  }, [isActive, timeLeft, setIsActive, setExpectedEndTime]);
+  }, [isActive, timeLeft, setIsActive, setExpectedEndTime, setLastSessionDuration]);
 
   const switchMode = useCallback((newMode: PomodoroMode) => {
     setMode(newMode); // This will automatically handle time and reset active state

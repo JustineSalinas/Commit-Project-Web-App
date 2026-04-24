@@ -542,3 +542,13 @@ export async function resolveDistraction(id: string) {
     return { success: false, error: error.message };
   }
 }
+
+export async function deleteDistraction(id: string) {
+  try {
+    await db.delete(distractions).where(eq(distractions.id, id));
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to delete Distraction:", error);
+    return { success: false, error: error.message };
+  }
+}

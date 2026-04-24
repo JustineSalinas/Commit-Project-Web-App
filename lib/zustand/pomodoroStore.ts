@@ -18,12 +18,14 @@ interface PomodoroState {
   activeTaskId: string | null;
   isCommitModalOpen: boolean;
   settings: PomodoroSettings;
+  lastSessionDuration: number; // Duration of the session that just finished
   setMode: (mode: PomodoroMode) => void;
   setTimeLeft: (time: number) => void;
   setIsActive: (isActive: boolean) => void;
   setExpectedEndTime: (time: number | null) => void;
   setActiveTaskId: (id: string | null) => void;
   setIsCommitModalOpen: (isOpen: boolean) => void;
+  setLastSessionDuration: (duration: number) => void;
   updateSettings: (settings: Partial<PomodoroSettings>) => void;
   incrementSessionsCompleted: () => void;
   resetTimer: () => void;
@@ -47,6 +49,7 @@ export const usePomodoroStore = create<PomodoroState>()(
       activeTaskId: null,
       isCommitModalOpen: false,
       settings: DEFAULT_SETTINGS,
+      lastSessionDuration: DEFAULT_SETTINGS.focusTime,
       
       setMode: (mode) => {
         const { settings } = get();
