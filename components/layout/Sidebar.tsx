@@ -14,7 +14,8 @@ import {
   Code2, 
   Activity, 
   Bot,
-  Settings
+  Settings,
+  User
 } from "lucide-react";
 
 const navGroups = [
@@ -90,7 +91,18 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom Section */}
-      <div className="px-4 pb-4 border-t border-[var(--border)] bg-[var(--bg-base)] border-r pt-4 w-full">
+      <div className="px-4 pb-4 border-t border-[var(--border)] bg-[var(--bg-base)] border-r pt-4 w-full flex flex-col gap-1">
+        <Link
+          href="/profile"
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors 
+            ${pathname === "/profile" 
+              ? "bg-[var(--accent)]/10 text-[var(--accent)] font-bold border border-[var(--accent)]/20" 
+              : "text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--accent)]"
+            }`}
+        >
+          <User className={`w-5 h-5 ${pathname === "/profile" ? "text-[var(--accent)]" : "text-[var(--text-secondary)] group-hover:text-[var(--accent)]"}`} />
+          <span className="text-sm">Profile</span>
+        </Link>
         <Link
           href="/settings"
           className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors 

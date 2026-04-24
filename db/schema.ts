@@ -5,6 +5,8 @@ export const profiles = pgTable('profiles', {
   clerkId: text('clerk_id').unique().notNull(), // Clerk User ID
   name: text('name'),
   email: text('email').unique().notNull(),
+  title: text('title'),
+  bio: text('bio'),
   hasCompletedOnboarding: boolean('has_completed_onboarding').default(false),
   preferences: json('preferences').$type<{
     preferredIDE?: string;

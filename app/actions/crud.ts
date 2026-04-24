@@ -344,3 +344,59 @@ export async function getDashboardStats() {
     return { focusTime: "0h 0m", cardsDue: 0, streak: "0 Days", heatmap: [] };
   }
 }
+
+export async function getProfileData() {
+  const userId = await getUserId();
+  try {
+    const userProfile = await getUserProfile();
+    
+    // Get recent TILs
+    const userTils = await db.query.tils.findMany({ 
+      where: eq(tils.userId, userId), 
+      orderBy: (t, { desc }) => [desc(t.createdAt)],
+    });
+    
+    // Get Roadmap concepts completed
+    const completedConcepts = await db.query.roadmap.findMany({
+      where: sql`${roadmap.userId} = ${userId} AND ${roadmap.status} = 'complete'`
+    });
+
+    // Get heatmap activity dates (all TILs, sessions, journals, snippets)
+    const [sessionsData, journalsData, snippetsData] = await Promise.all([
+      db.query.focusSessions.findMany({ where: eq(focusSessions.userId, userId), columns: { createdAt: true } }),
+      db.query.journals.findMany({ where: eq(journals.userId, userId), columns: { createdAt: true } }),
+      db.query.snippets.findMany({ where: eq(snippets.userId, userId), columns: { createdAt: true } })
+    ]);
+
+    const activityDates = new Map<string, number>();
+    
+    const incrementDate = (dateStr: Date | null) => {
+      if (!dateStr) return;
+      // Using local date string for grouping
+      const d = new Date(dateStr).toISOString().split('T')[0];
+      activityDates.set(d, (activityDates.get(d) || 0) + 1);
+    };
+
+    [...userTils, ...sessionsData, ...journalsData, ...snippetsData].forEach(item => {
+      incrementDate(item.createdAt);
+    });
+
+    // We'll calculate a mock consistency score based on recent activity, or just hardcode if 0
+    let totalActivity = 0;
+    activityDates.forEach(count => totalActivity += count);
+    const consistencyScore = totalActivity > 0 ? Math.min(100, 50 + totalActivity) : 0;
+
+    return {
+      user: userProfile,
+      tilsCount: userTils.length,
+      recentTils: userTils.slice(0, 3),
+      conceptsMastered: completedConcepts.length,
+      topConcepts: completedConcepts.slice(0, 3), // We can use roadmap titles
+      heatmapData: Object.fromEntries(activityDates),
+      consistencyScore: (consistencyScore).toFixed(1)
+    };
+  } catch (error) {
+    console.error("Failed to fetch profile data:", error);
+    return null;
+  }
+}
