@@ -61,7 +61,7 @@ export function Sidebar() {
   return (
     <aside className="w-64 bg-[var(--bg-base)] h-screen flex flex-col hidden md:flex border-r border-[var(--border)]">
       <div className="px-7 py-4 border-t border-[var(--border)] bg-[var(--bg-base)]">
-        <h1 className="text-[var(--accent)] text-xl font-bold tracking-wider">COMMIT</h1>
+        <h1 className="text-[var(--accent)] text-xl font-bold tracking-wider">COMMIT<span className="animate-blink">_</span></h1>
       </div>
 
       <nav className="flex-1 px-4 py-2 space-y-6 overflow-y-auto bg-transparent w-full custom-scrollbar">

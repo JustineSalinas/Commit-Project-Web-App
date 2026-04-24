@@ -26,7 +26,7 @@ function TypewriterEffect({ text }: { text: string }) {
     return () => clearInterval(timer);
   }, [text]);
 
-  return <span>{displayedText}<span className="animate-pulse">|</span></span>;
+  return <span>{displayedText}<span className="animate-blink">_</span></span>;
 }
 
 export default function DashboardPage() {

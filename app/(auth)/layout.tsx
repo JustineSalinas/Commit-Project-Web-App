@@ -43,7 +43,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="relative z-10">
           <Link href="/" className="flex items-center gap-2 group">
             <span className="text-[#00FFAA] text-2xl font-bold tracking-widest group-hover:text-[#00E599] transition-colors">
-              COMMIT
+              COMMIT<span className="animate-blink">_</span>
             </span>
           </Link>
         </div>
@@ -92,7 +92,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {/* Mobile logo */}
         <div className="lg:hidden mb-8">
           <Link href="/">
-            <span className="text-[#00FFAA] text-2xl font-bold tracking-widest">COMMIT</span>
+            <span className="text-[#00FFAA] text-2xl font-bold tracking-widest">COMMIT<span className="animate-blink">_</span></span>
           </Link>
         </div>
 
