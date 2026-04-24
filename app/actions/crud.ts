@@ -25,7 +25,7 @@ export async function getUserProfile() {
         console.warn("Detected missing columns in profiles table, falling back to limited selection.");
         // Only select columns we are sure exist
         const limitedResults = await db.execute(sql`SELECT id, clerk_id, name, email, has_completed_onboarding FROM profiles WHERE clerk_id = ${userId}`);
-        const user = limitedResults.rows[0] as any;
+        const user = limitedResults[0] as any;
         if (user) {
           return {
             ...user,
