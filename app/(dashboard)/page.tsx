@@ -4,7 +4,21 @@ import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getDashboardStats } from "@/app/actions/crud";
-import { Loader2 } from "lucide-react";
+import { usePomodoroStore } from "@/lib/zustand/pomodoroStore";
+import { usePomodoro } from "@/lib/hooks/usePomodoro";
+import { 
+  Loader2, 
+  Play, 
+  Pause, 
+  Square, 
+  Plus, 
+  Star, 
+  Map as MapIcon, 
+  Clock, 
+  ChevronRight,
+  TrendingUp,
+  Zap
+} from "lucide-react";
 
 function TypewriterEffect({ text }: { text: string }) {
   const [displayedText, setDisplayedText] = useState("");
@@ -28,25 +42,6 @@ function TypewriterEffect({ text }: { text: string }) {
 
   return <span>{displayedText}<span className="animate-blink">_</span></span>;
 }
-
-import { usePomodoroStore } from "@/lib/zustand/pomodoroStore";
-import { 
-  Loader2, 
-  Play, 
-  Pause, 
-  Square, 
-  Plus, 
-  Star, 
-  Map as MapIcon, 
-  Clock, 
-  ChevronRight,
-  TrendingUp,
-  Zap
-} from "lucide-react";
-import { usePomodoro } from "@/lib/hooks/usePomodoro";
-
-...
-
 export default function DashboardPage() {
   const { user, isLoaded } = useUser();
   const [stats, setStats] = useState({ 
