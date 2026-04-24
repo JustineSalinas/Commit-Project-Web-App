@@ -89,7 +89,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
               </p>
               
               <div className="flex items-center justify-between">
-                <div className="text-[9px] font-bold tracking-widest uppercase bg-[#18181B] border border-[#27272A] px-1.5 py-0.5 rounded text-[#A1A1AA]">
+                <div className="text-[9px] font-bold tracking-widest uppercase bg-[var(--bg-elevated)] border border-[var(--border-muted)] px-1.5 py-0.5 rounded text-[var(--text-secondary)]">
                   {task.actualPomos}/{task.estimatedPomos}
                 </div>
                 

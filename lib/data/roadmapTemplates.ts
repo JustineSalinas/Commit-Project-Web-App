@@ -1,5 +1,23 @@
 export const ROADMAP_TEMPLATES = [
   {
+    name: "Computer Fundamentals",
+    milestones: [
+      { title: "Hardware & OS Basics", description: "Learn how CPU, RAM, and Storage work together. Understand File Systems." },
+      { title: "Internet & Networking", description: "DNS, IP Addresses, and how the web actually works (HTTP/HTTPS)." },
+      { title: "Command Line Basics", description: "Navigate directories and manage files using Terminal/PowerShell." },
+      { title: "Git Version Control", description: "Basic concepts: Repos, Commits, and Branching." }
+    ]
+  },
+  {
+    name: "Logic & Problem Solving",
+    milestones: [
+      { title: "Computational Thinking", description: "Decompose complex problems into smaller, manageable parts." },
+      { title: "Algorithm Flowcharts", description: "Visualize logic using start, end, decision, and process blocks." },
+      { title: "Pseudo-code Basics", description: "Write logic in plain English before touching any syntax." },
+      { title: "Pattern Recognition", description: "Identify recurring solutions to similar problems." }
+    ]
+  },
+  {
     name: "Web Development",
     milestones: [
       { title: "HTML/CSS Fundamentals", description: "Learn semantic HTML, Flexbox, and Grid for layouts." },

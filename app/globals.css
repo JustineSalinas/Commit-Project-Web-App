@@ -38,6 +38,21 @@
   --topbar-bg:      rgba(9, 9, 11, 0.80);
 }
 
+.light {
+  --bg-base:        #FFFFFF;
+  --bg-surface:     #F8F8F8;
+  --bg-elevated:    #F1F1F1;
+  --border:         #E5E5E5;
+  --border-muted:   #D4D4D4;
+  --accent:         #00CC88;
+  --accent-muted:   rgba(0, 204, 136, 0.10);
+  --accent-hover:   #00AA77;
+  --text-primary:   #111111;
+  --text-secondary: #444444;
+  --text-muted:     #777777;
+  --topbar-bg:      rgba(255, 255, 255, 0.80);
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);

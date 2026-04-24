@@ -15,33 +15,43 @@ async function getUserId() {
 export async function getUserProfile() {
   const userId = await getUserId();
   try {
-    // We use a try-catch for the specific query to handle missing columns gracefully
     const results = await db.select().from(profiles).where(eq(profiles.clerkId, userId));
-    return results[0] || null;
-  } catch (error: any) {
-    // If the error is about missing columns (title/bio), try a limited selection
-    if (error.code === '42703' || error.message?.includes('column')) {
-      try {
-        console.warn("Detected missing columns in profiles table, falling back to limited selection.");
-        // Only select columns we are sure exist
-        const limitedResults = await db.execute(sql`SELECT id, clerk_id, name, email, has_completed_onboarding FROM profiles WHERE clerk_id = ${userId}`);
-        const user = limitedResults[0] as any;
-        if (user) {
-          return {
-            ...user,
-            clerkId: user.clerk_id, // Map snake_case to camelCase
-            title: null,
-            bio: null
-          };
-        }
-      } catch (innerError) {
-        console.error("Failed even limited profile fetch:", innerError);
-      }
+    
+    if (results[0]) {
+      return results[0];
     }
-    console.error("Failed to fetch user profile:", error);
+
+    // Auto-initialize profile if missing
+    console.log("Profile missing for user, initializing...", userId);
+    const user = await currentUser();
+    if (!user) return null;
+
+    const name = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Developer';
+    const email = user.emailAddresses[0]?.emailAddress || '';
+
+    // Create profile
+    const newProfile = await db.insert(profiles).values({
+      id: crypto.randomUUID(),
+      clerkId: userId,
+      name,
+      email,
+      hasCompletedOnboarding: true, // Default to true if auto-initializing to avoid stuck loops
+      preferences: {
+        theme: 'dark',
+        notifications: true,
+        aiEnabled: true
+      }
+    }).returning();
+
+    return newProfile[0];
+
+  } catch (error: any) {
+    console.error("Failed to fetch or initialize profile:", error);
+    // If table doesn't exist or other error, fallback to mock/limited data
     return null;
   }
 }
+
 
 export async function completeOnboarding(preferences: any) {
   try {
@@ -314,6 +324,22 @@ export async function getDashboardStats() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    // Self-healing: Ensure all V2 tables exist before querying
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS "tasks" (
+        "id" text PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, "description" text, 
+        "estimated_pomos" integer DEFAULT 1, "actual_pomos" integer DEFAULT 0, "status" text DEFAULT 'todo', 
+        "notes" text DEFAULT '', "created_at" timestamp DEFAULT now()
+      );
+      CREATE TABLE IF NOT EXISTS "session_logs" (
+        "id" text PRIMARY KEY, "user_id" text NOT NULL, "task_id" text, "task_title" text, 
+        "commit_message" text NOT NULL, "duration" integer NOT NULL, "timestamp" timestamp DEFAULT now(), "timezone" text
+      );
+      CREATE TABLE IF NOT EXISTS "distractions" (
+        "id" text PRIMARY KEY, "user_id" text NOT NULL, "content" text NOT NULL, "resolved" boolean DEFAULT false, "timestamp" timestamp DEFAULT now()
+      );
+    `);
+
     // 1. Focus Time Today
     const sessionsToday = await db.query.focusSessions.findMany({
       where: sql`${focusSessions.userId} = ${userId} AND ${focusSessions.createdAt} >= ${today}`
@@ -455,6 +481,20 @@ export async function getProfileData() {
 export async function getTasks() {
   const userId = await getUserId();
   try {
+    // Ensure table exists
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS "tasks" (
+        "id" text PRIMARY KEY,
+        "user_id" text NOT NULL,
+        "title" text NOT NULL,
+        "description" text,
+        "estimated_pomos" integer DEFAULT 1,
+        "actual_pomos" integer DEFAULT 0,
+        "status" text DEFAULT 'todo',
+        "notes" text DEFAULT '',
+        "created_at" timestamp DEFAULT now()
+      )
+    `);
     return await db.query.tasks.findMany({ where: eq(tasks.userId, userId), orderBy: (t, { desc }) => [desc(t.createdAt)] });
   } catch (error) {
     console.error("Failed to fetch Tasks:", error);
@@ -466,6 +506,21 @@ export async function createTask(data: { id: string; title: string; description?
   try {
     const userId = await getUserId();
     if (!data.title) throw new Error("Title is required");
+
+    // Self-healing: Ensure table exists (for environments where migrations haven't run)
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS "tasks" (
+        "id" text PRIMARY KEY,
+        "user_id" text NOT NULL,
+        "title" text NOT NULL,
+        "description" text,
+        "estimated_pomos" integer DEFAULT 1,
+        "actual_pomos" integer DEFAULT 0,
+        "status" text DEFAULT 'todo',
+        "notes" text DEFAULT '',
+        "created_at" timestamp DEFAULT now()
+      )
+    `);
 
     await db.insert(tasks).values({ 
       id: data.id || crypto.randomUUID(),
@@ -479,11 +534,7 @@ export async function createTask(data: { id: string; title: string; description?
     return { success: true };
   } catch (error: any) {
     console.error("Failed to create Task:", error);
-    // Return a more user-friendly error if it's a known database issue
-    const message = error.message?.includes('relation "tasks" does not exist') 
-      ? "Database table missing. Please contact support." 
-      : (error.message || "An unexpected error occurred");
-    return { success: false, error: message };
+    return { success: false, error: error.message || "Failed to create task" };
   }
 }
 
@@ -513,6 +564,18 @@ export async function deleteTask(id: string) {
 export async function getSessionLogs() {
   const userId = await getUserId();
   try {
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS "session_logs" (
+        "id" text PRIMARY KEY,
+        "user_id" text NOT NULL,
+        "task_id" text,
+        "task_title" text,
+        "commit_message" text NOT NULL,
+        "duration" integer NOT NULL,
+        "timestamp" timestamp DEFAULT now(),
+        "timezone" text
+      )
+    `);
     return await db.query.sessionLogs.findMany({ where: eq(sessionLogs.userId, userId), orderBy: (s, { desc }) => [desc(s.timestamp)] });
   } catch (error) {
     console.error("Failed to fetch Session Logs:", error);
@@ -543,6 +606,15 @@ export async function createSessionLog(data: { id: string; taskId?: string; task
 export async function getDistractions() {
   const userId = await getUserId();
   try {
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS "distractions" (
+        "id" text PRIMARY KEY,
+        "user_id" text NOT NULL,
+        "content" text NOT NULL,
+        "resolved" boolean DEFAULT false,
+        "timestamp" timestamp DEFAULT now()
+      )
+    `);
     // Return unresolved first
     return await db.query.distractions.findMany({ 
       where: eq(distractions.userId, userId),

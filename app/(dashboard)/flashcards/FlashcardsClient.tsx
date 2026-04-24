@@ -109,7 +109,7 @@ export default function FlashcardsClient({ initialCards }: { initialCards: any[]
               <div className={`absolute w-full h-full bg-[var(--bg-elevated)] border border-[var(--border)] shadow-xl rounded-2xl p-10 flex flex-col items-center justify-center backface-hidden transition-opacity ${flipped ? 'opacity-0' : 'opacity-100'}`}>
                 <span className="text-[var(--accent)] font-bold mb-4 tracking-widest uppercase text-xs">Side A</span>
                 <h2 className="text-3xl font-bold text-center text-[var(--text-primary)] font-serif leading-tight">{initialCards[currentIndex]?.question}</h2>
-                <p className="absolute bottom-6 text-[#71717A] text-sm flex items-center gap-2"><RotateCcw className="w-4 h-4"/> Click to reveal</p>
+                <p className="absolute bottom-6 text-[var(--text-muted)] text-sm flex items-center gap-2"><RotateCcw className="w-4 h-4"/> Click to reveal</p>
               </div>
 
               {/* Back */}

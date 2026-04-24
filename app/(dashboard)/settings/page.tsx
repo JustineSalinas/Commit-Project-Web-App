@@ -76,7 +76,7 @@ function Toggle({
     <button
       onClick={onToggle}
       className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${
-        enabled ? "bg-[var(--accent)]" : "bg-[var(--border-muted, #27272A)]"
+        enabled ? "bg-[var(--accent)]" : "bg-red-500"
       }`}
     >
       <span
@@ -127,24 +127,24 @@ function ProfileTab() {
       <div className="rounded-xl overflow-hidden border border-[var(--border)]">
         <UserProfile
           appearance={{
-            baseTheme: dark,
+            baseTheme: undefined, // Let it adapt to the current theme
             variables: {
-              colorBackground: "transparent",
-              colorInputBackground: "rgba(255,255,255,0.05)",
-              colorInputText: "#FAFAFA",
-              colorText: "#FAFAFA",
-              colorTextSecondary: "#A1A1AA",
+              colorBackground: "var(--bg-elevated)",
+              colorInputBackground: "var(--bg-base)",
+              colorInputText: "var(--text-primary)",
+              colorText: "var(--text-primary)",
+              colorTextSecondary: "var(--text-secondary)",
               colorPrimary: accentColor,
-              colorDanger: "#FF4757",
+              colorDanger: "var(--danger)",
               borderRadius: "0.5rem",
               fontFamily: "inherit",
             },
             elements: {
-              card: "shadow-none bg-transparent",
+              card: "shadow-none bg-transparent border-none",
               navbar: "hidden",
               navbarMobileMenuButton: "hidden",
-              headerTitle: "text-[#FAFAFA]",
-              headerSubtitle: "text-[#71717A]",
+              headerTitle: "text-[var(--text-primary)]",
+              headerSubtitle: "text-[var(--text-secondary)]",
               pageScrollBox: "p-0",
             },
           }}
@@ -161,8 +161,8 @@ function SecurityTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-[#FAFAFA]">Authentication & Security</h2>
-        <p className="text-sm text-[#71717A] mt-1">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)]">Authentication & Security</h2>
+        <p className="text-sm text-[var(--text-secondary)] mt-1">
           Manage passwords, sessions, and multi-factor authentication.
         </p>
       </div>
@@ -194,11 +194,21 @@ function AppearanceTab() {
 
   const accents = [
     { color: "#00FFAA", name: "Mint" },
+    { color: "#34D399", name: "Emerald" },
     { color: "#60A5FA", name: "Blue" },
+    { color: "#3B82F6", name: "Royal" },
+    { color: "#818CF8", name: "Indigo" },
     { color: "#A78BFA", name: "Purple" },
-    { color: "#FB923C", name: "Orange" },
+    { color: "#D946EF", name: "Fuchsia" },
     { color: "#F472B6", name: "Pink" },
+    { color: "#FB7185", name: "Rose" },
+    { color: "#F87171", name: "Red" },
+    { color: "#FB923C", name: "Orange" },
+    { color: "#FBBF24", name: "Amber" },
     { color: "#FACC15", name: "Gold" },
+    { color: "#A3E635", name: "Lime" },
+    { color: "#2DD4BF", name: "Teal" },
+    { color: "#38BDF8", name: "Sky" },
   ];
 
   return (
@@ -240,7 +250,7 @@ function AppearanceTab() {
         <div className="text-xs text-[var(--text-secondary)] uppercase font-bold tracking-widest mb-4">
           Accent Color
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {accents.map((a) => (
             <button
               key={a.color}
@@ -273,8 +283,8 @@ function EditorTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-[#FAFAFA]">Editor & Typography</h2>
-        <p className="text-sm text-[#71717A] mt-1">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)]">Editor & Typography</h2>
+        <p className="text-sm text-[var(--text-secondary)] mt-1">
           Customize code display, font rendering, and editor behavior.
         </p>
       </div>
@@ -343,10 +353,10 @@ function EditorTab() {
             whiteSpace: wordWrap ? "break-spaces" : "pre"
           }}
         >
-          <code className="text-[#A1A1AA]">
+          <code className="text-[var(--text-secondary)]">
             {lineNumbers && <span className="text-[#3f3f46] mr-4 inline-block select-none">1</span>}
             <span className="text-[#60A5FA]">const</span>{" "}
-            <span className="text-[#FAFAFA]">commit</span>{" "}
+            <span className="text-[var(--text-primary)]">commit</span>{" "}
             <span className="text-[var(--accent)]">=</span>{" "}
             <span className="text-[var(--accent)]">{`{`}</span>
             {"\n"}
@@ -355,7 +365,7 @@ function EditorTab() {
             <span className="text-[var(--text-primary)]">streak</span>
             <span className="text-[var(--accent)]">:</span>{" "}
             <span className="text-[#FB923C]">12</span>
-            <span className="text-[#71717A]">,</span>
+            <span className="text-[var(--text-secondary)]">,</span>
             {"\n"}
             {lineNumbers && <span className="text-[#3f3f46] mr-4 inline-block select-none">3</span>}
             {" ".repeat(parseInt(tabWidth))}
@@ -379,8 +389,8 @@ function AITab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-[#FAFAFA]">AI Features</h2>
-        <p className="text-sm text-[#71717A] mt-1">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)]">AI Features</h2>
+        <p className="text-sm text-[var(--text-secondary)] mt-1">
           Configure the Anthropic Claude integration and AI-powered features.
         </p>
       </div>
@@ -421,18 +431,18 @@ function ReposTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-[#FAFAFA]">Repository Syncing</h2>
-        <p className="text-sm text-[#71717A] mt-1">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)]">Repository Syncing</h2>
+        <p className="text-sm text-[var(--text-secondary)] mt-1">
           Select which repositories and organizations Commit can read from or write to.
         </p>
       </div>
 
       <SettingsCard>
         <div className="flex items-center justify-between mb-4">
-          <div className="text-xs text-[#71717A] uppercase font-bold tracking-widest">
+          <div className="text-xs text-[var(--text-secondary)] uppercase font-bold tracking-widest">
             Connected Repositories
           </div>
-          <button className="text-xs bg-[#18181B] border border-[#27272A] hover:border-[var(--accent)] text-[#A1A1AA] hover:text-[var(--accent)] px-3 py-1.5 rounded-lg transition-colors font-medium">
+          <button className="text-xs bg-[var(--bg-elevated)] border border-[var(--border-muted)] hover:border-[var(--accent)] text-[var(--text-secondary)] hover:text-[var(--accent)] px-3 py-1.5 rounded-lg transition-colors font-medium">
             + Add Repository
           </button>
         </div>
@@ -444,7 +454,7 @@ function ReposTab() {
           >
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border)] flex items-center justify-center">
-                <GitBranch className="w-4 h-4 text-[#71717A]" />
+                <GitBranch className="w-4 h-4 text-[var(--text-secondary)]" />
               </div>
               <div>
                 <div className="text-sm font-medium text-[var(--text-primary)]">
