@@ -235,11 +235,13 @@ export async function addRoadmapMilestone(data: { title: string; description?: s
   try {
     const userId = await getUserId();
     await ensureTablesExist();
-    await db.insert(roadmap).values({
-      userId,
-      title: data.title,
-      description: data.description,
-    });
+    
+    // Using raw SQL to avoid driver issues with the 'default' keyword
+    await db.execute(sql`
+      INSERT INTO "roadmap" ("user_id", "title", "description") 
+      VALUES (${userId}, ${data.title}, ${data.description || ''})
+    `);
+    
     revalidatePath('/roadmap');
     return { success: true };
   } catch (error: any) {
