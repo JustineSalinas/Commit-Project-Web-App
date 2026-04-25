@@ -606,14 +606,16 @@ export async function createTask(data: { id: string; title: string; description?
 
     await ensureTablesExist();
 
-    await db.insert(tasks).values({ 
-      id: data.id || crypto.randomUUID(),
-      userId, 
-      title: data.title, 
-      description: data.description || '', 
-      estimatedPomos: Number(data.estimatedPomos) || 1,
-      status: 'todo'
-    });
+    const taskId = data.id || crypto.randomUUID();
+    const estimatedPomos = Number(data.estimatedPomos) || 1;
+    const status = 'todo';
+
+    // Using raw SQL to avoid driver issues with the 'default' keyword
+    await db.execute(sql`
+      INSERT INTO "tasks" ("id", "user_id", "title", "description", "estimated_pomos", "status") 
+      VALUES (${taskId}, ${userId}, ${data.title}, ${data.description || ''}, ${estimatedPomos}, ${status})
+    `);
+
     revalidatePath('/tasks');
     return { success: true };
   } catch (error: any) {
