@@ -57,7 +57,7 @@ export default function DashboardPage() {
   const [mounted, setMounted] = useState(false);
 
   const { toggleTimer, resetTimer } = usePomodoro();
-  const { timeLeft, isActive, mode, sessionsCompleted } = usePomodoroStore();
+  const { timeLeft, isActive, mode, sessionsCompleted, activeTaskTitle } = usePomodoroStore();
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -227,10 +227,10 @@ export default function DashboardPage() {
           
           <div className="space-y-1 mb-8">
             <div className="text-sm font-bold text-[var(--text-primary)]">
-              {mode === 'focus' ? 'Deep Work: React Components' : 'Rest & Recharge'}
+              {mode === 'focus' ? (activeTaskTitle ? activeTaskTitle : 'Deep Work Session') : 'Rest & Recharge'}
             </div>
             <div className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest">
-              Session {sessionsCompleted % 4 || 4} of 4
+              Session {(sessionsCompleted % 4) + 1} of 4
             </div>
           </div>
 

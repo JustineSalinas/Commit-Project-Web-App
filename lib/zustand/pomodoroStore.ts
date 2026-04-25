@@ -16,6 +16,7 @@ interface PomodoroState {
   sessionsCompleted: number;
   expectedEndTime: number | null;
   activeTaskId: string | null;
+  activeTaskTitle: string | null;
   isCommitModalOpen: boolean;
   settings: PomodoroSettings;
   lastSessionDuration: number; // Duration of the session that just finished
@@ -24,6 +25,7 @@ interface PomodoroState {
   setIsActive: (isActive: boolean) => void;
   setExpectedEndTime: (time: number | null) => void;
   setActiveTaskId: (id: string | null) => void;
+  setActiveTaskTitle: (title: string | null) => void;
   setIsCommitModalOpen: (isOpen: boolean) => void;
   setLastSessionDuration: (duration: number) => void;
   updateSettings: (settings: Partial<PomodoroSettings>) => void;
@@ -47,6 +49,7 @@ export const usePomodoroStore = create<PomodoroState>()(
       sessionsCompleted: 0,
       expectedEndTime: null,
       activeTaskId: null,
+      activeTaskTitle: null,
       isCommitModalOpen: false,
       settings: DEFAULT_SETTINGS,
       lastSessionDuration: DEFAULT_SETTINGS.focusTime,
@@ -64,6 +67,7 @@ export const usePomodoroStore = create<PomodoroState>()(
       setIsActive: (isActive) => set({ isActive }),
       setExpectedEndTime: (expectedEndTime) => set({ expectedEndTime }),
       setActiveTaskId: (activeTaskId) => set({ activeTaskId }),
+      setActiveTaskTitle: (activeTaskTitle) => set({ activeTaskTitle }),
       setIsCommitModalOpen: (isCommitModalOpen) => set({ isCommitModalOpen }),
       setLastSessionDuration: (lastSessionDuration) => set({ lastSessionDuration }),
       
@@ -100,7 +104,7 @@ export const usePomodoroStore = create<PomodoroState>()(
     }),
     {
       name: 'commit-pomodoro-storage',
-      partialize: (state) => ({ settings: state.settings }), // Only persist settings
+      partialize: (state) => ({ settings: state.settings, activeTaskId: state.activeTaskId, activeTaskTitle: state.activeTaskTitle }), // Persist active task across refreshes
     }
   )
 );

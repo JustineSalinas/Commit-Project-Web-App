@@ -1,8 +1,12 @@
 import { Calendar, Flame } from "lucide-react";
-import { getHeatmapData } from "@/app/actions/crud";
+import { getDashboardStats } from "@/app/actions/crud";
 
 export default async function HeatmapPage() {
-  const data = await getHeatmapData();
+  const stats = await getDashboardStats();
+  const data = stats.heatmap;
+  // stats.streak is a string like "12 Days". Let's extract the number.
+  const streakMatch = stats.streak.match(/(\d+)/);
+  const streak = streakMatch ? parseInt(streakMatch[0], 10) : 0;
 
   // Generate the last 364 days (52 weeks x 7 days)
   const today = new Date();
@@ -11,27 +15,12 @@ export default async function HeatmapPage() {
   for (let i = 363; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    const localStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    // getDashboardStats returns keys as toDateString(), so we use that!
+    const localStr = d.toDateString();
     daysArray.push({
       dateStr: localStr,
       count: data[localStr] || 0
     });
-  }
-
-  // Calculate streak based on data keys
-  let streak = 0;
-  const checkDate = new Date();
-  let checkStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
-  
-  if (!data[checkStr]) {
-    checkDate.setDate(checkDate.getDate() - 1);
-    checkStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
-  }
-  
-  while (data[checkStr]) {
-    streak++;
-    checkDate.setDate(checkDate.getDate() - 1);
-    checkStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
   }
 
   const getColor = (count: number) => {

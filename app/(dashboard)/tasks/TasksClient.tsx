@@ -71,7 +71,10 @@ export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
           {columnTasks.map(task => (
             <div 
               key={task.id}
-              onClick={() => setActiveTaskId(task.id)}
+              onClick={() => {
+                setActiveTaskId(task.id);
+                usePomodoroStore.getState().setActiveTaskTitle(task.title);
+              }}
               className={`bg-[var(--bg-base)] border p-3 rounded-lg cursor-pointer transition-all hover:border-[var(--accent)]/50 ${
                 activeTaskId === task.id ? 'border-[var(--accent)] bg-[var(--accent)]/5 shadow-[0_0_10px_rgba(0,255,170,0.05)]' : 'border-[var(--border)]'
               }`}
