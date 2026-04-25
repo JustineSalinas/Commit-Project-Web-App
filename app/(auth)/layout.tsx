@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   }, []);
 
   return (
-    <div className="min-h-screen flex bg-[#09090B] relative">
+    <div className="min-h-screen flex bg-[#09090B] relative" suppressHydrationWarning={true}>
       <InteractiveGrid />
       {/* Left Panel — Branded Hero */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden">

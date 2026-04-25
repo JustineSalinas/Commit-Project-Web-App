@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const { messages, model, system } = await req.json();
 
     // DEBUG: Check which keys the server can see
-    console.log("GEMINI_KEY_PRESENT:", !!process.env.GEMINI_API_KEY);
+    console.log("GEMINI_KEY:", process.env.GEMINI_API_KEY ? `${process.env.GEMINI_API_KEY.substring(0, 4)}...` : "(not found)");
     console.log("ANTHROPIC_KEY_PRESENT:", !!process.env.ANTHROPIC_API_KEY);
 
     // Prioritize Gemini if key is present (Free tier)
