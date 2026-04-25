@@ -630,11 +630,15 @@ export async function createTask(data: { id: string; title: string; description?
     const estimatedPomos = Number(data.estimatedPomos) || 1;
     const status = 'todo';
 
-    // Using raw SQL to avoid driver issues with the 'default' keyword
-    await db.execute(sql`
-      INSERT INTO "tasks" ("id", "user_id", "title", "description", "estimated_pomos", "status") 
-      VALUES (${taskId}, ${userId}, ${data.title}, ${data.description || ''}, ${estimatedPomos}, ${status})
-    `);
+    // Use Drizzle insert instead of raw SQL for safer typing and column mapping
+    await db.insert(tasks).values({
+      id: taskId,
+      userId: userId,
+      title: data.title,
+      description: data.description || '',
+      estimatedPomos: estimatedPomos,
+      status: status
+    });
 
     revalidatePath('/tasks');
     return { success: true };
