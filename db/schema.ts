@@ -115,3 +115,10 @@ export const distractions = pgTable('distractions', {
   timestamp: timestamp('timestamp').defaultNow(),
 });
 
+export const mastery = pgTable('mastery', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  concept: text('concept').notNull(),
+  level: integer('level').default(1), // 1: Heard of It, 2: Can Explain It, 3: Can Use It, 4: Can Teach It
+  createdAt: timestamp('created_at').defaultNow(),
+});

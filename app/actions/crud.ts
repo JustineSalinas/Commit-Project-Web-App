@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { tils, bugs, snippets, flashcards, roadmap, journals, focusSessions, profiles, tasks, sessionLogs, distractions } from "@/db/schema";
+import { tils, bugs, snippets, flashcards, roadmap, journals, focusSessions, profiles, tasks, sessionLogs, distractions, mastery } from "@/db/schema";
 import { eq, gte, sql, or } from "drizzle-orm";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -416,6 +416,13 @@ const tables = [
       "id" text PRIMARY KEY, "user_id" text NOT NULL, "content" text NOT NULL, 
       "resolved" boolean DEFAULT false, "timestamp" timestamp DEFAULT now()
     )`
+  },
+  {
+    name: 'mastery',
+    sql: sql`CREATE TABLE IF NOT EXISTS "mastery" (
+      "id" serial PRIMARY KEY, "user_id" text NOT NULL, "concept" text NOT NULL, 
+      "level" integer DEFAULT 1, "created_at" timestamp DEFAULT now()
+    )`
   }
 ];
 
@@ -737,5 +744,89 @@ export async function deleteDistraction(id: string) {
   } catch (error: any) {
     console.error("Failed to delete Distraction:", error);
     return { success: false, error: error.message };
+  }
+}
+
+// --- MASTERY ACTIONS ---
+export async function getSkills() {
+  const userId = await getUserId();
+  try {
+    await ensureTablesExist();
+    return await db.query.mastery.findMany({ 
+      where: eq(mastery.userId, userId),
+      orderBy: (m, { desc }) => [desc(m.createdAt)]
+    });
+  } catch (error) {
+    console.error("Failed to fetch Skills:", error);
+    return [];
+  }
+}
+
+export async function addSkill(data: { concept: string; level: number }) {
+  try {
+    const userId = await getUserId();
+    await ensureTablesExist();
+    await db.insert(mastery).values({ 
+      userId, 
+      concept: data.concept,
+      level: data.level
+    });
+    revalidatePath('/mastery');
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to add Skill:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateSkillLevel(id: number, level: number) {
+  try {
+    await ensureTablesExist();
+    await db.update(mastery).set({ level }).where(eq(mastery.id, id));
+    revalidatePath('/mastery');
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to update Skill:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteSkill(id: number) {
+  try {
+    await ensureTablesExist();
+    await db.delete(mastery).where(eq(mastery.id, id));
+    revalidatePath('/mastery');
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to delete Skill:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// --- HEATMAP ACTIONS ---
+export async function getHeatmapData() {
+  const userId = await getUserId();
+  try {
+    await ensureTablesExist();
+    // Get all focus sessions
+    const sessions = await db.query.focusSessions.findMany({ 
+      where: eq(focusSessions.userId, userId),
+      columns: { createdAt: true }
+    });
+    
+    // Group by date string (YYYY-MM-DD local time is easiest for UI)
+    const map: Record<string, number> = {};
+    sessions.forEach(s => {
+      if (!s.createdAt) return;
+      const d = new Date(s.createdAt);
+      // Constructing local YYYY-MM-DD
+      const localStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      map[localStr] = (map[localStr] || 0) + 1;
+    });
+
+    return map;
+  } catch (error) {
+    console.error("Failed to fetch Heatmap Data:", error);
+    return {};
   }
 }

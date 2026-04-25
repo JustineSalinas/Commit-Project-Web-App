@@ -1,17 +1,51 @@
 import { Calendar, Flame } from "lucide-react";
+import { getHeatmapData } from "@/app/actions/crud";
 
-export default function HeatmapPage() {
-  const weeks = Array.from({ length: 52 });
-  const days = Array.from({ length: 7 });
+export default async function HeatmapPage() {
+  const data = await getHeatmapData();
 
-  const getColor = () => {
-    const r = Math.random();
-    if (r > 0.8) return "bg-[var(--accent)]";
-    if (r > 0.6) return "bg-[var(--accent)]/70";
-    if (r > 0.4) return "bg-[var(--accent)]/40";
-    if (r > 0.2) return "bg-[var(--accent)]/20";
+  // Generate the last 364 days (52 weeks x 7 days)
+  const today = new Date();
+  const daysArray = [];
+  
+  for (let i = 363; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const localStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    daysArray.push({
+      dateStr: localStr,
+      count: data[localStr] || 0
+    });
+  }
+
+  // Calculate streak based on data keys
+  let streak = 0;
+  const checkDate = new Date();
+  let checkStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+  
+  if (!data[checkStr]) {
+    checkDate.setDate(checkDate.getDate() - 1);
+    checkStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+  }
+  
+  while (data[checkStr]) {
+    streak++;
+    checkDate.setDate(checkDate.getDate() - 1);
+    checkStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+  }
+
+  const getColor = (count: number) => {
+    if (count >= 4) return "bg-[var(--accent)]";
+    if (count === 3) return "bg-[var(--accent)]/70";
+    if (count === 2) return "bg-[var(--accent)]/40";
+    if (count === 1) return "bg-[var(--accent)]/20";
     return "bg-[var(--bg-elevated)]";
   };
+
+  // Organize days into 52 columns of 7 rows
+  // Days usually flow top to bottom, left to right
+  const weeks = Array.from({ length: 52 });
+  const days = Array.from({ length: 7 });
 
   return (
     <div className="space-y-6">
@@ -24,8 +58,8 @@ export default function HeatmapPage() {
           <p className="text-[var(--text-secondary)] text-sm mt-1">Visualize your consistency and daily effort over time.</p>
         </div>
         <div className="flex items-center gap-2 bg-[var(--bg-elevated)] border border-[var(--border)] px-4 py-2 rounded-lg">
-          <Flame className="w-4 h-4 text-orange-500" />
-          <span className="font-bold text-[var(--text-primary)]">12 Day Streak</span>
+          <Flame className={`w-4 h-4 ${streak > 0 ? "text-orange-500" : "text-[var(--text-muted)]"}`} />
+          <span className="font-bold text-[var(--text-primary)]">{streak} Day Streak</span>
         </div>
       </header>
 
@@ -33,19 +67,25 @@ export default function HeatmapPage() {
         <div className="min-w-[800px]">
           <div className="flex gap-1">
             <div className="flex flex-col gap-1 mr-2 text-xs text-[var(--text-secondary)] justify-between py-1">
-              <span>Mon</span>
-              <span>Wed</span>
-              <span>Fri</span>
+              <span>Sun</span>
+              <span>Tue</span>
+              <span>Thu</span>
+              <span>Sat</span>
             </div>
             {weeks.map((_, w_idx) => (
               <div key={w_idx} className="flex flex-col gap-1">
-                {days.map((__, d_idx) => (
-                  <div 
-                    key={d_idx} 
-                    className={`w-3 h-3 rounded-sm ${getColor()} hover:ring-1 hover:ring-[var(--text-muted)] cursor-pointer transition-all`}
-                    title="4 contributions"
-                  />
-                ))}
+                {days.map((__, d_idx) => {
+                  const dayIndex = w_idx * 7 + d_idx;
+                  const dayData = daysArray[dayIndex];
+                  if (!dayData) return <div key={d_idx} className="w-3 h-3" />;
+                  return (
+                    <div 
+                      key={d_idx} 
+                      className={`w-3 h-3 rounded-sm ${getColor(dayData.count)} hover:ring-1 hover:ring-[var(--text-muted)] cursor-pointer transition-all`}
+                      title={`${dayData.count} sessions on ${dayData.dateStr}`}
+                    />
+                  );
+                })}
               </div>
             ))}
           </div>
