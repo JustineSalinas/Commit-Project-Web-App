@@ -6,7 +6,7 @@ import { useSettingsStore } from "@/lib/store/useSettingsStore";
 
 export default function AITab() {
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "Hello! I'm your AI learning assistant powered by Claude. What code concept would you like me to explain today?" }
+    { role: "assistant", content: "Hello! I'm your AI learning assistant. What code concept would you like me to explain today?" }
   ]);
   const [input, setInput] = useState("");
   const aiModel = useSettingsStore(state => state.aiModel);
@@ -28,9 +28,7 @@ export default function AITab() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [...messages, userMessage],
-          model: aiModel === "claude-opus-4" ? "claude-3-opus-20240229" 
-               : aiModel === "claude-sonnet-4" ? "claude-3-sonnet-20240229" 
-               : "claude-3-haiku-20240307",
+          model: aiModel,
         }),
       });
 
@@ -60,7 +58,7 @@ export default function AITab() {
         </div>
         <div className="bg-[var(--bg-elevated)] border border-[var(--border)] px-3 py-1.5 rounded-full text-xs font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
           <Sparkles className="w-3 h-3 text-[var(--accent)]" /> 
-          {aiModel === 'claude-sonnet-4' ? 'Sonnet 3.5' : aiModel === 'claude-opus-4' ? 'Opus 4' : 'Haiku'}
+          AI Active
         </div>
       </header>
 

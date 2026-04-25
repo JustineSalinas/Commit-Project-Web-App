@@ -31,7 +31,7 @@ const tabs = [
   { id: "security" as const, label: "Security", icon: Shield, description: "Passwords, sessions, MFA" },
   { id: "appearance" as const, label: "Appearance", icon: Palette, description: "Theme, accents, UI" },
   { id: "editor" as const, label: "Editor", icon: Type, description: "Fonts, sizes, tab width" },
-  { id: "ai" as const, label: "AI Features", icon: Bot, description: "Claude model, prompts, usage" },
+  { id: "ai" as const, label: "AI Features", icon: Bot, description: "Gemini model, prompts, usage" },
   { id: "repos" as const, label: "Repositories", icon: GitBranch, description: "Repo syncing & access" },
 ];
 
@@ -391,7 +391,7 @@ function AITab() {
       <div>
         <h2 className="text-lg font-semibold text-[var(--text-primary)]">AI Features</h2>
         <p className="text-sm text-[var(--text-secondary)] mt-1">
-          Configure the Anthropic Claude integration and AI-powered features.
+          Configure the Google Gemini integration and AI-powered features.
         </p>
       </div>
 
@@ -402,14 +402,14 @@ function AITab() {
         <SettingsRow label="Auto-Suggestions" description="Get contextual suggestions while writing journal entries.">
           <Toggle enabled={autoSuggest} onToggle={() => setAutoSuggest(!autoSuggest)} />
         </SettingsRow>
-        <SettingsRow label="Default Model" description="Select which Claude model to use.">
+        <SettingsRow label="Default Model" description="Select which Gemini model to use.">
           <Select
             value={aiModel}
             onChange={setAiModel}
             options={[
-              { value: "claude-sonnet-4", label: "Claude Sonnet 4" },
-              { value: "claude-haiku-3.5", label: "Claude Haiku 3.5" },
-              { value: "claude-opus-4", label: "Claude Opus 4" },
+              { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash (Fastest)" },
+              { value: "gemini-1.5-pro", label: "Gemini 1.5 Pro (Smarts)" },
+              { value: "gemini-1.5-flash", label: "Gemini 1.5 Flash (Light)" },
             ]}
           />
         </SettingsRow>

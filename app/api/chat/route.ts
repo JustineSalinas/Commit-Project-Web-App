@@ -1,23 +1,48 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from 'next/server';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || '',
 });
 
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+
 export async function POST(req: NextRequest) {
   try {
     const { messages, model, system } = await req.json();
 
+    // Prioritize Gemini if key is present (Free tier)
+    if (process.env.GEMINI_API_KEY) {
+      const selectedModel = model?.startsWith('gemini') ? model : "gemini-2.0-flash";
+      const geminiModel = genAI.getGenerativeModel({ 
+        model: selectedModel,
+        systemInstruction: system || "You are an expert developer assistant helping the user learn and write code."
+      });
+
+      // Convert messages to Gemini format
+      const chat = geminiModel.startChat({
+        history: messages.slice(0, -1).map((m: any) => ({
+          role: m.role === "assistant" ? "model" : "user",
+          parts: [{ text: m.content }],
+        })),
+      });
+
+      const lastMessage = messages[messages.length - 1].content;
+      const result = await chat.sendMessage(lastMessage);
+      const responseText = result.response.text();
+
+      return NextResponse.json({ result: responseText });
+    }
+
+    // Fallback to Claude if no Gemini key
     if (!process.env.ANTHROPIC_API_KEY) {
       return NextResponse.json(
-        { error: 'Missing Anthropic API Key in .env.local' },
+        { error: 'Missing AI API Keys. Please add GEMINI_API_KEY (Free) or ANTHROPIC_API_KEY to your .env.local' },
         { status: 400 }
       );
     }
 
-    // Convert OpenAI style messages to Anthropic style if needed,
-    // though we can just pass them if they are { role: "user" | "assistant", content: string }
     const response = await anthropic.messages.create({
       model: model || "claude-3-haiku-20240307",
       max_tokens: 1024,
@@ -28,7 +53,6 @@ export async function POST(req: NextRequest) {
       })),
     });
 
-    // We can just extract the text blocks
     const responseContent = response.content
       .filter((block) => block.type === 'text')
       .map((block) => block.text)
@@ -36,13 +60,12 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ result: responseContent });
   } catch (error: any) {
-    console.error('Claude API Error:', error);
+    console.error('AI API Error:', error);
     
-    // Specific handling for Anthropic balance errors
     if (error.status === 400 && error.message?.includes('credit balance is too low')) {
       return NextResponse.json(
-        { error: 'Your Anthropic API balance is zero. Please add credits at console.anthropic.com to use the AI Explainer.' },
-        { status: 402 } // Payment Required
+        { error: 'Your Anthropic balance is zero. Please add GEMINI_API_KEY to .env.local to use the free AI tier.' },
+        { status: 402 }
       );
     }
 

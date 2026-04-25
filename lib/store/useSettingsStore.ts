@@ -42,7 +42,7 @@ export const useSettingsStore = create<SettingsState>()(
       ligatures: true,
       aiEnabled: true,
       autoSuggest: true,
-      aiModel: 'claude-sonnet-4',
+      aiModel: 'gemini-2.0-flash',
 
       setTheme: (theme) => set({ theme }),
       setAccentColor: (color) => set({ accentColor: color }),
