@@ -167,7 +167,7 @@ export default function RoadmapClient({ initialRoadmap, userId }: { initialRoadm
                     {/* Progress Bar Background */}
                     {progressPercent > 0 && (
                        <div className="absolute top-0 left-0 h-1 bg-[var(--bg-base)] w-full">
-                         <div className={`h-full transition-all duration-1000 ease-out ${progressPercent === 100 ? 'bg-[var(--accent)]' : 'bg-blue-500'}`} style={{ width: \`\${progressPercent}%\` }} />
+                         <div className={`h-full transition-all duration-1000 ease-out ${progressPercent === 100 ? 'bg-[var(--accent)]' : 'bg-blue-500'}`} style={{ width: `${progressPercent}%` }} />
                        </div>
                     )}
                     
