@@ -62,9 +62,13 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('AI API Error:', error);
     
-    if (error.status === 400 && error.message?.includes('credit balance is too low')) {
+    // Check for common provider-specific balance/key errors
+    const isBalanceError = 
+      error.status === 400 && (error.message?.includes('credit balance') || error.message?.includes('insufficient'));
+
+    if (isBalanceError) {
       return NextResponse.json(
-        { error: 'Your Anthropic balance is zero. Please add GEMINI_API_KEY to .env.local to use the free AI tier.' },
+        { error: 'Your AI provider balance is zero. Please ensure GEMINI_API_KEY is set in .env.local to use the free tier.' },
         { status: 402 }
       );
     }
