@@ -15,6 +15,7 @@ async function getUserId() {
 export async function getUserProfile() {
   const userId = await getUserId();
   try {
+    await ensureTablesExist();
     const results = await db.select().from(profiles).where(eq(profiles.clerkId, userId));
     
     if (results[0]) {
