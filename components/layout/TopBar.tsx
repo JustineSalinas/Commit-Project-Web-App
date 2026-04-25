@@ -4,8 +4,24 @@ import { UserButton } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import Link from "next/link";
 import { Settings, Bell, Flame } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getDashboardStats } from "@/app/actions/crud";
 
 export function TopBar() {
+  const [streak, setStreak] = useState("0 Days");
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const data = await getDashboardStats();
+        setStreak(data.streak);
+      } catch (err) {
+        console.error("Failed to load streak");
+      }
+    }
+    fetchStats();
+  }, []);
+
   return (
     <header className="h-16 border-b border-[var(--border)] bg-[var(--topbar-bg)] backdrop-blur-sm flex items-center px-6 justify-end sticky top-0 z-10">
 
@@ -13,8 +29,8 @@ export function TopBar() {
       <div className="flex items-center gap-3">
         {/* Streak Counter */}
         <div className="flex items-center gap-1.5 bg-[var(--bg-surface)] border border-[var(--border)] rounded-full px-3 py-1 cursor-default hover:border-[var(--accent)] transition-colors" title="Current Day Streak">
-          <Flame className="w-4 h-4 text-orange-500 fill-orange-500/20" />
-          <span className="text-[var(--text-primary)] text-sm font-bold">12 Days</span>
+          <Flame className={`w-4 h-4 ${streak === "0 Days" ? "text-[var(--text-muted)]" : "text-orange-500 fill-orange-500/20"}`} />
+          <span className="text-[var(--text-primary)] text-sm font-bold">{streak}</span>
         </div>
 
         {/* Notifications */}
