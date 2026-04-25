@@ -455,6 +455,8 @@ async function ensureTablesExist() {
       console.log("Database tables verified.");
     } catch (error) {
       console.error("Database initialization failed or timed out:", error);
+      // Reset so next request can retry instead of being permanently stuck
+      dbInitializationPromise = null;
     }
   })();
 
@@ -525,6 +527,16 @@ export async function getDashboardStats() {
     const completedRoadmap = roadmapItems.filter(r => r.status === 'complete').length;
     const roadmapProgress = roadmapItems.length > 0 ? Math.round((completedRoadmap / roadmapItems.length) * 100) : 0;
 
+    // 6. Mastery Feynman Breakdown (real data from mastery table)
+    const masterySkills = await db.query.mastery.findMany({ where: eq(mastery.userId, userId) });
+    const total = masterySkills.length || 1; // avoid division by zero
+    const masteryBreakdown = {
+      heard:   Math.round((masterySkills.filter(s => s.level === 1).length / total) * 100),
+      explain: Math.round((masterySkills.filter(s => s.level === 2).length / total) * 100),
+      use:     Math.round((masterySkills.filter(s => s.level === 3).length / total) * 100),
+      teach:   Math.round((masterySkills.filter(s => s.level === 4).length / total) * 100),
+    };
+
     return {
       focusTime: `${Math.floor(focusTimeToday / 60)}h ${focusTimeToday % 60}m`,
       cardsDue,
@@ -536,11 +548,11 @@ export async function getDashboardStats() {
         message: log.commitMessage
       })),
       roadmapProgress,
-      mastery: {
-        teach: 15, // Mock values for now, can be calculated from flashcard scores later
-        use: 40,
-        explain: 25,
-        heard: 20
+      mastery: masterySkills.length > 0 ? masteryBreakdown : {
+        teach: 0,
+        use: 0,
+        explain: 0,
+        heard: 0
       }
     };
   } catch (error) {
