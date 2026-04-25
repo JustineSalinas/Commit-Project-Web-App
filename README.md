@@ -78,7 +78,7 @@ Every Pomodoro session ends with a **Commit Prompt**: _"What did you learn today
 | Database         | **Supabase** (PostgreSQL)     | Primary cloud database with RLS per user             |
 | ORM              | **Drizzle ORM**               | Type-safe, lightweight query layer                   |
 | Real-time        | **Supabase Realtime**         | Live syncing of entries and session state            |
-| AI / LLM         | **Anthropic Claude API**      | Context-aware AI Code Explainer (Claude Sonnet)      |
+| AI / LLM         | **Gemini API**                | Context-aware AI Code Explainer (Claude Sonnet)      |
 | Rich Editor      | **Tiptap**                    | Markdown + syntax-highlighted code editing           |
 | Syntax Highlight | **Shiki**                     | VS Code-quality code highlighting                    |
 | Styling          | **Tailwind CSS + shadcn/ui**  | Utility-first CSS with accessible components         |
@@ -203,7 +203,7 @@ commit-projectv2/
 │   │   │   └── sessions.ts
 │   │   ├── migrations/           # Auto-generated SQL migrations
 │   │   └── db.ts                 # DB connection instance
-│   ├── ai/                       # Anthropic Claude integration
+│   ├── ai/                       # Gemini integration
 │   │   ├── client.ts
 │   │   └── prompts.ts
 │   ├── inngest/                  # Background job functions

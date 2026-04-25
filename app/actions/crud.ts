@@ -336,6 +336,89 @@ export async function logFocusSession(data: { durationMinutes: number; focusType
   }
 }
 
+const tables = [
+  {
+    name: 'profiles',
+    sql: sql`CREATE TABLE IF NOT EXISTS "profiles" (
+      "id" serial PRIMARY KEY, "clerk_id" text UNIQUE NOT NULL, "name" text, "email" text UNIQUE NOT NULL, 
+      "title" text, "bio" text, "has_completed_onboarding" boolean DEFAULT false, 
+      "preferences" json, "created_at" timestamp DEFAULT now()
+    )`
+  },
+  {
+    name: 'focus_sessions',
+    sql: sql`CREATE TABLE IF NOT EXISTS "focus_sessions" (
+      "id" serial PRIMARY KEY, "user_id" text NOT NULL, "duration_minutes" integer NOT NULL, 
+      "focus_type" text, "created_at" timestamp DEFAULT now()
+    )`
+  },
+  {
+    name: 'tils',
+    sql: sql`CREATE TABLE IF NOT EXISTS "tils" (
+      "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
+      "content" text NOT NULL, "tags" json, "created_at" timestamp DEFAULT now()
+    )`
+  },
+  {
+    name: 'flashcards',
+    sql: sql`CREATE TABLE IF NOT EXISTS "flashcards" (
+      "id" serial PRIMARY KEY, "user_id" text NOT NULL, "question" text NOT NULL, 
+      "answer" text NOT NULL, "score" integer DEFAULT 0, "last_reviewed" timestamp, 
+      "created_at" timestamp DEFAULT now()
+    )`
+  },
+  {
+    name: 'bugs',
+    sql: sql`CREATE TABLE IF NOT EXISTS "bugs" (
+      "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
+      "description" text, "status" text DEFAULT 'open', "created_at" timestamp DEFAULT now()
+    )`
+  },
+  {
+    name: 'snippets',
+    sql: sql`CREATE TABLE IF NOT EXISTS "snippets" (
+      "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
+      "code" text NOT NULL, "language" text NOT NULL, "description" text, "created_at" timestamp DEFAULT now()
+    )`
+  },
+  {
+    name: 'roadmap',
+    sql: sql`CREATE TABLE IF NOT EXISTS "roadmap" (
+      "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
+      "description" text, "status" text DEFAULT 'pending', "created_at" timestamp DEFAULT now()
+    )`
+  },
+  {
+    name: 'journals',
+    sql: sql`CREATE TABLE IF NOT EXISTS "journals" (
+      "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
+      "content" text NOT NULL, "created_at" timestamp DEFAULT now(), "updated_at" timestamp DEFAULT now()
+    )`
+  },
+  {
+    name: 'tasks',
+    sql: sql`CREATE TABLE IF NOT EXISTS "tasks" (
+      "id" text PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, "description" text, 
+      "estimated_pomos" integer DEFAULT 1, "actual_pomos" integer DEFAULT 0, "status" text DEFAULT 'todo', 
+      "notes" text DEFAULT '', "created_at" timestamp DEFAULT now()
+    )`
+  },
+  {
+    name: 'session_logs',
+    sql: sql`CREATE TABLE IF NOT EXISTS "session_logs" (
+      "id" text PRIMARY KEY, "user_id" text NOT NULL, "task_id" text, "task_title" text, 
+      "commit_message" text NOT NULL, "duration" integer NOT NULL, "timestamp" timestamp DEFAULT now(), "timezone" text
+    )`
+  },
+  {
+    name: 'distractions',
+    sql: sql`CREATE TABLE IF NOT EXISTS "distractions" (
+      "id" text PRIMARY KEY, "user_id" text NOT NULL, "content" text NOT NULL, 
+      "resolved" boolean DEFAULT false, "timestamp" timestamp DEFAULT now()
+    )`
+  }
+];
+
 let dbInitializationPromise: Promise<void> | null = null;
 
 // --- SELF-HEALING DATABASE UTILITY ---
@@ -345,96 +428,25 @@ async function ensureTablesExist() {
   }
 
   dbInitializationPromise = (async () => {
-    const tables = [
-      {
-        name: 'profiles',
-        sql: sql`CREATE TABLE IF NOT EXISTS "profiles" (
-          "id" serial PRIMARY KEY, "clerk_id" text UNIQUE NOT NULL, "name" text, "email" text UNIQUE NOT NULL, 
-          "title" text, "bio" text, "has_completed_onboarding" boolean DEFAULT false, 
-          "preferences" json, "created_at" timestamp DEFAULT now()
-        )`
-      },
-      {
-        name: 'focus_sessions',
-        sql: sql`CREATE TABLE IF NOT EXISTS "focus_sessions" (
-          "id" serial PRIMARY KEY, "user_id" text NOT NULL, "duration_minutes" integer NOT NULL, 
-          "focus_type" text, "created_at" timestamp DEFAULT now()
-        )`
-      },
-      {
-        name: 'tils',
-        sql: sql`CREATE TABLE IF NOT EXISTS "tils" (
-          "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
-          "content" text NOT NULL, "tags" json, "created_at" timestamp DEFAULT now()
-        )`
-      },
-      {
-        name: 'flashcards',
-        sql: sql`CREATE TABLE IF NOT EXISTS "flashcards" (
-          "id" serial PRIMARY KEY, "user_id" text NOT NULL, "question" text NOT NULL, 
-          "answer" text NOT NULL, "score" integer DEFAULT 0, "last_reviewed" timestamp, 
-          "created_at" timestamp DEFAULT now()
-        )`
-      },
-      {
-        name: 'bugs',
-        sql: sql`CREATE TABLE IF NOT EXISTS "bugs" (
-          "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
-          "description" text, "status" text DEFAULT 'open', "created_at" timestamp DEFAULT now()
-        )`
-      },
-      {
-        name: 'snippets',
-        sql: sql`CREATE TABLE IF NOT EXISTS "snippets" (
-          "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
-          "code" text NOT NULL, "language" text NOT NULL, "description" text, "created_at" timestamp DEFAULT now()
-        )`
-      },
-      {
-        name: 'roadmap',
-        sql: sql`CREATE TABLE IF NOT EXISTS "roadmap" (
-          "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
-          "description" text, "status" text DEFAULT 'pending', "created_at" timestamp DEFAULT now()
-        )`
-      },
-      {
-        name: 'journals',
-        sql: sql`CREATE TABLE IF NOT EXISTS "journals" (
-          "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
-          "content" text NOT NULL, "created_at" timestamp DEFAULT now(), "updated_at" timestamp DEFAULT now()
-        )`
-      },
-      {
-        name: 'tasks',
-        sql: sql`CREATE TABLE IF NOT EXISTS "tasks" (
-          "id" text PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, "description" text, 
-          "estimated_pomos" integer DEFAULT 1, "actual_pomos" integer DEFAULT 0, "status" text DEFAULT 'todo', 
-          "notes" text DEFAULT '', "created_at" timestamp DEFAULT now()
-        )`
-      },
-      {
-        name: 'session_logs',
-        sql: sql`CREATE TABLE IF NOT EXISTS "session_logs" (
-          "id" text PRIMARY KEY, "user_id" text NOT NULL, "task_id" text, "task_title" text, 
-          "commit_message" text NOT NULL, "duration" integer NOT NULL, "timestamp" timestamp DEFAULT now(), "timezone" text
-        )`
-      },
-      {
-        name: 'distractions',
-        sql: sql`CREATE TABLE IF NOT EXISTS "distractions" (
-          "id" text PRIMARY KEY, "user_id" text NOT NULL, "content" text NOT NULL, 
-          "resolved" boolean DEFAULT false, "timestamp" timestamp DEFAULT now()
-        )`
-      }
-    ];
+    try {
+      console.log("Checking database tables...");
+      
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Database connection timeout")), 5000)
+      );
 
-    for (const table of tables) {
-      try {
-        console.log(`Verifying table: ${table.name}`);
-        await db.execute(table.sql);
-      } catch (e) {
-        console.warn(`Failed to ensure table ${table.name} exists:`, e);
-      }
+      const checkPromise = Promise.all(tables.map(async (table) => {
+        try {
+          await db.execute(table.sql);
+        } catch (e) {
+          // Ignore table already exists errors
+        }
+      }));
+
+      await Promise.race([checkPromise, timeoutPromise]);
+      console.log("Database tables verified.");
+    } catch (error) {
+      console.error("Database initialization failed or timed out:", error);
     }
   })();
 

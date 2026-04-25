@@ -12,6 +12,10 @@ export async function POST(req: NextRequest) {
   try {
     const { messages, model, system } = await req.json();
 
+    // DEBUG: Check which keys the server can see
+    console.log("GEMINI_KEY_PRESENT:", !!process.env.GEMINI_API_KEY);
+    console.log("ANTHROPIC_KEY_PRESENT:", !!process.env.ANTHROPIC_API_KEY);
+
     // Prioritize Gemini if key is present (Free tier)
     if (process.env.GEMINI_API_KEY) {
       const selectedModel = model?.startsWith('gemini') ? model : "gemini-2.0-flash";
