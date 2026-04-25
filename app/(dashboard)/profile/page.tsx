@@ -19,7 +19,7 @@ export default async function ProfilePage() {
         <div className="flex gap-4">
           <Link 
             href="/"
-            className="bg-[#00FFAA] text-black px-6 py-2 rounded-lg font-medium hover:brightness-110 transition-all"
+            className="bg-[var(--accent)] text-black px-6 py-2 rounded-lg font-medium hover:brightness-110 transition-all"
           >
             Return to Dashboard
           </Link>
@@ -63,7 +63,7 @@ export default async function ProfilePage() {
             <span className="text-sm text-[var(--text-secondary)]">{user.clerkId ? user.clerkId.substring(0, 10) : "@user"}</span>
           </div>
 
-          <button className="w-full py-2.5 bg-[#00FFAA]/10 hover:bg-[#00FFAA]/20 text-[#00FFAA] rounded-lg font-bold flex items-center justify-center gap-2 transition-colors border border-[#00FFAA]/20">
+          <button className="w-full py-2.5 bg-[var(--accent)]/10 hover:bg-[var(--accent)]/20 text-[var(--accent)] rounded-lg font-bold flex items-center justify-center gap-2 transition-colors border border-[var(--accent)]/20">
             <UserPlus className="w-4 h-4" />
             Follow
           </button>
@@ -97,11 +97,11 @@ export default async function ProfilePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
             <div className="bg-[#111113] border border-[#1A1A1F] rounded-xl p-5 relative overflow-hidden group hover:border-[var(--border-muted)] transition-colors">
-              <div className="absolute top-0 left-0 w-full h-1 bg-[#00FFAA] opacity-50 group-hover:opacity-100 transition-opacity"></div>
+              <div className="absolute top-0 left-0 w-full h-1 bg-[var(--accent)] opacity-50 group-hover:opacity-100 transition-opacity"></div>
               <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest mb-2">Consistency Score</p>
               <div className="flex items-end gap-2">
                 <span className="text-3xl font-bold text-[var(--text-primary)]">{displayScore}</span>
-                <span className="text-sm font-medium text-[#00FFAA] mb-1">+1.4%</span>
+                <span className="text-sm font-medium text-[var(--accent)] mb-1">+1.4%</span>
               </div>
             </div>
 
@@ -132,7 +132,7 @@ export default async function ProfilePage() {
         
         {/* Top Concepts Mastered */}
         <div className="lg:col-span-1 bg-[#111113] border border-[#1A1A1F] rounded-xl p-6">
-          <h3 className="text-xs font-bold text-[#00FFAA] uppercase tracking-widest mb-6">Top Concepts Mastered</h3>
+          <h3 className="text-xs font-bold text-[var(--accent)] uppercase tracking-widest mb-6">Top Concepts Mastered</h3>
           
           <div className="space-y-6">
             {topConcepts.length > 0 ? topConcepts.map((concept, idx) => (
@@ -142,7 +142,7 @@ export default async function ProfilePage() {
                   <span className="text-[var(--text-muted)]">Level {3 - idx}</span>
                 </div>
                 <div className="h-1.5 w-full bg-[var(--bg-elevated)] rounded-full overflow-hidden">
-                  <div className="h-full bg-[#00FFAA]" style={{ width: `${100 - (idx * 20)}%` }}></div>
+                  <div className="h-full bg-[var(--accent)]" style={{ width: `${100 - (idx * 20)}%` }}></div>
                 </div>
               </div>
             )) : (
@@ -154,7 +154,7 @@ export default async function ProfilePage() {
                     <span className="text-[var(--text-muted)]">Level 8</span>
                   </div>
                   <div className="h-1.5 w-full bg-[var(--bg-elevated)] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#00FFAA]" style={{ width: "90%" }}></div>
+                    <div className="h-full bg-[var(--accent)]" style={{ width: "90%" }}></div>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -163,7 +163,7 @@ export default async function ProfilePage() {
                     <span className="text-[var(--text-muted)]">Level 7</span>
                   </div>
                   <div className="h-1.5 w-full bg-[var(--bg-elevated)] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#00FFAA]" style={{ width: "75%" }}></div>
+                    <div className="h-full bg-[var(--accent)]" style={{ width: "75%" }}></div>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -172,7 +172,7 @@ export default async function ProfilePage() {
                     <span className="text-[var(--text-muted)]">Level 6</span>
                   </div>
                   <div className="h-1.5 w-full bg-[var(--bg-elevated)] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#00FFAA]" style={{ width: "60%" }}></div>
+                    <div className="h-full bg-[var(--accent)]" style={{ width: "60%" }}></div>
                   </div>
                 </div>
               </>
@@ -204,7 +204,7 @@ export default async function ProfilePage() {
                 </div>
                 <div className="flex-1 space-y-2 group-hover:translate-x-1 transition-transform">
                   <h4 className="text-[var(--text-primary)] font-bold text-lg flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#00FFAA]"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
                     {til.title}
                   </h4>
                   <p className="text-[var(--text-secondary)] text-sm line-clamp-2 leading-relaxed">
@@ -212,7 +212,7 @@ export default async function ProfilePage() {
                   </p>
                   <div className="flex items-center justify-between pt-2">
                     <span className="px-2 py-1 bg-[var(--bg-elevated)] border border-[var(--border-muted)] rounded text-[10px] font-bold text-[var(--text-muted)] flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00FFAA]"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
                       SYSTEM STATUS: OPTIMAL
                     </span>
                   </div>
@@ -227,7 +227,7 @@ export default async function ProfilePage() {
                 </div>
                 <div className="flex-1 space-y-2 group-hover:translate-x-1 transition-transform">
                   <h4 className="text-[var(--text-primary)] font-bold text-lg flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#00FFAA]"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
                     Understanding Zero-Copy Networking in Linux
                   </h4>
                   <p className="text-[var(--text-secondary)] text-sm line-clamp-2 leading-relaxed">
@@ -235,7 +235,7 @@ export default async function ProfilePage() {
                   </p>
                   <div className="flex items-center justify-between pt-2">
                     <span className="px-2 py-1 bg-[var(--bg-elevated)] border border-[var(--border-muted)] rounded text-[10px] font-bold text-[var(--text-muted)] flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00FFAA]"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
                       SYSTEM STATUS: OPTIMAL
                     </span>
                   </div>
