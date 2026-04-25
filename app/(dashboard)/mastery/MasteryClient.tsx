@@ -108,7 +108,7 @@ export default function MasteryClient({ initialSkills }: { initialSkills: any[] 
                 <div className="w-full h-2 bg-[var(--bg-surface)] rounded-full overflow-hidden border border-[var(--border)] mb-4">
                   <div 
                     className="h-full bg-[var(--accent)] transition-all duration-1000" 
-                    style={{ width: \`\${currentLvl.percent}%\` }}
+                    style={{ width: `${currentLvl.percent}%` }}
                   />
                 </div>
                 
