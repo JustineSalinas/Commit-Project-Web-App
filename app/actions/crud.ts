@@ -232,21 +232,52 @@ export async function getRoadmap() {
     return [];
   }
 }
-export async function addRoadmapMilestone(data: { title: string; description?: string }) {
+export async function addRoadmapMilestone(data: { title: string; description?: string; order?: number; subGoals?: any; linkedConcept?: string; linkedJournalId?: number }) {
   try {
     const userId = await getUserId();
     await ensureTablesExist();
     
+    const subGoalsJson = data.subGoals ? JSON.stringify(data.subGoals) : null;
+
     // Using raw SQL to avoid driver issues with the 'default' keyword
     await db.execute(sql`
-      INSERT INTO "roadmap" ("user_id", "title", "description") 
-      VALUES (${userId}, ${data.title}, ${data.description || ''})
+      INSERT INTO "roadmap" ("user_id", "title", "description", "order", "sub_goals", "linked_concept", "linked_journal_id", "pomos_spent", "created_at") 
+      VALUES (${userId}, ${data.title}, ${data.description || ''}, ${data.order || 0}, ${subGoalsJson ? sql`${subGoalsJson}::json` : null}, ${data.linkedConcept || null}, ${data.linkedJournalId || null}, 0, now())
     `);
     
     revalidatePath('/roadmap');
     return { success: true };
   } catch (error: any) {
     console.error("Failed to add Milestone:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function importRoadmapTemplate(templateId: string) {
+  try {
+    const userId = await getUserId();
+    await ensureTablesExist();
+
+    if (templateId === 'web-dev-beginner') {
+      const milestones = [
+        { title: "HTML & Web Fundamentals", description: "Learn the structure of the web.", order: 1, linkedConcept: "HTML", subGoals: [{title: "Write a basic HTML document", completed: false}, {title: "Understand semantic tags", completed: false}] },
+        { title: "CSS Styling & Layouts", description: "Make things look good.", order: 2, linkedConcept: "CSS", subGoals: [{title: "Box model & flexbox", completed: false}, {title: "Responsive design", completed: false}] },
+        { title: "JavaScript Basics", description: "Add interactivity.", order: 3, linkedConcept: "JavaScript", subGoals: [{title: "Variables & functions", completed: false}, {title: "Loops & logic", completed: false}] },
+        { title: "DOM Manipulation", description: "Interact with the HTML.", order: 4, linkedConcept: "DOM", subGoals: [{title: "Select elements", completed: false}, {title: "Event listeners", completed: false}] },
+        { title: "Asynchronous JavaScript & APIs", description: "Fetch data from the web.", order: 5, linkedConcept: "Async JS", subGoals: [{title: "Promises & async/await", completed: false}, {title: "Fetch API", completed: false}] },
+        { title: "Frontend Frameworks (React)", description: "Build scalable UIs.", order: 6, linkedConcept: "React", subGoals: [{title: "Components & props", completed: false}, {title: "State & hooks", completed: false}] },
+        { title: "Capstone Project", description: "Put it all together.", order: 7, linkedConcept: "Full Stack", subGoals: [{title: "Plan project", completed: false}, {title: "Deploy app", completed: false}] },
+      ];
+
+      for (const m of milestones) {
+        await addRoadmapMilestone(m);
+      }
+    }
+
+    revalidatePath('/roadmap');
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to import template:", error);
     return { success: false, error: error.message };
   }
 }
@@ -386,7 +417,10 @@ const tables = [
     name: 'roadmap',
     sql: sql`CREATE TABLE IF NOT EXISTS "roadmap" (
       "id" serial PRIMARY KEY, "user_id" text NOT NULL, "title" text NOT NULL, 
-      "description" text, "status" text DEFAULT 'pending', "created_at" timestamp DEFAULT now()
+      "description" text, "status" text DEFAULT 'pending', 
+      "order" integer DEFAULT 0, "sub_goals" json, "linked_concept" text, 
+      "linked_journal_id" integer, "pomos_spent" integer DEFAULT 0,
+      "created_at" timestamp DEFAULT now()
     )`
   },
   {
@@ -452,6 +486,17 @@ async function ensureTablesExist() {
       }));
 
       await Promise.race([checkPromise, timeoutPromise]);
+      
+      // Self-healing for roadmap schema migrations
+      try {
+        await db.execute(sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "order" integer DEFAULT 0`);
+        await db.execute(sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "sub_goals" json`);
+        await db.execute(sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "linked_concept" text`);
+        await db.execute(sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "linked_journal_id" integer`);
+        await db.execute(sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "pomos_spent" integer DEFAULT 0`);
+      } catch (e) {
+        console.error("Migration for roadmap failed", e);
+      }
       console.log("Database tables verified.");
     } catch (error) {
       console.error("Database initialization failed or timed out:", error);
@@ -643,13 +688,17 @@ export async function createTask(data: { id: string; title: string; description?
     const status = 'todo';
 
     // Use Drizzle insert instead of raw SQL for safer typing and column mapping
+    // Providing explicit values to prevent default keyword driver errors
     await db.insert(tasks).values({
       id: taskId,
       userId: userId,
       title: data.title,
       description: data.description || '',
       estimatedPomos: estimatedPomos,
-      status: status
+      actualPomos: 0,
+      status: status,
+      notes: '',
+      createdAt: new Date()
     });
 
     revalidatePath('/tasks');

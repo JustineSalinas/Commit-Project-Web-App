@@ -35,11 +35,29 @@ export async function POST(req: NextRequest) {
           systemInstruction: system || "You are an expert developer assistant helping the user learn and write code."
         });
 
+        let formattedHistory = messages.slice(0, -1).map((m: any) => ({
+          role: m.role === "assistant" ? "model" : "user",
+          parts: [{ text: m.content }],
+        }));
+
+        // Ensure first message is user
+        while (formattedHistory.length > 0 && formattedHistory[0].role !== "user") {
+          formattedHistory.shift();
+        }
+
+        // Merge consecutive messages with the same role
+        const finalHistory: { role: string, parts: { text: string }[] }[] = [];
+        for (const msg of formattedHistory) {
+          const lastMsg = finalHistory[finalHistory.length - 1];
+          if (lastMsg && lastMsg.role === msg.role) {
+            lastMsg.parts[0].text += "\n\n" + msg.parts[0].text;
+          } else {
+            finalHistory.push(msg);
+          }
+        }
+
         const chat = geminiModel.startChat({
-          history: messages.slice(0, -1).map((m: any) => ({
-            role: m.role === "assistant" ? "model" : "user",
-            parts: [{ text: m.content }],
-          })),
+          history: finalHistory,
         });
 
         const lastMessage = messages[messages.length - 1].content;

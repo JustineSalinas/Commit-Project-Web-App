@@ -70,6 +70,11 @@ export const roadmap = pgTable('roadmap', {
   title: text('title').notNull(),
   description: text('description'),
   status: text('status').default('pending'), // pending, in-progress, complete
+  order: integer('order').default(0), // For dependency chains
+  subGoals: json('sub_goals').$type<{ title: string; completed: boolean }[]>(),
+  linkedConcept: text('linked_concept'),
+  linkedJournalId: integer('linked_journal_id'),
+  pomosSpent: integer('pomos_spent').default(0),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
