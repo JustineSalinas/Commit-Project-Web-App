@@ -6,7 +6,7 @@ export default async function HeatmapPage() {
 
   // Generate the last 364 days (52 weeks x 7 days)
   const today = new Date();
-  const daysArray = [];
+  const daysArray: { dateStr: string; count: number }[] = [];
   
   for (let i = 363; i >= 0; i--) {
     const d = new Date(today);
