@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BookOpen, Search, Filter, Plus, Save, Trash2, Loader2 } from "lucide-react";
-import { getJournals, addJournalEntry, updateJournalEntry, deleteJournalEntry } from "@/app/actions/crud";
+import { BookOpen, Search, Filter, Plus, Save, Trash2, Loader2, Download } from "lucide-react";
+import { getJournals, addJournalEntry, updateJournalEntry, deleteJournalEntry, exportJournalMarkdown } from "@/app/actions/crud";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -12,6 +12,23 @@ export default function JournalPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const md = await exportJournalMarkdown();
+      const blob = new Blob([md], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "journal-export.md";
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const activeEntry = entries.find(e => e.id === activeId);
 
@@ -102,14 +119,25 @@ export default function JournalPage() {
           </h1>
           <p className="text-[var(--text-secondary)] text-sm mt-1">Document your thoughts, hurdles, and daily wins.</p>
         </div>
-        <button 
-          onClick={handleNewEntry}
-          disabled={isSaving}
-          className="flex items-center gap-2 bg-[var(--accent)] text-black px-4 py-2 rounded-lg font-bold hover:brightness-110 transition-all disabled:opacity-50"
-        >
-          {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />} 
-          New Entry
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExport}
+            disabled={isExporting || entries.length === 0}
+            className="flex items-center gap-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-3 py-2 rounded-lg font-bold hover:border-[var(--border-muted)] transition-all disabled:opacity-40"
+            title="Export as Markdown"
+          >
+            {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            Export
+          </button>
+          <button
+            onClick={handleNewEntry}
+            disabled={isSaving}
+            className="flex items-center gap-2 bg-[var(--accent)] text-black px-4 py-2 rounded-lg font-bold hover:brightness-110 transition-all disabled:opacity-50"
+          >
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+            New Entry
+          </button>
+        </div>
       </header>
 
       {isLoading ? (

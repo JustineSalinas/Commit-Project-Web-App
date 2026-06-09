@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { tils, bugs, snippets, flashcards, roadmap, journals, focusSessions, profiles, tasks, sessionLogs, distractions, mastery } from "@/db/schema";
+import { tils, bugs, snippets, flashcards, roadmap, journals, focusSessions, profiles, tasks, sessionLogs, distractions, mastery, teams, teamMembers } from "@/db/schema";
 import { eq, gte, sql, or } from "drizzle-orm";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -173,6 +173,13 @@ export async function addSnippet(data: { title: string; code: string; language: 
   try {
     const userId = await getUserId();
     await ensureTablesExist();
+    // Free tier: 50 snippet limit
+    const existing = await db.query.snippets.findMany({ where: eq(snippets.userId, userId) });
+    if (existing.length >= 50) {
+      const { isPro } = await import("@/lib/plans");
+      const pro = await isPro(userId);
+      if (!pro) return { success: false, error: 'upgrade_required' };
+    }
     await db.insert(snippets).values({ userId, title: data.title, code: data.code, language: data.language });
     revalidatePath('/snippets');
     return { success: true };
@@ -187,7 +194,10 @@ export async function getFlashcards() {
   const userId = await getUserId();
   try {
     await ensureTablesExist();
-    return await db.query.flashcards.findMany({ where: eq(flashcards.userId, userId) });
+    return await db.query.flashcards.findMany({
+      where: eq(flashcards.userId, userId),
+      orderBy: (f, { asc }) => [asc(f.dueDate)],
+    });
   } catch (error) {
     console.error("Failed to fetch Flashcards:", error);
     return [];
@@ -209,7 +219,7 @@ export async function updateFlashcardScore(id: number, scoreChange: number) {
   try {
     const card = await db.query.flashcards.findFirst({ where: eq(flashcards.id, id) });
     if (card) {
-      await db.update(flashcards).set({ 
+      await db.update(flashcards).set({
         score: (card.score || 0) + scoreChange,
         lastReviewed: new Date()
       }).where(eq(flashcards.id, id));
@@ -218,6 +228,59 @@ export async function updateFlashcardScore(id: number, scoreChange: number) {
     return { success: true };
   } catch (error: any) {
     console.error("Failed to update Flashcard score:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function reviewFlashcard(id: number, rating: 'again' | 'hard' | 'good' | 'easy') {
+  try {
+    const card = await db.query.flashcards.findFirst({ where: eq(flashcards.id, id) });
+    if (!card) return { success: false, error: 'Card not found' };
+
+    const ef = card.easeFactor ?? 2.5;
+    const iv = card.interval ?? 1;
+    const rc = (card.reviewCount ?? 0) + 1;
+
+    let newEf: number;
+    let newInterval: number;
+
+    switch (rating) {
+      case 'again':
+        newEf = Math.max(1.3, ef - 0.2);
+        newInterval = 1;
+        break;
+      case 'hard':
+        newEf = Math.max(1.3, ef - 0.15);
+        newInterval = Math.max(1, Math.ceil(iv * 1.2));
+        break;
+      case 'good':
+        newEf = ef;
+        newInterval = Math.ceil(iv * ef);
+        break;
+      case 'easy':
+        newEf = ef + 0.15;
+        newInterval = Math.ceil(iv * ef * 1.3);
+        break;
+    }
+
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + newInterval);
+
+    await db.execute(sql`
+      UPDATE flashcards SET
+        ease_factor = ${newEf},
+        interval = ${newInterval},
+        due_date = ${dueDate},
+        review_count = ${rc},
+        last_reviewed = now(),
+        score = score + ${rating === 'again' ? -1 : rating === 'easy' ? 2 : 1}
+      WHERE id = ${id}
+    `);
+
+    revalidatePath('/flashcards');
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to review Flashcard:", error);
     return { success: false, error: error.message };
   }
 }
@@ -455,8 +518,24 @@ const tables = [
   {
     name: 'mastery',
     sql: sql`CREATE TABLE IF NOT EXISTS "mastery" (
-      "id" serial PRIMARY KEY, "user_id" text NOT NULL, "concept" text NOT NULL, 
+      "id" serial PRIMARY KEY, "user_id" text NOT NULL, "concept" text NOT NULL,
       "level" integer DEFAULT 1, "created_at" timestamp DEFAULT now()
+    )`
+  },
+  {
+    name: 'teams',
+    sql: sql`CREATE TABLE IF NOT EXISTS "teams" (
+      "id" serial PRIMARY KEY, "name" text NOT NULL, "owner_id" text NOT NULL,
+      "subscription_status" text DEFAULT 'free', "stripe_customer_id" text,
+      "stripe_subscription_id" text, "paymongo_customer_id" text,
+      "plan_expires_at" timestamp, "created_at" timestamp DEFAULT now()
+    )`
+  },
+  {
+    name: 'team_members',
+    sql: sql`CREATE TABLE IF NOT EXISTS "team_members" (
+      "id" serial PRIMARY KEY, "team_id" integer NOT NULL, "clerk_id" text NOT NULL,
+      "role" text DEFAULT 'member', "joined_at" timestamp DEFAULT now()
     )`
   }
 ];
@@ -487,15 +566,30 @@ async function ensureTablesExist() {
 
       await Promise.race([checkPromise, timeoutPromise]);
       
-      // Self-healing for roadmap schema migrations
-      try {
-        await db.execute(sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "order" integer DEFAULT 0`);
-        await db.execute(sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "sub_goals" json`);
-        await db.execute(sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "linked_concept" text`);
-        await db.execute(sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "linked_journal_id" integer`);
-        await db.execute(sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "pomos_spent" integer DEFAULT 0`);
-      } catch (e) {
-        console.error("Migration for roadmap failed", e);
+      // Self-healing column migrations
+      const migrations = [
+        // Roadmap columns
+        sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "order" integer DEFAULT 0`,
+        sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "sub_goals" json`,
+        sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "linked_concept" text`,
+        sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "linked_journal_id" integer`,
+        sql`ALTER TABLE "roadmap" ADD COLUMN IF NOT EXISTS "pomos_spent" integer DEFAULT 0`,
+        // Billing columns on profiles
+        sql`ALTER TABLE "profiles" ADD COLUMN IF NOT EXISTS "plan" text DEFAULT 'free'`,
+        sql`ALTER TABLE "profiles" ADD COLUMN IF NOT EXISTS "subscription_status" text DEFAULT 'free'`,
+        sql`ALTER TABLE "profiles" ADD COLUMN IF NOT EXISTS "stripe_customer_id" text`,
+        sql`ALTER TABLE "profiles" ADD COLUMN IF NOT EXISTS "stripe_subscription_id" text`,
+        sql`ALTER TABLE "profiles" ADD COLUMN IF NOT EXISTS "paymongo_customer_id" text`,
+        sql`ALTER TABLE "profiles" ADD COLUMN IF NOT EXISTS "plan_expires_at" timestamp`,
+        // SM-2 columns on flashcards
+        sql`ALTER TABLE "flashcards" ADD COLUMN IF NOT EXISTS "ease_factor" real DEFAULT 2.5`,
+        sql`ALTER TABLE "flashcards" ADD COLUMN IF NOT EXISTS "interval" integer DEFAULT 1`,
+        sql`ALTER TABLE "flashcards" ADD COLUMN IF NOT EXISTS "due_date" timestamp DEFAULT now()`,
+        sql`ALTER TABLE "flashcards" ADD COLUMN IF NOT EXISTS "review_count" integer DEFAULT 0`,
+      ];
+
+      for (const m of migrations) {
+        try { await db.execute(m); } catch { /* column already exists */ }
       }
       console.log("Database tables verified.");
     } catch (error) {
@@ -865,6 +959,155 @@ export async function deleteSkill(id: number) {
     return { success: true };
   } catch (error: any) {
     console.error("Failed to delete Skill:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// --- BILLING ACTIONS ---
+export async function getBillingInfo() {
+  const userId = await getUserId();
+  try {
+    await ensureTablesExist();
+    const profile = await db.query.profiles.findFirst({ where: eq(profiles.clerkId, userId) });
+    if (!profile) return null;
+    return {
+      plan: profile.plan || 'free',
+      subscriptionStatus: profile.subscriptionStatus || 'free',
+      planExpiresAt: profile.planExpiresAt,
+      stripeCustomerId: profile.stripeCustomerId,
+      paymongoCustomerId: profile.paymongoCustomerId,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function cancelMySubscription() {
+  const userId = await getUserId();
+  try {
+    await ensureTablesExist();
+    await db.execute(sql`
+      UPDATE profiles SET
+        plan = 'free',
+        subscription_status = 'cancelled',
+        stripe_subscription_id = NULL,
+        plan_expires_at = NULL
+      WHERE clerk_id = ${userId}
+    `);
+    revalidatePath('/settings');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+// --- EXPORT ACTIONS ---
+export async function exportJournalMarkdown(): Promise<string> {
+  const userId = await getUserId();
+  await ensureTablesExist();
+  const entries = await db.query.journals.findMany({
+    where: eq(journals.userId, userId),
+    orderBy: (j, { desc }) => [desc(j.createdAt)],
+  });
+  return entries
+    .map(e => `# ${e.title}\n\n${e.content}\n\n---\n`)
+    .join('\n');
+}
+
+export async function exportRoadmapMarkdown(): Promise<string> {
+  const userId = await getUserId();
+  await ensureTablesExist();
+  const items = await db.query.roadmap.findMany({
+    where: eq(roadmap.userId, userId),
+    orderBy: (r, { asc }) => [asc(r.order)],
+  });
+  return items
+    .map(r => `## ${r.title}\n\nStatus: ${r.status}\n\n${r.description || ''}\n\n---\n`)
+    .join('\n');
+}
+
+// --- TEAM ACTIONS ---
+export async function createTeam(name: string) {
+  const userId = await getUserId();
+  try {
+    await ensureTablesExist();
+    const [team] = await db.insert(teams).values({ name, ownerId: userId }).returning();
+    await db.insert(teamMembers).values({ teamId: team.id, clerkId: userId, role: 'owner' });
+    revalidatePath('/team');
+    return { success: true, team };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function getTeam() {
+  const userId = await getUserId();
+  try {
+    await ensureTablesExist();
+    const membership = await db.query.teamMembers.findFirst({ where: eq(teamMembers.clerkId, userId) });
+    if (!membership) return null;
+    const team = await db.query.teams.findFirst({ where: eq(teams.id, membership.teamId) });
+    if (!team) return null;
+    const members = await db.query.teamMembers.findMany({ where: eq(teamMembers.teamId, team.id) });
+    // Get profile names for each member
+    const memberProfiles = await Promise.all(
+      members.map(async m => {
+        const p = await db.query.profiles.findFirst({ where: eq(profiles.clerkId, m.clerkId) });
+        return { ...m, name: p?.name || 'Unknown', email: p?.email || '' };
+      })
+    );
+    return { team, members: memberProfiles, role: membership.role };
+  } catch {
+    return null;
+  }
+}
+
+export async function inviteTeamMember(email: string) {
+  const userId = await getUserId();
+  try {
+    await ensureTablesExist();
+    const myMembership = await db.query.teamMembers.findFirst({ where: eq(teamMembers.clerkId, userId) });
+    if (!myMembership || myMembership.role !== 'owner') {
+      return { success: false, error: 'Only team owners can invite members' };
+    }
+    const team = await db.query.teams.findFirst({ where: eq(teams.id, myMembership.teamId) });
+    if (!team) return { success: false, error: 'Team not found' };
+
+    // Check member limit (Teams plan: up to 10 seats)
+    const currentMembers = await db.query.teamMembers.findMany({ where: eq(teamMembers.teamId, team.id) });
+    if (currentMembers.length >= 10) {
+      return { success: false, error: 'Team is full (10 seats maximum)' };
+    }
+
+    const invitee = await db.query.profiles.findFirst({ where: eq(profiles.email, email) });
+    if (!invitee) return { success: false, error: 'No Commit account found with that email' };
+
+    const alreadyMember = await db.query.teamMembers.findFirst({ where: eq(teamMembers.clerkId, invitee.clerkId) });
+    if (alreadyMember) return { success: false, error: 'User is already in a team' };
+
+    await db.insert(teamMembers).values({ teamId: team.id, clerkId: invitee.clerkId, role: 'member' });
+    revalidatePath('/team');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function removeTeamMember(memberClerkId: string) {
+  const userId = await getUserId();
+  try {
+    await ensureTablesExist();
+    const myMembership = await db.query.teamMembers.findFirst({ where: eq(teamMembers.clerkId, userId) });
+    if (!myMembership || myMembership.role !== 'owner') {
+      return { success: false, error: 'Only team owners can remove members' };
+    }
+    if (memberClerkId === userId) {
+      return { success: false, error: 'Cannot remove yourself from your own team' };
+    }
+    await db.delete(teamMembers).where(eq(teamMembers.clerkId, memberClerkId));
+    revalidatePath('/team');
+    return { success: true };
+  } catch (error: any) {
     return { success: false, error: error.message };
   }
 }

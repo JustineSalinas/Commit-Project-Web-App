@@ -16,7 +16,9 @@ import {
   Sun,
   Monitor,
   Sparkles,
+  CreditCard,
 } from "lucide-react";
+import { BillingTab } from "@/components/settings/BillingTab";
 
 type SettingsTab =
   | "profile"
@@ -24,7 +26,8 @@ type SettingsTab =
   | "appearance"
   | "editor"
   | "ai"
-  | "repos";
+  | "repos"
+  | "billing";
 
 const tabs = [
   { id: "profile" as const, label: "Profile", icon: User, description: "Avatar, display name, email" },
@@ -33,6 +36,7 @@ const tabs = [
   { id: "editor" as const, label: "Editor", icon: Type, description: "Fonts, sizes, tab width" },
   { id: "ai" as const, label: "AI Features", icon: Bot, description: "Gemini model, prompts, usage" },
   { id: "repos" as const, label: "Repositories", icon: GitBranch, description: "Repo syncing & access" },
+  { id: "billing" as const, label: "Billing", icon: CreditCard, description: "Plan, payments, invoices" },
 ];
 
 /* ─── Reusable Components ─── */
@@ -484,7 +488,9 @@ function ReposTab() {
 /* ─── Main Settings Page ─── */
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+  const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const initialTab = (searchParams?.get("tab") as SettingsTab | null) || "profile";
+  const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -494,6 +500,7 @@ export default function SettingsPage() {
       case "editor": return <EditorTab />;
       case "ai": return <AITab />;
       case "repos": return <ReposTab />;
+      case "billing": return <BillingTab />;
     }
   };
 

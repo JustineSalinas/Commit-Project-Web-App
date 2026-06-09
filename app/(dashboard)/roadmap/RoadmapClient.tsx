@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Map, Plus, CheckCircle, Circle, ArrowRight, BookOpen, Clock, Lock, Link as LinkIcon, Share2 } from "lucide-react";
-import { addRoadmapMilestone, markRoadmapStatus, importRoadmapTemplate } from "@/app/actions/crud";
+import { Map, Plus, CheckCircle, Circle, ArrowRight, BookOpen, Clock, Lock, Link as LinkIcon, Share2, Download } from "lucide-react";
+import { addRoadmapMilestone, markRoadmapStatus, importRoadmapTemplate, exportRoadmapMarkdown } from "@/app/actions/crud";
 
 export default function RoadmapClient({ initialRoadmap, userId }: { initialRoadmap: any[], userId?: string }) {
   const router = useRouter();
@@ -12,6 +12,23 @@ export default function RoadmapClient({ initialRoadmap, userId }: { initialRoadm
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const md = await exportRoadmapMarkdown();
+      const blob = new Blob([md], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "roadmap-export.md";
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,13 +89,22 @@ export default function RoadmapClient({ initialRoadmap, userId }: { initialRoadm
           <p className="text-[var(--text-secondary)] text-sm mt-1">Track your macro project milestones and course paths.</p>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={handleExport}
+            disabled={exporting || initialRoadmap.length === 0}
+            className="flex items-center gap-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-3 py-1.5 rounded-lg font-bold transition-all flex-shrink-0 disabled:opacity-40"
+            title="Export as Markdown"
+          >
+            {exporting ? <span className="w-4 h-4 border-2 border-[var(--text-muted)] border-t-transparent rounded-full animate-spin inline-block" /> : <Download className="w-4 h-4" />}
+            Export
+          </button>
           {userId && (
-            <button 
+            <button
               onClick={() => {
                 const url = `${window.location.origin}/shared/roadmap/${userId}`;
                 navigator.clipboard.writeText(url);
                 alert("Shareable link copied to clipboard!");
-              }} 
+              }}
               className="flex items-center gap-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-3 py-1.5 rounded-lg font-bold transition-all flex-shrink-0"
               title="Copy public roadmap link"
             >

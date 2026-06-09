@@ -2,21 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  Home, 
-  Timer, 
-  BookOpen, 
-  Map, 
-  Layers, 
-  Lightbulb, 
-  Bug, 
-  Target, 
-  Code2, 
-  Activity, 
+import {
+  Home,
+  Timer,
+  BookOpen,
+  Map,
+  Layers,
+  Lightbulb,
+  Bug,
+  Target,
+  Code2,
+  Activity,
   Bot,
   Settings,
   User,
-  Layout
+  Layout,
+  Users,
 } from "lucide-react";
 import { usePomodoroStore } from "@/lib/zustand/pomodoroStore";
 
@@ -26,6 +27,7 @@ const navGroups = [
     items: [
       { name: "Dashboard", href: "/", icon: Home },
       { name: "Activity", href: "/heatmap", icon: Activity },
+      { name: "Team", href: "/team", icon: Users },
     ]
   },
   {
