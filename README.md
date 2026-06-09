@@ -248,7 +248,7 @@ commit-projectv2/
 - Node.js 20+
 - A [Supabase](https://supabase.com) project
 - A [Clerk](https://clerk.com) application
-- An [Anthropic](https://anthropic.com) API key
+- An [Gemini](https://gemini.com) API key
 - An [Inngest](https://inngest.com) account
 
 ### 1. Clone & Install
@@ -284,8 +284,8 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...
 # Drizzle
 DATABASE_URL=postgresql://postgres:[password]@db.[project].supabase.co:5432/postgres
 
-# Anthropic Claude
-ANTHROPIC_API_KEY=sk-ant-...
+# Gemini
+GEMINI_API_KEY=sk-ant-...
 
 # Inngest
 INNGEST_EVENT_KEY=...
