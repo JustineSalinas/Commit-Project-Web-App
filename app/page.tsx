@@ -302,6 +302,12 @@ function BentoFlashcard() {
   );
 }
 
+const phpFormat = (n: number) =>
+  n === 0 ? "0" : n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+const toUSD = (php: number) =>
+  php === 0 ? "0" : Math.round(php / 56).toString();
+
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const PRICING_PLANS = [
@@ -1167,7 +1173,7 @@ export default function LandingPage() {
                   <div className="flex items-baseline gap-1">
                     <span className="text-2xl font-bold text-[var(--text-muted)]">₱</span>
                     <span className="font-display text-5xl font-bold">
-                      {(isAnnual ? plan.price.annual : plan.price.monthly).toLocaleString("en-PH")}
+                      {phpFormat(isAnnual ? plan.price.annual : plan.price.monthly)}
                     </span>
                   </div>
                   {plan.price.monthly > 0 ? (
@@ -1179,9 +1185,14 @@ export default function LandingPage() {
                       forever
                     </span>
                   )}
+                  {plan.price.monthly > 0 && (
+                    <p className="text-[11px] text-[var(--text-muted)] font-mono mt-1">
+                      ≈ ${toUSD(isAnnual ? plan.price.annual : plan.price.monthly)} USD / mo
+                    </p>
+                  )}
                   {isAnnual && plan.price.annual > 0 && (
-                    <p className="text-xs text-[var(--text-muted)] font-mono mt-1.5">
-                      billed ₱{(plan.price.annual * 12).toLocaleString("en-PH")} / year
+                    <p className="text-xs text-[var(--text-muted)] font-mono mt-1">
+                      billed ₱{phpFormat(plan.price.annual * 12)} / year
                     </p>
                   )}
                 </div>
