@@ -1,0 +1,23 @@
+[    7567ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js:14537
+[    8228ms] [WARNING] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview @ https://wise-grouse-94.clerk.accounts.dev/npm/@clerk/clerk-js@5/dist/clerk.browser.js:18
+[    8229ms] [WARNING] Clerk: The prop "afterSignInUrl" is deprecated and should be replaced with the new "fallbackRedirectUrl" or "forceRedirectUrl" props instead. Learn more: https://clerk.com/docs/guides/custom-redirects#redirect-url-props @ https://wise-grouse-94.clerk.accounts.dev/npm/@clerk/clerk-js@5/dist/clerk.browser.js:18
+[    8294ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3003/favicon.ico:0
+[    8359ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[    8382ms] [LOG] [Fast Refresh] done in 249ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[    8691ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[    8758ms] [LOG] [Fast Refresh] done in 170ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[  102158ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  106626ms] [LOG] [Fast Refresh] done in 4571ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[  106732ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  106968ms] [LOG] [Fast Refresh] done in 340ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[  109504ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  109612ms] [LOG] [Fast Refresh] done in 224ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[  109972ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  110032ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3003/sign-up:0
+[  110062ms] [LOG] [Fast Refresh] done in 227ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[  113411ms] [WARNING] The resource http://localhost:3003/_next/static/media/017d9bea37084d9b-s.p.a6d6de71.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3003/sign-up:0
+[  113411ms] [WARNING] The resource http://localhost:3003/_next/static/media/051742360c26797e-s.p.102b7f24.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3003/sign-up:0
+[  761414ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  762523ms] [LOG] [Fast Refresh] done in 1093ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809
+[  770163ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5949
+[  771274ms] [LOG] [Fast Refresh] done in 999ms @ http://localhost:3003/_next/static/chunks/node_modules_next_dist_client_cf1d9188._.js:5809

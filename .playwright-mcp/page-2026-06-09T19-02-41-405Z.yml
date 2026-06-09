@@ -1,0 +1,395 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - generic [ref=e5]: COMMIT_|
+        - generic [ref=e6]:
+          - button "Features" [ref=e7]
+          - button "How It Works" [ref=e8]
+          - button "Pricing" [ref=e9]
+        - generic [ref=e10]:
+          - link "Sign In" [ref=e11] [cursor=pointer]:
+            - /url: /sign-in
+          - link "Get Started" [ref=e12] [cursor=pointer]:
+            - /url: /sign-up
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]: 11 tools. One workspace.
+        - heading "Stop re-learning the same thing twice." [level=1] [ref=e18]:
+          - text: Stop re-learning
+          - text: the same thing
+          - text: twice.
+        - paragraph [ref=e19]: Commit is the workspace built around how developers actually retain knowledge — structured focus sessions, spaced repetition, and a searchable record of everything you've learned.
+        - generic [ref=e20]:
+          - button "Start for free" [ref=e21]:
+            - generic [ref=e22]:
+              - text: Start for free
+              - img [ref=e23]
+          - button "See features" [ref=e25]
+        - paragraph [ref=e26]: No credit card required — free forever
+      - generic [ref=e28]:
+        - generic [ref=e33]: commit — dashboard
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - img [ref=e43]
+            - img [ref=e47]
+            - img [ref=e51]
+            - img [ref=e54]
+            - img [ref=e59]
+          - generic [ref=e69]:
+            - generic [ref=e70]:
+              - generic [ref=e71]:
+                - paragraph [ref=e72]: Deep Work Session
+                - paragraph [ref=e73]: 14 day streak · Fullstack track
+              - generic [ref=e75]:
+                - paragraph [ref=e76]: Consistency Matrix
+                - paragraph [ref=e77]: 2026-YTD
+              - generic [ref=e271]:
+                - generic [ref=e272]:
+                  - paragraph [ref=e273]: Roadmap Horizon
+                  - paragraph [ref=e274]: Fullstack Dev
+                  - paragraph [ref=e275]: 62%
+                - generic [ref=e279]:
+                  - paragraph [ref=e280]: Cognitive Mastery
+                  - generic [ref=e281]:
+                    - generic [ref=e282]:
+                      - generic [ref=e283]: Teach
+                      - generic [ref=e286]: 42%
+                    - generic [ref=e287]:
+                      - generic [ref=e288]: Use
+                      - generic [ref=e291]: 71%
+                    - generic [ref=e292]:
+                      - generic [ref=e293]: Explain
+                      - generic [ref=e296]: 58%
+                    - generic [ref=e297]:
+                      - generic [ref=e298]: Heard
+                      - generic [ref=e301]: 85%
+            - generic [ref=e302]:
+              - paragraph [ref=e304]: Focus Active
+              - generic [ref=e305]: 24:15
+              - generic [ref=e306]: Binary Trees
+              - generic [ref=e307]: Session 2 of 4
+              - generic [ref=e313]:
+                - img [ref=e314]
+                - generic [ref=e316]: 14 Days
+    - generic [ref=e318]:
+      - heading "You learn. You forget. You re-learn." [level=2] [ref=e320]:
+        - text: You learn.
+        - text: You forget.
+        - text: You re-learn.
+      - generic [ref=e321]:
+        - generic [ref=e322]:
+          - img [ref=e324]
+          - generic [ref=e327]:
+            - heading "Momentum fades after week two" [level=3] [ref=e328]
+            - paragraph [ref=e329]: Starting a new topic feels great. Then enthusiasm wears off, sessions get shorter, gaps grow longer. Without structure, learning stalls before it sticks.
+        - generic [ref=e330]:
+          - img [ref=e332]
+          - generic [ref=e342]:
+            - heading "Learning without retention" [level=3] [ref=e343]
+            - paragraph [ref=e344]: You read the docs, follow the tutorial, then draw a blank two weeks later. Without a review system, knowledge evaporates before it can compound.
+        - generic [ref=e345]:
+          - img [ref=e347]
+          - generic [ref=e348]:
+            - heading "No record of growth" [level=3] [ref=e349]
+            - paragraph [ref=e350]: You can't see how far you've come. Without visible progress, it's hard to stay motivated — or explain your skills in an interview.
+    - generic [ref=e352]:
+      - generic [ref=e353]:
+        - paragraph [ref=e354]: Features
+        - heading "Every tool your learning needs" [level=2] [ref=e355]:
+          - text: Every tool your
+          - text: learning needs
+      - generic [ref=e356]:
+        - generic [ref=e357]:
+          - generic [ref=e358]:
+            - img [ref=e360]
+            - generic [ref=e363]: Live
+          - heading "Pomodoro Focus Timer" [level=3] [ref=e364]
+          - paragraph [ref=e365]: 25-minute sessions linked to your roadmap milestones. Every session ends with a structured learning prompt.
+          - generic [ref=e366]:
+            - generic [ref=e367]: 24:15
+            - button [ref=e368]:
+              - img [ref=e369]
+        - generic [ref=e372]:
+          - img [ref=e374]
+          - heading "Spaced Repetition" [level=3] [ref=e376]
+          - paragraph [ref=e377]: SM-2 algorithm — same as Anki — schedules each card at the optimal review interval.
+          - generic [ref=e379] [cursor=pointer]:
+            - generic [ref=e380]:
+              - generic [ref=e381]: Question
+              - paragraph [ref=e382]: What is the time complexity of binary search?
+              - generic [ref=e383]: tap to reveal →
+            - generic [ref=e384]:
+              - generic [ref=e385]: Answer
+              - paragraph [ref=e386]: O(log n)
+              - generic [ref=e387]:
+                - button "Again" [ref=e388]
+                - button "Hard" [ref=e389]
+                - button "Good" [ref=e390]
+                - button "Easy" [ref=e391]
+        - generic [ref=e392]:
+          - img [ref=e394]
+          - heading "Productivity Heatmap" [level=3] [ref=e395]
+          - paragraph [ref=e396]: GitHub-style activity graph of every focus session.
+        - generic [ref=e468]:
+          - img [ref=e470]
+          - heading "AI Code Explainer" [level=3] [ref=e473]
+          - paragraph [ref=e474]: Paste any code. Choose depth — 5-year-old to senior dev. Powered by Claude.
+          - generic [ref=e475]:
+            - paragraph [ref=e476]: "> explain useCallback at depth: beginner"
+            - paragraph [ref=e477]: useCallback is like a note that tells React to reuse a function instead of recreating it...
+        - generic [ref=e478]:
+          - img [ref=e480]
+          - heading "Code Journal" [level=3] [ref=e483]
+          - paragraph [ref=e484]: Rich text notes with Shiki syntax highlighting. Every session's learning, searchable forever.
+        - generic [ref=e485]:
+          - img [ref=e487]
+          - heading "Roadmap Tracker" [level=3] [ref=e489]
+          - paragraph [ref=e490]: Personal learning paths with milestones, dependencies, and progress tracking.
+          - generic [ref=e491]:
+            - generic [ref=e495]:
+              - generic [ref=e496]: Algorithms Fundamentals
+              - generic [ref=e497]: 67%
+            - generic [ref=e503]:
+              - generic [ref=e504]: System Design Basics
+              - generic [ref=e505]: 34%
+            - generic [ref=e511]:
+              - generic [ref=e512]: TypeScript Advanced
+              - generic [ref=e513]: 12%
+        - generic [ref=e516]:
+          - img [ref=e518]
+          - heading "TIL Daily Log" [level=3] [ref=e520]
+          - paragraph [ref=e521]: Auto-prompted after every session. Build a searchable record of every insight.
+        - generic [ref=e522]:
+          - img [ref=e524]
+          - heading "Bug Journal" [level=3] [ref=e533]
+          - paragraph [ref=e534]: Structured error tracking with root cause analysis. Turn every bug into a lesson.
+        - generic [ref=e535]:
+          - img [ref=e537]
+          - heading "Concept Mastery" [level=3] [ref=e547]
+          - paragraph [ref=e548]: "Feynman 4-level self-assessment: Heard Of → Can Explain → Can Use → Can Teach."
+          - generic [ref=e549]:
+            - generic "Heard Of" [ref=e550]
+            - generic "Can Explain" [ref=e551]
+            - generic "Can Use" [ref=e552]
+            - generic "Can Teach" [ref=e553]
+    - generic [ref=e555]:
+      - heading "One loop. Infinite retention." [level=2] [ref=e556]:
+        - text: One loop.
+        - text: Infinite retention.
+      - generic [ref=e557]:
+        - generic [ref=e558]:
+          - img [ref=e560]
+          - generic [ref=e564]:
+            - generic [ref=e565]: "01"
+            - heading "Set your session" [level=3] [ref=e566]
+            - paragraph [ref=e567]: Pick a roadmap milestone, set your focus intent. The timer starts — no distractions, just the work.
+        - generic [ref=e568]:
+          - img [ref=e570]
+          - generic [ref=e573]:
+            - generic [ref=e574]: "02"
+            - heading "Deep work" [level=3] [ref=e575]
+            - paragraph [ref=e576]: 25 minutes of focused work. Intrusive thoughts? Drop them in the Distraction Dump — they won't vanish, just wait.
+        - generic [ref=e577]:
+          - img [ref=e579]
+          - generic [ref=e582]:
+            - generic [ref=e583]: "03"
+            - heading "Commit" [level=3] [ref=e584]
+            - paragraph [ref=e585]: "Session ends. One prompt: 'What did you learn?' Your answer auto-schedules a flashcard review. Knowledge stacks."
+    - generic [ref=e587]:
+      - generic [ref=e588]:
+        - generic [ref=e589]: "0"
+        - paragraph [ref=e590]: Learning tools in one workspace
+      - generic [ref=e591]:
+        - generic [ref=e592]: 0 min
+        - paragraph [ref=e593]: Proven focus session length
+      - generic [ref=e594]:
+        - generic [ref=e595]: 0%
+        - paragraph [ref=e596]: Retention improvement with spaced repetition
+    - generic [ref=e598]:
+      - paragraph [ref=e599]: Pricing
+      - generic [ref=e600]:
+        - heading "Start free. Scale when ready." [level=2] [ref=e601]:
+          - text: Start free.
+          - text: Scale when ready.
+        - generic [ref=e602]:
+          - button "Monthly" [ref=e603]
+          - button "Annual −20%" [ref=e604]:
+            - text: Annual
+            - generic [ref=e605]: −20%
+      - generic [ref=e606]:
+        - generic [ref=e607]:
+          - generic [ref=e608]:
+            - heading "Free" [level=3] [ref=e610]
+            - paragraph [ref=e611]: For developers starting their learning journey.
+          - generic [ref=e612]:
+            - generic [ref=e613]: $0
+            - text: forever
+          - list [ref=e614]:
+            - listitem [ref=e615]:
+              - img [ref=e616]
+              - text: Unlimited Pomodoro sessions
+            - listitem [ref=e618]:
+              - img [ref=e619]
+              - text: TIL daily log
+            - listitem [ref=e621]:
+              - img [ref=e622]
+              - text: Up to 3 roadmaps
+            - listitem [ref=e624]:
+              - img [ref=e625]
+              - text: 50 code snippets
+            - listitem [ref=e627]:
+              - img [ref=e628]
+              - text: Spaced repetition flashcards
+            - listitem [ref=e630]:
+              - img [ref=e631]
+              - text: Bug journal
+            - listitem [ref=e633]:
+              - img [ref=e634]
+              - text: Community support
+          - link "Get started free" [ref=e636] [cursor=pointer]:
+            - /url: /sign-up
+        - generic [ref=e637]:
+          - generic [ref=e638]: Most popular
+          - generic [ref=e639]:
+            - heading "Pro" [level=3] [ref=e641]
+            - paragraph [ref=e642]: For developers serious about retention and growth.
+          - generic [ref=e643]:
+            - generic [ref=e644]: $9
+            - text: / month
+          - list [ref=e645]:
+            - listitem [ref=e646]:
+              - img [ref=e647]
+              - text: Everything in Free
+            - listitem [ref=e649]:
+              - img [ref=e650]
+              - text: Unlimited roadmaps
+            - listitem [ref=e652]:
+              - img [ref=e653]
+              - text: Unlimited snippets
+            - listitem [ref=e655]:
+              - img [ref=e656]
+              - text: AI Code Explainer (Claude)
+            - listitem [ref=e658]:
+              - img [ref=e659]
+              - text: Advanced heatmap analytics
+            - listitem [ref=e661]:
+              - img [ref=e662]
+              - text: Export to PDF / Markdown
+            - listitem [ref=e664]:
+              - img [ref=e665]
+              - text: Concept mastery tracking
+            - listitem [ref=e667]:
+              - img [ref=e668]
+              - text: Priority support
+            - listitem [ref=e670]:
+              - img [ref=e671]
+              - text: Early access to features
+          - link "Start Pro" [ref=e673] [cursor=pointer]:
+            - /url: /sign-up?plan=pro
+        - generic [ref=e674]:
+          - generic [ref=e675]:
+            - generic [ref=e676]:
+              - heading "Teams" [level=3] [ref=e677]
+              - img [ref=e678]
+            - paragraph [ref=e683]: For bootcamps and study groups learning together.
+          - generic [ref=e684]:
+            - generic [ref=e685]: $29
+            - text: / month
+          - list [ref=e686]:
+            - listitem [ref=e687]:
+              - img [ref=e688]
+              - text: Everything in Pro × 10 seats
+            - listitem [ref=e690]:
+              - img [ref=e691]
+              - text: Shared roadmap templates
+            - listitem [ref=e693]:
+              - img [ref=e694]
+              - text: Team productivity heatmap
+            - listitem [ref=e696]:
+              - img [ref=e697]
+              - text: Admin dashboard
+            - listitem [ref=e699]:
+              - img [ref=e700]
+              - text: Member progress visibility
+            - listitem [ref=e702]:
+              - img [ref=e703]
+              - text: Priority onboarding call
+            - listitem [ref=e705]:
+              - img [ref=e706]
+              - text: SLA support
+            - listitem [ref=e708]:
+              - img [ref=e709]
+              - text: Custom integrations
+          - link "Talk to us" [ref=e711] [cursor=pointer]:
+            - /url: /sign-up?plan=teams
+    - generic [ref=e713]:
+      - heading "Questions worth asking." [level=2] [ref=e715]:
+        - text: Questions worth
+        - text: asking.
+      - generic [ref=e716]:
+        - generic [ref=e717]:
+          - button "Is Commit a coding tutorial platform?" [ref=e718]:
+            - generic [ref=e719]: Is Commit a coding tutorial platform?
+            - img [ref=e720]
+          - paragraph [ref=e722]: "No. Commit doesn't teach you to code — it helps you learn better while you do. Think of it as infrastructure around your learning: structured sessions, retention tools, and a record of your growth. Bring your own resources."
+        - generic [ref=e723]:
+          - button "How is this different from Notion or Obsidian?" [ref=e724]:
+            - generic [ref=e725]: How is this different from Notion or Obsidian?
+            - img [ref=e726]
+          - paragraph [ref=e728]: "Notion and Obsidian are blank canvases. Commit is purpose-built for developer learning workflows: a Pomodoro timer that ends with a structured prompt, SM-2 flashcard scheduling, concept mastery tracking, and a bug journal — all connected."
+        - generic [ref=e729]:
+          - button "Do I need to use the Pomodoro technique?" [ref=e730]:
+            - generic [ref=e731]: Do I need to use the Pomodoro technique?
+            - img [ref=e732]
+          - paragraph [ref=e734]: It helps, but it's not required. The 25-minute session is the default trigger for the Commit Prompt and TIL log. You can adjust session length to match your flow.
+        - generic [ref=e735]:
+          - button "How does spaced repetition work?" [ref=e736]:
+            - generic [ref=e737]: How does spaced repetition work?
+            - img [ref=e738]
+          - paragraph [ref=e740]: Commit uses the SM-2 algorithm — the same one behind Anki — to schedule flashcard reviews. Rate each card after review and the algorithm calculates the optimal next review date based on your confidence.
+        - generic [ref=e741]:
+          - button "What AI features are included?" [ref=e742]:
+            - generic [ref=e743]: What AI features are included?
+            - img [ref=e744]
+          - paragraph [ref=e746]: Pro tier includes the AI Code Explainer powered by Claude. Paste any code, choose a depth level (5-year-old to senior dev), and get a plain-language explanation designed for learning, not just debugging.
+        - generic [ref=e747]:
+          - button "Is the free tier truly free?" [ref=e748]:
+            - generic [ref=e749]: Is the free tier truly free?
+            - img [ref=e750]
+          - paragraph [ref=e752]: Yes. No credit card required. Free includes unlimited Pomodoro sessions, TIL logging, flashcards, and up to 3 roadmaps. Upgrade to Pro for AI features, unlimited roadmaps, and advanced analytics.
+    - generic [ref=e754]:
+      - heading "Stop losing your learning." [level=2] [ref=e755]:
+        - text: Stop losing
+        - text: your learning.
+      - paragraph [ref=e756]: Every session adds to your knowledge base. Six months from now, you'll have a searchable record of everything you've learned — and it starts today.
+      - link "Start building your knowledge base" [ref=e758] [cursor=pointer]:
+        - /url: /sign-up
+        - text: Start building your knowledge base
+        - img [ref=e759]
+      - paragraph [ref=e761]: No credit card required
+    - contentinfo [ref=e762]:
+      - generic [ref=e763]:
+        - generic [ref=e764]:
+          - generic [ref=e765]:
+            - generic [ref=e766]: COMMIT_|
+            - paragraph [ref=e767]: The developer learning workspace.
+          - generic [ref=e768]:
+            - button "Features" [ref=e769]
+            - button "How It Works" [ref=e770]
+            - button "Pricing" [ref=e771]
+            - link "Sign In" [ref=e772] [cursor=pointer]:
+              - /url: /sign-in
+            - link "Sign Up" [ref=e773] [cursor=pointer]:
+              - /url: /sign-up
+            - link "Privacy" [ref=e774] [cursor=pointer]:
+              - /url: /privacy
+            - link "Terms" [ref=e775] [cursor=pointer]:
+              - /url: /terms
+        - generic [ref=e776]:
+          - paragraph [ref=e777]: © 2026 Commit. Built by Adrian Salinas.
+          - paragraph [ref=e778]: All rights reserved.
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e784] [cursor=pointer]:
+    - img [ref=e785]
+  - alert [ref=e788]

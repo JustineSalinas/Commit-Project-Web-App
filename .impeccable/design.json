@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-09T00:00:00Z",
+  "title": "Design System: Commit",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Precision Mint",
+        "canonical": "oklch(92% 0.21 158)",
+        "tonalRamp": ["oklch(25% 0.12 158)","oklch(35% 0.15 158)","oklch(45% 0.17 158)","oklch(55% 0.19 158)","oklch(65% 0.21 158)","oklch(75% 0.22 158)","oklch(85% 0.22 158)","oklch(92% 0.21 158)"]
+      },
+      "bg-base": {
+        "role": "neutral",
+        "displayName": "Void",
+        "canonical": "oklch(10% 0.002 270)",
+        "tonalRamp": ["oklch(8% 0.002 270)","oklch(12% 0.002 270)","oklch(16% 0.002 270)","oklch(20% 0.002 270)","oklch(30% 0.002 270)","oklch(50% 0.002 270)","oklch(70% 0.002 270)","oklch(90% 0.002 270)"]
+      },
+      "bg-surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "oklch(13% 0.002 270)",
+        "tonalRamp": ["oklch(8% 0.002 270)","oklch(11% 0.002 270)","oklch(14% 0.002 270)","oklch(18% 0.002 270)","oklch(25% 0.002 270)","oklch(40% 0.002 270)","oklch(60% 0.002 270)","oklch(85% 0.002 270)"]
+      },
+      "text-primary": {
+        "role": "neutral",
+        "displayName": "Near White",
+        "canonical": "oklch(98% 0.002 270)",
+        "tonalRamp": ["oklch(20% 0.002 270)","oklch(35% 0.002 270)","oklch(50% 0.002 270)","oklch(65% 0.002 270)","oklch(75% 0.002 270)","oklch(85% 0.002 270)","oklch(93% 0.002 270)","oklch(98% 0.002 270)"]
+      },
+      "danger": {
+        "role": "semantic",
+        "displayName": "Alert Red",
+        "canonical": "oklch(60% 0.22 20)",
+        "tonalRamp": ["oklch(25% 0.15 20)","oklch(35% 0.18 20)","oklch(45% 0.20 20)","oklch(55% 0.22 20)","oklch(62% 0.22 20)","oklch(70% 0.20 20)","oklch(80% 0.18 20)","oklch(90% 0.10 20)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page-level hero headlines only. Never inside components." },
+      "headline": { "displayName": "Headline", "purpose": "Section headings and major UI titles. One per section." },
+      "title": { "displayName": "Title", "purpose": "Component headings, card titles, modal titles." },
+      "body": { "displayName": "Body", "purpose": "All prose and descriptions. Max 65ch line length." },
+      "label": { "displayName": "Label / Data", "purpose": "Monospace kickers, metadata, timestamps, data values. Uppercase, tracked." }
+    },
+    "shadows": [
+      {
+        "name": "structural-float",
+        "value": "0 25px 50px -12px rgba(0,0,0,0.5)",
+        "purpose": "Physically separates floating elements (hero mock, modals, popovers) from the page. Not used for hover states or ambient glow."
+      }
+    ],
+    "motion": [
+      { "name": "ease-spring", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Default easing for all reveal and state transitions. Spring-like feel without bounce." },
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Short interactions: hover color changes, border transitions. 150-300ms." },
+      { "name": "duration-fast", "value": "150ms", "purpose": "Hover color, border shifts." },
+      { "name": "duration-base", "value": "300ms", "purpose": "Navbar scroll transition, accordion expand." },
+      { "name": "duration-reveal", "value": "700ms", "purpose": "Scroll-reveal transitions." },
+      { "name": "reduced-motion", "value": "opacity 200ms ease", "purpose": "@media (prefers-reduced-motion): crossfade or instant; never skip the transition entirely." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single primary CTA per view. Precision Mint background, black text. Rare — one per screen region.",
+      "html": "<button class=\"ds-btn-primary\"><span>Start for free</span><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: #00FFAA; color: #000; font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; border: none; border-radius: 12px; cursor: pointer; transition: background 180ms ease, transform 120ms ease; } .ds-btn-primary:hover { background: #00E599; } .ds-btn-primary:active { transform: scale(0.97); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action. Structural border, secondary text. Directional hover fill from entry side.",
+      "html": "<button class=\"ds-btn-ghost\">See features</button>",
+      "css": ".ds-btn-ghost { position: relative; overflow: hidden; display: inline-flex; align-items: center; padding: 14px 28px; background: transparent; color: #A1A1AA; font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 500; border: 1px solid #1A1A1F; border-radius: 12px; cursor: pointer; transition: border-color 200ms ease, color 200ms ease; } .ds-btn-ghost:hover { border-color: #27272A; color: #FAFAFA; } .ds-btn-ghost::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.06); transform: translateX(-105%); transition: transform 350ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-ghost:hover::after { transform: translateX(0); }"
+    },
+    {
+      "name": "Bento Card",
+      "kind": "card",
+      "refersTo": "card-bento",
+      "description": "The primary container for feature content. Tonal surface, spotlight cursor effect on hover.",
+      "html": "<div class=\"ds-card-bento\"><div class=\"ds-card-icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#00FFAA\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/></svg></div><h3 class=\"ds-card-title\">Pomodoro Timer</h3><p class=\"ds-card-body\">25-minute sessions linked to your roadmap milestones.</p></div>",
+      "css": ".ds-card-bento { position: relative; isolation: isolate; padding: 24px; background: #111113; border: 1px solid #1A1A1F; border-radius: 16px; transition: border-color 200ms ease; } .ds-card-bento:hover { border-color: #27272A; } .ds-card-bento::before { content: ''; position: absolute; inset: 0; border-radius: 16px; background: radial-gradient(circle 260px at var(--sx,-100px) var(--sy,-100px), rgba(0,255,170,0.07), transparent 65%); pointer-events: none; z-index: 0; } .ds-card-icon { width: 40px; height: 40px; border-radius: 12px; background: rgba(0,255,170,0.1); border: 1px solid rgba(0,255,170,0.2); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; } .ds-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 600; color: #FAFAFA; margin: 0 0 8px; } .ds-card-body { font-family: 'Space Grotesk', sans-serif; font-size: 14px; color: #A1A1AA; line-height: 1.6; margin: 0; }"
+    },
+    {
+      "name": "Pricing Card (Highlighted)",
+      "kind": "card",
+      "refersTo": "card-pricing-highlighted",
+      "description": "The recommended tier. Accent-tinted border, 'Most popular' badge. One per pricing section.",
+      "html": "<div class=\"ds-card-pricing-hl\"><div class=\"ds-pricing-badge\">Most popular</div><h3 class=\"ds-pricing-name\">Pro</h3><div class=\"ds-pricing-price\"><span class=\"ds-pricing-amount\">$9</span><span class=\"ds-pricing-period\">/ month</span></div></div>",
+      "css": ".ds-card-pricing-hl { position: relative; padding: 28px; background: #111113; border: 1px solid rgba(0,255,170,0.4); border-radius: 16px; } .ds-pricing-badge { position: absolute; top: -1px; left: 32px; padding: 4px 12px; background: #00FFAA; color: #000; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 0 0 8px 8px; } .ds-pricing-name { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; color: #FAFAFA; margin: 16px 0 4px; } .ds-pricing-amount { font-family: 'Space Grotesk', sans-serif; font-size: 48px; font-weight: 700; color: #FAFAFA; } .ds-pricing-period { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #71717A; margin-left: 8px; }"
+    },
+    {
+      "name": "Monospace Label / Kicker",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Section orientation label. JetBrains Mono, 11px, uppercase, wide-tracked, Precision Mint. One per section.",
+      "html": "<span class=\"ds-kicker\">Features</span>",
+      "css": ".ds-kicker { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: #00FFAA; display: block; }"
+    },
+    {
+      "name": "Navigation (Scrolled State)",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "Sticky header after scroll. Frosted void background, structural bottom border.",
+      "html": "<header class=\"ds-nav\"><span class=\"ds-nav-logo\">COMMIT_<span class=\"ds-nav-cursor\">|</span></span><nav class=\"ds-nav-links\"><a href=\"#\" class=\"ds-nav-link\">Features</a><a href=\"#\" class=\"ds-nav-link\">Pricing</a></nav></header>",
+      "css": ".ds-nav { position: fixed; top: 0; left: 0; right: 0; height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: rgba(9,9,11,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid #1A1A1F; } .ds-nav-logo { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 0.2em; color: #00FFAA; } .ds-nav-cursor { animation: blink 1s step-end infinite; } @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} } .ds-nav-links { display: flex; gap: 32px; } .ds-nav-link { font-family: 'Space Grotesk', sans-serif; font-size: 14px; color: #A1A1AA; text-decoration: none; transition: color 200ms ease; } .ds-nav-link:hover { color: #FAFAFA; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Architect's Sketchbook",
+    "overview": "Commit's visual language is built on restraint and precision. The surface is near-void — dark enough that the UI disappears, leaving only the data. Generous negative space acts as structure; the borders and dividers are the grid. Nothing is decorative. Every component earns its presence by carrying signal the user needs right now.\n\nThe mint accent (#00FFAA) is not a brand color in the conventional sense. It is a measurement instrument. It marks what is live, what is active, what has been completed. Its rarity on any given screen is precisely what makes it meaningful.\n\nThis system explicitly rejects curriculum-driven UI, gamification chrome, and generic dark SaaS aesthetics.",
+    "keyCharacteristics": [
+      "Near-void dark ground with tonal layering",
+      "Mint accent used sparingly: active state, completion, key measurements only",
+      "Monospace for all data, metrics, labels, and timestamps",
+      "Typography hierarchy built on weight and size contrast, not color",
+      "Borders as structural dividers, not decoration"
+    ],
+    "rules": [
+      { "name": "The Rarity Rule", "body": "Precision Mint at full opacity is permitted only when it carries active or completion state, a live measurement, or the single primary CTA per view.", "section": "colors" },
+      { "name": "The Tonal Depth Rule", "body": "Depth is expressed through the three surface levels (bg-base, bg-surface, bg-elevated). No box shadows. No blur layers. No glassmorphism.", "section": "elevation" },
+      { "name": "The No Ambient Shadow Rule", "body": "Box shadows are prohibited except to physically separate a floating element from the page. No ambient glow under buttons.", "section": "elevation" },
+      { "name": "The Two Registers Rule", "body": "Space Grotesk for meaning; JetBrains Mono for measurement. Never swap them.", "section": "typography" },
+      { "name": "The Label Scarcity Rule", "body": "Monospace uppercase labels are permitted once per section as orientation. A kicker on every card is noise, not system.", "section": "typography" }
+    ],
+    "dos": [
+      "Use JetBrains Mono for all numerical data, timestamps, session metadata, and status labels",
+      "Let the Precision Mint accent touch ≤15% of any screen at full opacity",
+      "Express depth through tonal surface levels, never through shadows",
+      "Use text-wrap: balance on h1–h3 to prevent orphan lines",
+      "Write button labels as verb + object: 'Start for free', 'Delete session', 'Export PDF'",
+      "Show empty states as instructive — explain what the component will show once populated",
+      "Apply reduced-motion alternatives to every animation"
+    ],
+    "donts": [
+      "Don't build curriculum UI: no lesson trees, no 'complete this module' paths, no XP bars",
+      "Don't gamify: no streak-as-product toasts, no mascots, no celebration animations for routine actions",
+      "Don't use purple or blue gradients, neon glows, or glassmorphism as decoration",
+      "Don't put a monospace uppercase kicker on every section and every card",
+      "Don't use gradient text (background-clip: text)",
+      "Don't use border-left greater than 1px as a colored accent stripe",
+      "Don't add shadows to buttons, card hover states, or section backgrounds",
+      "Don't use the accent color as a brand wash or background fill"
+    ]
+  }
+}
