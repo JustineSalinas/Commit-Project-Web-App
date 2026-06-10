@@ -1,10 +1,13 @@
-import { getProfileData } from "@/app/actions/crud";
+import { getProfileData, getBillingInfo } from "@/app/actions/crud";
 import { ProfileHeatmap } from "@/components/profile/ProfileHeatmap";
-import { UserPlus, Activity, BookOpen, Layers, User } from "lucide-react";
+import { PlanBadge } from "@/components/billing/PlanBadge";
+import { UserPlus, Activity, BookOpen, Layers, User, Sparkles } from "lucide-react";
 import Link from "next/link";
+import type { PlanTier } from "@/lib/billing/plans.config";
 
 export default async function ProfilePage() {
-  const profileData = await getProfileData();
+  const [profileData, billing] = await Promise.all([getProfileData(), getBillingInfo()]);
+  const plan = (billing?.plan as PlanTier) || "free";
 
   if (!profileData || !profileData.user) {
     return (
@@ -84,15 +87,25 @@ export default async function ProfilePage() {
         {/* Right Column - Info & Stats */}
         <div className="flex-1 space-y-6 pt-2">
           <div>
-            <div className="flex items-center gap-4 mb-2">
+            <div className="flex items-center gap-4 mb-2 flex-wrap">
               <h1 className="text-4xl font-extrabold text-[var(--text-primary)]">{displayName}</h1>
               <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border-muted)] rounded-md">
                 {displayTitle}
               </span>
+              <PlanBadge plan={plan} />
             </div>
             <p className="text-[var(--text-secondary)] text-lg max-w-2xl leading-relaxed">
               {displayBio}
             </p>
+            {plan === "free" && (
+              <Link
+                href="/settings?tab=billing"
+                className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-[var(--accent)] bg-[var(--accent)]/8 hover:bg-[var(--accent)]/15 border border-[var(--accent)]/20 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Upgrade to Pro — unlock unlimited features
+              </Link>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">

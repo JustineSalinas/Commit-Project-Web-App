@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Map, Plus, CheckCircle, Circle, ArrowRight, BookOpen, Clock, Lock, Link as LinkIcon, Share2, Download } from "lucide-react";
 import { addRoadmapMilestone, markRoadmapStatus, importRoadmapTemplate, exportRoadmapMarkdown } from "@/app/actions/crud";
+import { UpgradePrompt } from "@/components/billing/UpgradePrompt";
 
 export default function RoadmapClient({ initialRoadmap, userId }: { initialRoadmap: any[], userId?: string }) {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function RoadmapClient({ initialRoadmap, userId }: { initialRoadm
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [exporting, setExporting] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
 
   const handleExport = async () => {
     setExporting(true);
@@ -45,6 +47,9 @@ export default function RoadmapClient({ initialRoadmap, userId }: { initialRoadm
         setTitle("");
         setDescription("");
         router.refresh();
+      } else if (result.error === 'upgrade_required') {
+        setIsModalOpen(false);
+        setShowUpgradePrompt(true);
       } else {
         setError(result.error || "Failed to save");
       }
@@ -80,6 +85,9 @@ export default function RoadmapClient({ initialRoadmap, userId }: { initialRoadm
 
   return (
     <div className="space-y-6 relative h-full pb-20">
+      {showUpgradePrompt && (
+        <UpgradePrompt feature="Unlimited Roadmap Milestones" onClose={() => setShowUpgradePrompt(false)} />
+      )}
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2 text-[var(--text-primary)]">

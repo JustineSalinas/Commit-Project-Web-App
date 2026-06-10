@@ -1,21 +1,17 @@
 import { Calendar, Flame } from "lucide-react";
-import { getDashboardStats } from "@/app/actions/crud";
+import { getHeatmapData, getDashboardStats } from "@/app/actions/crud";
 
 export default async function HeatmapPage() {
-  const stats = await getDashboardStats();
-  const data = stats.heatmap;
-  // stats.streak is a string like "12 Days". Let's extract the number.
+  const [data, stats] = await Promise.all([getHeatmapData(), getDashboardStats()]);
   const streakMatch = stats.streak.match(/(\d+)/);
   const streak = streakMatch ? parseInt(streakMatch[0], 10) : 0;
 
-  // Generate the last 364 days (52 weeks x 7 days)
   const today = new Date();
   const daysArray: { dateStr: string; count: number }[] = [];
-  
+
   for (let i = 363; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    // getDashboardStats returns keys as toDateString(), so we use that!
     const localStr = d.toDateString();
     daysArray.push({
       dateStr: localStr,
@@ -68,10 +64,10 @@ export default async function HeatmapPage() {
                   const dayData = daysArray[dayIndex];
                   if (!dayData) return <div key={d_idx} className="w-3 h-3" />;
                   return (
-                    <div 
-                      key={d_idx} 
+                    <div
+                      key={d_idx}
                       className={`w-3 h-3 rounded-sm ${getColor(dayData.count)} hover:ring-1 hover:ring-[var(--text-muted)] cursor-pointer transition-all`}
-                      title={`${dayData.count} sessions on ${dayData.dateStr}`}
+                      title={`${dayData.count} ${dayData.count === 1 ? "activity" : "activities"} on ${dayData.dateStr}`}
                     />
                   );
                 })}
@@ -80,7 +76,7 @@ export default async function HeatmapPage() {
           </div>
           
           <div className="mt-4 flex items-center justify-between text-xs text-[var(--text-secondary)]">
-            <span>Learn to rest, not to quit.</span>
+            <span>Tracks focus sessions, TILs, journals, bugs, snippets &amp; roadmap updates.</span>
             <div className="flex items-center gap-2">
               <span>Less</span>
               <div className="w-3 h-3 rounded-sm bg-[var(--bg-elevated)]" />

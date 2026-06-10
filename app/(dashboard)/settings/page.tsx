@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { UserProfile, useUser } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { useSettingsStore } from "@/lib/store/useSettingsStore";
@@ -487,9 +488,9 @@ function ReposTab() {
 
 /* ─── Main Settings Page ─── */
 
-export default function SettingsPage() {
-  const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-  const initialTab = (searchParams?.get("tab") as SettingsTab | null) || "profile";
+function SettingsContent() {
+  const searchParams = useSearchParams();
+  const initialTab = (searchParams.get("tab") as SettingsTab | null) || "profile";
   const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
 
   const renderTabContent = () => {
@@ -542,5 +543,13 @@ export default function SettingsPage() {
         <div className="flex-1 min-w-0">{renderTabContent()}</div>
       </div>
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-[var(--text-secondary)]">Loading settings...</div>}>
+      <SettingsContent />
+    </Suspense>
   );
 }

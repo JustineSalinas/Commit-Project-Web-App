@@ -1,6 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { isPro } from '@/lib/plans';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || '',
@@ -10,7 +12,14 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages, model, system } = await req.json();
+    const { messages, model, system, depth } = await req.json();
+
+    if (depth && depth !== 'basic') {
+      const { userId } = await auth();
+      if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      const pro = await isPro(userId);
+      if (!pro) return NextResponse.json({ error: 'upgrade_required' }, { status: 403 });
+    }
 
     const geminiKey = process.env.GEMINI_API_KEY;
     const anthropicKey = process.env.ANTHROPIC_API_KEY;

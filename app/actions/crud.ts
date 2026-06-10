@@ -299,7 +299,14 @@ export async function addRoadmapMilestone(data: { title: string; description?: s
   try {
     const userId = await getUserId();
     await ensureTablesExist();
-    
+
+    const existing = await db.query.roadmap.findMany({ where: eq(roadmap.userId, userId) });
+    if (existing.length >= 15) {
+      const { isPro } = await import("@/lib/plans");
+      const pro = await isPro(userId);
+      if (!pro) return { success: false, error: 'upgrade_required' };
+    }
+
     const subGoalsJson = data.subGoals ? JSON.stringify(data.subGoals) : null;
 
     // Using raw SQL to avoid driver issues with the 'default' keyword
@@ -1117,20 +1124,22 @@ export async function getHeatmapData() {
   const userId = await getUserId();
   try {
     await ensureTablesExist();
-    // Get all focus sessions
-    const sessions = await db.query.focusSessions.findMany({ 
-      where: eq(focusSessions.userId, userId),
-      columns: { createdAt: true }
-    });
-    
-    // Group by date string (YYYY-MM-DD local time is easiest for UI)
+
+    const [sessionsData, tilsData, journalsData, bugsData, snippetsData, roadmapData] = await Promise.all([
+      db.query.focusSessions.findMany({ where: eq(focusSessions.userId, userId), columns: { createdAt: true } }),
+      db.query.tils.findMany({ where: eq(tils.userId, userId), columns: { createdAt: true } }),
+      db.query.journals.findMany({ where: eq(journals.userId, userId), columns: { createdAt: true } }),
+      db.query.bugs.findMany({ where: eq(bugs.userId, userId), columns: { createdAt: true } }),
+      db.query.snippets.findMany({ where: eq(snippets.userId, userId), columns: { createdAt: true } }),
+      db.query.roadmap.findMany({ where: eq(roadmap.userId, userId), columns: { createdAt: true } }),
+    ]);
+
     const map: Record<string, number> = {};
-    sessions.forEach(s => {
-      if (!s.createdAt) return;
-      const d = new Date(s.createdAt);
-      // Constructing local YYYY-MM-DD
-      const localStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-      map[localStr] = (map[localStr] || 0) + 1;
+    [...sessionsData, ...tilsData, ...journalsData, ...bugsData, ...snippetsData, ...roadmapData].forEach(item => {
+      if (!item.createdAt) return;
+      const d = new Date(item.createdAt);
+      const key = d.toDateString();
+      map[key] = (map[key] || 0) + 1;
     });
 
     return map;

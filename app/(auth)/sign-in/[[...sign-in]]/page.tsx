@@ -4,6 +4,7 @@ import { dark } from "@clerk/themes";
 export default function SignInPage() {
   return (
     <SignIn
+      fallbackRedirectUrl="/dashboard"
       appearance={{
         baseTheme: dark,
         variables: {

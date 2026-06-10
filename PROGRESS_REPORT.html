@@ -68,13 +68,13 @@
 <body>
 
 <h1>COMMIT_ Build Progress Report</h1>
-<p class="subtitle">Developer Learning Workspace &nbsp;·&nbsp; <span class="date">Generated: June 9, 2026</span></p>
+<p class="subtitle">Developer Learning Workspace &nbsp;·&nbsp; <span class="date">Generated: June 10, 2026</span></p>
 
 <!-- SUMMARY STATS -->
 <div class="summary-grid">
-  <div class="stat-card"><div class="num">38</div><div class="lbl">Files created / modified</div></div>
+  <div class="stat-card"><div class="num">55</div><div class="lbl">Files created / modified</div></div>
   <div class="stat-card"><div class="num">6</div><div class="lbl">API routes built</div></div>
-  <div class="stat-card"><div class="num">5</div><div class="lbl">Phases completed</div></div>
+  <div class="stat-card"><div class="num">8</div><div class="lbl">Phases completed</div></div>
   <div class="stat-card"><div class="num">2</div><div class="lbl">Payment providers integrated</div></div>
 </div>
 
@@ -285,6 +285,82 @@
   </tbody>
 </table>
 
+<h2>Phase 6 — Security &amp; Plan Gates <span class="phase-badge done">Complete</span></h2>
+
+<table>
+  <thead><tr><th>File</th><th>What changed</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="file">app/api/chat/route.ts</td>
+      <td>Server-side depth gate: if <code>depth</code> is <code>advanced</code> or <code>expert</code>, verifies the user is Pro via <code>isPro()</code> and returns 403 if not. Prevents bypassing the UI lock by direct POST.</td>
+      <td><span class="badge badge-done">Done</span></td>
+    </tr>
+    <tr>
+      <td class="file">app/actions/crud.ts</td>
+      <td><code>addRoadmapMilestone()</code> — free-tier gate at 15 milestones. Returns <code>{ error: 'upgrade_required' }</code> if limit exceeded and user is not Pro.</td>
+      <td><span class="badge badge-done">Done</span></td>
+    </tr>
+    <tr>
+      <td class="file">app/(dashboard)/roadmap/RoadmapClient.tsx</td>
+      <td>Catches <code>upgrade_required</code> from <code>addRoadmapMilestone()</code> and shows <code>UpgradePrompt</code> modal instead of generic error.</td>
+      <td><span class="badge badge-done">Done</span></td>
+    </tr>
+    <tr>
+      <td class="file">app/(dashboard)/snippets/SnippetsClient.tsx</td>
+      <td>Catches <code>upgrade_required</code> from <code>addSnippet()</code> (50-snippet free limit already in CRUD) and shows <code>UpgradePrompt</code> modal.</td>
+      <td><span class="badge badge-done">Done</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Phase 7 — UX Polish <span class="phase-badge done">Complete</span></h2>
+
+<table>
+  <thead><tr><th>File</th><th>What changed</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="file">app/(dashboard)/settings/page.tsx</td>
+      <td>Replaced <code>window.location.search</code> SSR workaround with <code>useSearchParams()</code> from <code>next/navigation</code>, wrapped in <code>&lt;Suspense&gt;</code>. Billing tab auto-activates reliably after payment redirect in all environments.</td>
+      <td><span class="badge badge-done">Done</span></td>
+    </tr>
+    <tr>
+      <td class="file">components/onboarding/OnboardingModal.tsx</td>
+      <td>Expanded from 3 → 5 steps. Added Step 3 <strong>Learning Track</strong> (Web Dev / Backend / CS Fundamentals / Mobile / Data) and Step 4 <strong>Primary Goal</strong> (Get a job / Build a project / Pass a bootcamp / Learn for fun). Both saved into <code>preferences</code> JSON in profiles. Continue is disabled until a selection is made.</td>
+      <td><span class="badge badge-done">Done</span></td>
+    </tr>
+    <tr>
+      <td class="file">app/actions/crud.ts + app/(dashboard)/heatmap/page.tsx</td>
+      <td><code>getHeatmapData()</code> now aggregates all 6 sources (focus sessions, TILs, journals, bugs, snippets, roadmap) via <code>Promise.all</code>. Heatmap page uses <code>getHeatmapData()</code> directly. Tooltip changed from "sessions" → "activities". Legend caption lists all tracked sources.</td>
+      <td><span class="badge badge-done">Done</span></td>
+    </tr>
+    <tr>
+      <td class="file">app/(dashboard)/profile/page.tsx</td>
+      <td>Calls <code>getBillingInfo()</code> in parallel with <code>getProfileData()</code>. <code>PlanBadge</code> shown inline next to display name. Free users see a mint "Upgrade to Pro" nudge below their bio linking to <code>/settings?tab=billing</code>.</td>
+      <td><span class="badge badge-done">Done</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Phase 8 — Production Deployment Prep <span class="phase-badge done">Complete</span></h2>
+
+<table>
+  <thead><tr><th>File</th><th>What changed</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="file">.env.example</td>
+      <td>Created with all 9 required env vars documented (Clerk, Supabase, Gemini, PayMongo, Stripe, App URL). Includes where to get each key, test vs live key notes, and webhook setup instructions.</td>
+      <td><span class="badge badge-done">Done</span></td>
+    </tr>
+    <tr>
+      <td class="file">app/(auth)/sign-in/.../page.tsx<br>app/(auth)/sign-up/.../page.tsx</td>
+      <td>Added <code>fallbackRedirectUrl="/dashboard"</code> to <code>&lt;SignIn&gt;</code> and <code>&lt;SignUp&gt;</code> components — Clerk v5 modern API. Fixes the <code>afterSignInUrl is deprecated</code> console warning seen in Playwright logs.</td>
+      <td><span class="badge badge-done">Done</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="desc" style="margin-bottom:24px;">Remaining production checklist (manual steps — no code needed): switch Clerk/PayMongo/Stripe to live keys, update <code>NEXT_PUBLIC_APP_URL</code> to production domain, register webhooks on production URLs in both dashboards.</p>
+
 <div class="divider"></div>
 
 <!-- ════════════════════════════════════════════════
@@ -320,6 +396,10 @@
 
 <h2>Next Priority Tasks <span class="phase-badge next">Upcoming</span></h2>
 
+<div class="note" style="margin-bottom:16px;">
+  <strong>8 of 11 original tasks are complete.</strong> 3 tasks remain: one is config-only (you add the keys), two are medium-complexity code tasks.
+</div>
+
 <table>
   <thead><tr><th>#</th><th>Task</th><th>Priority</th><th>Complexity</th><th>Notes</th></tr></thead>
   <tbody>
@@ -328,87 +408,21 @@
       <td><strong>Add PayMongo &amp; Stripe keys + test payment flow</strong></td>
       <td><span class="badge badge-blocker">P0 Blocker</span></td>
       <td>Low (config only)</td>
-      <td>Use PayMongo test keys (pk_test_..., sk_test_...) and Stripe test mode. Run <code>stripe listen --forward-to localhost:3000/api/webhooks/stripe</code> during testing. After a successful checkout, verify profiles.plan updates to 'pro' in Supabase.</td>
+      <td>Use PayMongo test keys (<code>pk_test_...</code>, <code>sk_test_...</code>) and Stripe test mode. Run <code>stripe listen --forward-to localhost:3000/api/webhooks/stripe</code> during local testing. After a successful checkout, verify <code>profiles.plan</code> updates to <code>'pro'</code> in Supabase. See <code>.env.example</code> for all required vars and where to get them.</td>
     </tr>
     <tr>
       <td>2</td>
-      <td><strong>Server-side AI depth gate at /api/chat</strong></td>
-      <td><span class="badge badge-next">P1</span></td>
-      <td>Low (1 file)</td>
-      <td>Currently depth is gated client-side in the UI (non-Pro can't click Advanced). Need to also validate at the API route level: if depth != 'basic' and user is not Pro, return 403. Without this, a savvy user could POST directly to /api/chat with depth=expert. Read the existing /api/chat route and add isPro() check.</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td><strong>Roadmap milestone free-tier gate</strong></td>
-      <td><span class="badge badge-next">P1</span></td>
-      <td>Low (1 action)</td>
-      <td>addRoadmapMilestone() in crud.ts currently has no plan limit. Add: count existing roadmap items for userId; if &gt;= 15 (approx 3 roadmaps × 5 milestones) and not pro, return { error: 'upgrade_required' }. Then wire UpgradePrompt in RoadmapClient when this error is returned.</td>
-    </tr>
-    <tr>
-      <td>4</td>
-      <td><strong>Settings tab URL param with useSearchParams</strong></td>
-      <td><span class="badge badge-next">P2</span></td>
-      <td>Low (1 file)</td>
-      <td>Currently uses window.location.search to read ?tab= which can cause SSR issues. Replace with Next.js useSearchParams() hook wrapped in Suspense. This ensures the billing tab auto-activates after a payment redirect in all environments.</td>
-    </tr>
-    <tr>
-      <td>5</td>
       <td><strong>Team subscription lifecycle</strong></td>
       <td><span class="badge badge-next">P2</span></td>
       <td>Medium (2-3 files)</td>
-      <td>When a user upgrades to Teams plan via webhook, auto-create a team for them if one doesn't exist. Currently the team must be created manually on the /team page after upgrading. The webhook handler in api/webhooks/stripe should call createTeam() if plan === 'teams' and no team exists.</td>
+      <td>When a user upgrades to Teams plan via Stripe webhook, auto-create a team for them if one doesn't exist. Currently the team must be created manually on <code>/team</code> after upgrading. The webhook handler in <code>api/webhooks/stripe/route.ts</code> should call <code>createTeam()</code> if <code>plan === 'teams'</code> and the user has no existing team. Also handle PayMongo webhook for the same case.</td>
     </tr>
     <tr>
-      <td>6</td>
+      <td>3</td>
       <td><strong>PDF Export (jsPDF)</strong></td>
       <td><span class="badge badge-next">P2</span></td>
-      <td>Medium (2 files)</td>
-      <td>jsPDF is already installed (v4.2.1). Pattern: server action returns plain text/markdown string → client component imports jsPDF, generates PDF in browser, triggers download. Build exportJournalPdf() client utility. Add PDF button alongside the existing Markdown export button in journal and roadmap pages. Remember: jsPDF must only run in browser — never in server actions or API routes.</td>
-    </tr>
-    <tr>
-      <td>7</td>
-      <td><strong>UpgradePrompt wired to snippet gate</strong></td>
-      <td><span class="badge badge-next">P2</span></td>
-      <td>Low (1 file)</td>
-      <td>addSnippet() returns { error: 'upgrade_required' } for free users at 50 snippets. The SnippetsClient needs to catch this specific error and show the UpgradePrompt modal component instead of a generic error toast.</td>
-    </tr>
-    <tr>
-      <td>8</td>
-      <td><strong>Onboarding modal — Track + Goal steps</strong></td>
-      <td><span class="badge badge-next">P2</span></td>
-      <td>Medium (1 file)</td>
-      <td>The OnboardingModal currently collects preferences. Add two additional steps: (1) Learning Track selector (Web Dev / Backend / CS Fundamentals / Mobile / Data), (2) Primary Goal (Get a job / Build a project / Pass a bootcamp / Learn for fun). Store as part of preferences JSON in profiles. This data can power roadmap template suggestions.</td>
-    </tr>
-    <tr>
-      <td>9</td>
-      <td><strong>Heatmap page — show all activity sources</strong></td>
-      <td><span class="badge badge-next">P3</span></td>
-      <td>Low (1 file)</td>
-      <td>The /heatmap page currently shows focus sessions only. getHeatmapData() in crud.ts already aggregates TILs, journals, snippets, bugs, roadmap items. Wire all these sources into the heatmap visualization for a richer activity view.</td>
-    </tr>
-    <tr>
-      <td>10</td>
-      <td><strong>Profile page — plan badge + upgrade CTA</strong></td>
-      <td><span class="badge badge-next">P3</span></td>
-      <td>Low (1 file)</td>
-      <td>Add PlanBadge component to the public profile page to show the user's plan tier. For free users viewing their own profile, show a subtle "Upgrade to Pro" nudge. For teams users, show team name and member count.</td>
-    </tr>
-    <tr>
-      <td>11</td>
-      <td><strong>Production deployment prep</strong></td>
-      <td><span class="badge badge-next">P3</span></td>
-      <td>Medium</td>
-      <td>
-        Checklist before going live:<br>
-        • Switch Clerk to production keys<br>
-        • Switch PayMongo to live keys (sk_live_...)<br>
-        • Switch Stripe to live mode<br>
-        • Update NEXT_PUBLIC_APP_URL to production domain<br>
-        • Register webhooks on production URL in PayMongo and Stripe dashboards<br>
-        • Set up Stripe CLI or webhook relay for production webhook delivery<br>
-        • Enable NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL to redirect to dashboard (currently /dashboard but app root is /)<br>
-        • Review Clerk dev key warning in console
-      </td>
+      <td>Medium (2–3 files)</td>
+      <td>jsPDF is already installed (v4.2.1). Pattern: server action returns the existing markdown string → client component imports jsPDF dynamically, generates PDF in browser, triggers download. Add a PDF button alongside the existing Markdown export button in both journal and roadmap pages. <strong>Critical:</strong> jsPDF must only run in the browser — never import it in server actions or API routes. Use <code>await import('jspdf')</code> inside a click handler.</td>
     </tr>
   </tbody>
 </table>
@@ -449,6 +463,14 @@
   <strong>Stale .next Cache:</strong> If the app returns 500 with "React Client Manifest" errors after code changes, delete the <code>.next</code> folder and restart the dev server. This is a Turbopack known issue with certain file structure changes.
 </div>
 
+<div class="note">
+  <strong>Onboarding Preferences Schema:</strong> <code>profiles.preferences</code> is a JSON column. After Phase 7, the shape is <code>{ preferredIDE, languages[], workflow, learningTrack, primaryGoal }</code>. <code>learningTrack</code> values: <code>web-dev | backend | cs-fundamentals | mobile | data</code>. <code>primaryGoal</code> values: <code>get-a-job | build-project | pass-bootcamp | learn-for-fun</code>. These can power roadmap template auto-selection in a future update.
+</div>
+
+<div class="note">
+  <strong>Clerk v5 Redirect API:</strong> <code>afterSignInUrl</code> / <code>afterSignUpUrl</code> props are deprecated in Clerk v5. Use <code>fallbackRedirectUrl</code> (redirects only if no other redirect is pending) or <code>forceRedirectUrl</code> (always redirects). Both <code>&lt;SignIn&gt;</code> and <code>&lt;SignUp&gt;</code> now use <code>fallbackRedirectUrl="/dashboard"</code>. The env vars <code>NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL</code> are the v5 equivalents of the old <code>NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL</code>.
+</div>
+
 <div class="divider"></div>
 
 <h2>Architecture Summary</h2>
@@ -474,7 +496,7 @@
 <div class="divider"></div>
 
 <p style="color:#71717A;font-size:0.75rem;text-align:center;padding-top:8px;">
-  Commit — Developer Learning Workspace &nbsp;·&nbsp; Built by Adrian Salinas &nbsp;·&nbsp; Report generated June 9, 2026
+  Commit — Developer Learning Workspace &nbsp;·&nbsp; Built by Adrian Salinas &nbsp;·&nbsp; Report generated June 10, 2026
 </p>
 
 <div class="no-print" style="margin-top:32px;text-align:center;">

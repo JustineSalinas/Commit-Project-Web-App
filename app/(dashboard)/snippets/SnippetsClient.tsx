@@ -4,19 +4,21 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Code2, Files, Plus, Search } from "lucide-react";
 import { addSnippet } from "@/app/actions/crud";
+import { UpgradePrompt } from "@/components/billing/UpgradePrompt";
 
 export default function SnippetsClient({ initialSnippets }: { initialSnippets: any[] }) {
   const router = useRouter();
   const [snippets, setSnippets] = useState(initialSnippets);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSnippet, setActiveSnippet] = useState<any>(initialSnippets.length > 0 ? initialSnippets[0] : null);
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [language, setLanguage] = useState("TypeScript");
   const [code, setCode] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
 
   const filteredSnippets = initialSnippets.filter(s => 
     s.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -36,7 +38,10 @@ export default function SnippetsClient({ initialSnippets }: { initialSnippets: a
       setIsModalOpen(false);
       setTitle("");
       setCode("");
-      router.refresh(); // Refresh data from server
+      router.refresh();
+    } else if (result.error === 'upgrade_required') {
+      setIsModalOpen(false);
+      setShowUpgradePrompt(true);
     } else {
       setError(result.error || "Failed to save");
     }
@@ -44,6 +49,9 @@ export default function SnippetsClient({ initialSnippets }: { initialSnippets: a
 
   return (
     <div className="space-y-6 h-full flex flex-col relative">
+      {showUpgradePrompt && (
+        <UpgradePrompt feature="Unlimited Code Snippets" onClose={() => setShowUpgradePrompt(false)} />
+      )}
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2 text-[var(--text-primary)]">
