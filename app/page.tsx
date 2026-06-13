@@ -22,6 +22,9 @@ import {
   Users,
   Pause,
   Play,
+  Zap,
+  LineChart,
+  GraduationCap,
 } from "lucide-react";
 
 // ─── Hooks ──────────────────────────────────────────────────────────────────
@@ -368,29 +371,81 @@ const PRICING_PLANS = [
 ];
 
 const FAQS = [
+  // ── Getting Started ──────────────────────────────────────────────
   {
-    q: "Is Commit a coding tutorial platform?",
-    a: "No. Commit doesn't teach you to code — it helps you learn better while you do. Think of it as infrastructure around your learning: structured sessions, retention tools, and a record of your growth. Bring your own resources.",
+    category: "Getting Started",
+    q: "What exactly is Commit, in one sentence?",
+    a: "Commit is a closed learning loop for developers: you run a 25-minute focused session, write what you learned, AI generates flashcards from your notes, and spaced repetition schedules the review at the exact moment your brain would otherwise forget — all inside one workspace.",
+    impact: "Every session leaves a permanent trace. Six months in, you have a searchable record of every concept you've ever touched — not a graveyard of half-read tabs and forgotten Notion pages.",
   },
   {
-    q: "How is this different from Notion or Obsidian?",
-    a: "Notion and Obsidian are blank canvases. Commit is purpose-built for developer learning workflows: a Pomodoro timer that ends with a structured prompt, SM-2 flashcard scheduling, concept mastery tracking, and a bug journal — all connected.",
+    category: "Getting Started",
+    q: "Is this for beginners, mid-level, or senior engineers?",
+    a: "All three, for different reasons. Beginners use it to build structured habits and stop bouncing between tutorials without retaining anything. Mid-level engineers use it to close knowledge gaps and accelerate toward senior-level topics. Senior engineers use it to onboard new stacks, prep for system design interviews, or build a written record of the mentoring and debugging insights that usually disappear in Slack threads.",
+    impact: "The tools adapt to your level. A junior's roadmap looks nothing like a staff engineer's, but the retention loop — session → log → review — works the same regardless of experience.",
   },
   {
-    q: "Do I need to use the Pomodoro technique?",
-    a: "It helps, but it's not required. The 25-minute session is the default trigger for the Commit Prompt and TIL log. You can adjust session length to match your flow.",
+    category: "Getting Started",
+    q: "Walk me through what a real 30-minute Commit session looks like.",
+    a: "Start a 25-minute Pomodoro and link it to a roadmap milestone (e.g., 'React hooks — useEffect dependencies'). Work on your topic — code, docs, a video, anything. When the timer ends, Commit shows one prompt: 'What did you learn?' Write 2–4 sentences in your own words. On Pro, AI Auto-Cards reads that entry and generates 3–6 optimally worded flashcards. Those cards join your spaced repetition queue with SM-2 scheduling. That's the whole loop — 25 minutes of work plus 5 minutes of capture.",
+    impact: "You go from 'I read about useEffect today' to 'I have a card due in 3 days that asks exactly the thing I struggled to articulate.' That 5-minute gap is where most developer knowledge permanently disappears.",
   },
   {
-    q: "How does spaced repetition work?",
-    a: "Commit uses the SM-2 algorithm — the same one behind Anki — to schedule flashcard reviews. Rate each card after review and the algorithm calculates the optimal next review date based on your confidence.",
+    category: "Getting Started",
+    q: "I already use Notion / Obsidian. Why isn't that enough?",
+    a: "Notion and Obsidian are blank canvases — great for storage, not for retention. They don't end each session with a structured learning prompt, don't schedule review at scientifically optimal intervals, don't track which concepts you've actually internalized versus just written down, and don't connect your notes to a spaced repetition queue. Commit doesn't replace your note-taking app — it replaces the forgetting that happens after you close it.",
+    impact: "The problem isn't where you store your notes. It's that nobody schedules re-reading them at the right time. Commit handles the scheduling automatically.",
+  },
+  // ── Learning & Retention ─────────────────────────────────────────
+  {
+    category: "Learning & Retention",
+    q: "Why is spaced repetition genuinely better than re-reading my notes?",
+    a: "Re-reading feels productive but produces weak retention — you're recognizing familiar material, not retrieving it from memory. Retrieval practice (actively recalling an answer before seeing it) is consistently the highest-leverage study technique in cognitive science research. Spaced repetition combines retrieval with optimal timing: reviews are scheduled to hit right before you'd forget, which forces your brain to reconstruct the memory each time. Commit uses the SM-2 algorithm — the same one behind Anki — and generates the cards from your own session notes so you're always reviewing in your own words.",
+    impact: "The main reason developers don't use Anki isn't skepticism — it's that making cards from scratch is tedious. AI Auto-Cards removes that bottleneck entirely.",
   },
   {
-    q: "What AI features are included?",
-    a: "Pro tier includes the AI Code Explainer powered by Claude. Paste any code, choose a depth level (5-year-old to senior dev), and get a plain-language explanation designed for learning, not just debugging.",
+    category: "Learning & Retention",
+    q: "How does the Bug Journal actually make me a better developer over time?",
+    a: "When you hit a bug, you log: the error message, what you tried, what fixed it, and the root cause. Commit stores this with syntax-highlighted code. Six months later when you hit the same class of error — and you will — you search your journal and find your own fix in your own words. Over time, patterns emerge: if you're logging ten TypeScript type errors in a month, that's a signal to close a foundational gap rather than continue patching symptoms.",
+    impact: "The average developer Googles the same class of error 4–6 times before it finally sticks. One well-logged bug journal entry ends that loop permanently.",
   },
   {
-    q: "Is the free tier truly free?",
-    a: "Yes. No credit card required. Free includes unlimited Pomodoro sessions, TIL logging, flashcards, and up to 3 roadmaps. Upgrade to Pro for AI features, unlimited roadmaps, and advanced analytics.",
+    category: "Learning & Retention",
+    q: "What is the Feynman-based Concept Mastery scale and why is it more honest than a checklist?",
+    a: "Standard checklists are binary — done or not done. Concept Mastery uses four levels: 'Heard Of' → 'Can Explain It Simply' → 'Can Use It in Code' → 'Can Teach It.' The distinction is meaningful: having written a closure doesn't mean you can explain why closures matter, and being able to explain doesn't mean you'd use them correctly under interview pressure. Commit tracks which level each concept is at across your roadmap so you have an honest picture of your actual knowledge state — not an optimistic one.",
+    impact: "Developers chronically overestimate concepts they've used but never explained. The mastery scale makes that gap visible — which is the first step to closing it before an interview does.",
+  },
+  // ── AI Features ──────────────────────────────────────────────────
+  {
+    category: "AI Features",
+    q: "What are the three AI features and what specific problem does each solve?",
+    a: "AI Code Intelligence: paste any code, select depth (ELI5 → beginner → intermediate → senior dev), get a plain-language explanation. It also flags related concepts you haven't reviewed recently as knowledge gaps. AI Auto-Cards: paste your TIL entry or session notes, get 3–8 question/answer pairs generated and immediately queued for spaced repetition — no manual card writing. Learning Intelligence: analyzes your mastery data to surface at-risk concepts (things you're forgetting faster than you're reinforcing), predict time-to-mastery per roadmap milestone, and compute an interview readiness score per tech stack based on your actual review history.",
+    impact: "Each feature targets a different failure mode: Code Intelligence fixes shallow understanding, Auto-Cards removes the creation bottleneck, and Learning Intelligence fixes the 'I don't know what I don't know' problem.",
+  },
+  {
+    category: "AI Features",
+    q: "Do AI Auto-Cards generate quality flashcards, or will I need to rewrite everything?",
+    a: "Quality scales directly with input specificity. 'Learned about hooks today' produces shallow cards. 'useCallback prevents child re-renders by memoizing the function reference — critical when the child uses React.memo, because React.memo does a shallow props comparison and a new function reference always fails that check' produces precise, testable cards. The generator is tuned for active recall — it creates question/answer pairs designed for retrieval, not recognition. You review generated cards before they enter your queue and can edit or delete any of them.",
+    impact: "Rule of thumb: write your TIL entry as if explaining the concept to a junior dev who asked why it matters. That specificity produces the best cards — and is also the most effective active learning technique on its own.",
+  },
+  {
+    category: "AI Features",
+    q: "Is my code or session content used to train AI models?",
+    a: "No. Content you submit to AI features is sent to Anthropic's Claude API for real-time processing only. Anthropic does not use API inputs for model training under their current API terms. We do not use your content to train any models ourselves. Your TIL entries, code snippets, bug journal, and session notes are stored in our database and belong entirely to you — exportable and deletable from Settings at any time.",
+    impact: "You can safely paste proprietary work code for explanations without worrying about it surfacing in a competitor's AI output or public model responses.",
+  },
+  // ── Pricing & Account ────────────────────────────────────────────
+  {
+    category: "Pricing & Account",
+    q: "What does the free plan include — is anything meaningful paywalled?",
+    a: "Free includes: unlimited Pomodoro sessions, TIL daily log, bug journal, spaced repetition flashcards (manual creation), concept mastery tracking, up to 3 learning roadmaps, 50 code snippets, and the full productivity heatmap. The core learning loop — session → log → review — is completely functional on free. Pro adds: all three AI features (Code Intelligence, Auto-Cards, Learning Intelligence), unlimited roadmaps, unlimited snippets, advanced analytics, and PDF/Markdown export. Teams adds shared roadmaps, admin dashboard, and member progress visibility.",
+    impact: "We want you to build the habit before asking you to pay for acceleration. The free plan is intentionally generous — it is not a 14-day trial.",
+  },
+  {
+    category: "Pricing & Account",
+    q: "What happens to my data if I downgrade or delete my account?",
+    a: "If you downgrade from Pro to Free, every piece of content you created is preserved — TIL logs, flashcards, roadmaps, snippets, and bug journal entries all stay intact. You lose access to AI features and higher limits, nothing else. If you delete your account, your data is permanently removed within 30 days. Before deleting, you can export everything from the Settings page in JSON format (for programmatic use) or as a PDF.",
+    impact: "Your knowledge base belongs to you, not us. We don't hold data hostage to retain subscribers.",
   },
 ];
 
@@ -400,7 +455,7 @@ export default function LandingPage() {
   useScrollReveal();
 
   const [isAnnual, setIsAnnual] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -411,7 +466,7 @@ export default function LandingPage() {
   const pricingRef2 = useSpotlight();
   const pricingRef3 = useSpotlight();
 
-  const stat1 = useCounter(11);
+  const stat1 = useCounter(14);
   const stat2 = useCounter(25);
   const stat3 = useCounter(89);
 
@@ -527,7 +582,7 @@ export default function LandingPage() {
           <div>
             <div className="hero-enter hero-d1 inline-flex items-center gap-2 mb-8 px-3 py-1.5 rounded-full border border-[var(--border)] bg-[var(--bg-surface)] text-xs text-[var(--text-muted)] font-mono">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-breathe inline-block" />
-              11 tools. One workspace.
+              14 AI-powered tools. One workspace.
             </div>
 
             <h1 className="hero-enter hero-d2 font-display text-[56px] md:text-[72px] lg:text-[80px] font-bold leading-[0.92] tracking-tight mb-7">
@@ -809,11 +864,15 @@ export default function LandingPage() {
             <p className="reveal font-mono text-xs text-[var(--accent)] uppercase tracking-widest mb-4">
               Features
             </p>
-            <h2 className="reveal stagger-1 font-display text-4xl md:text-[52px] font-bold tracking-tight max-w-xl leading-tight">
-              Every tool your
+            <h2 className="reveal stagger-1 font-display text-4xl md:text-[52px] font-bold tracking-tight max-w-2xl leading-tight">
+              AI-powered tools built for
               <br />
-              learning needs
+              <span className="text-[var(--accent)]">how developers actually learn.</span>
             </h2>
+            <p className="reveal stagger-2 mt-5 text-base text-[var(--text-secondary)] max-w-xl leading-relaxed">
+              Not a note-taking app. Not a tutorial site. A closed loop — from focused session
+              to spaced review to measurable mastery — with AI accelerating every step.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -874,17 +933,23 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* AI Explainer */}
+            {/* AI Code Intelligence */}
             <div className="reveal stagger-2 md:col-span-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-6 spotlight-card hover:border-[var(--border-muted)] transition-colors">
-              <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center text-[var(--accent)] mb-4">
-                <Cpu size={20} />
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center text-[var(--accent)]">
+                  <Cpu size={20} />
+                </div>
+                <span className="text-[10px] font-mono text-[var(--accent)] border border-[var(--accent)]/30 rounded-full px-2.5 py-0.5 bg-[var(--accent)]/5">
+                  Claude
+                </span>
               </div>
               <h3 className="text-lg font-semibold mb-2">
-                AI Code Explainer
+                AI Code Intelligence
               </h3>
               <p className="text-sm text-[var(--text-secondary)] mb-4">
-                Paste any code. Choose depth — 5-year-old to senior dev.
-                Powered by Claude.
+                Paste any code. Get an explanation at your depth — from
+                5-year-old to senior dev. Also surfaces knowledge gaps
+                and suggests what to review next.
               </p>
               <div className="rounded-lg bg-[var(--bg-elevated)] border border-[var(--border)] p-3 font-mono text-xs space-y-1.5">
                 <p className="text-[var(--text-muted)]">
@@ -894,6 +959,9 @@ export default function LandingPage() {
                 <p className="text-[var(--text-secondary)]">
                   useCallback is like a note that tells React to reuse a
                   function instead of recreating it...
+                </p>
+                <p className="text-[var(--text-muted)] pt-1 border-t border-[var(--border)]">
+                  <span className="text-[var(--warning)]">gap:</span> You haven&apos;t reviewed closures yet
                 </p>
               </div>
             </div>
@@ -995,7 +1063,7 @@ export default function LandingPage() {
               </h3>
               <p className="text-sm text-[var(--text-secondary)] mb-4">
                 Feynman 4-level self-assessment: Heard Of → Can Explain → Can
-                Use → Can Teach.
+                Use → Can Teach. AI suggests when you&apos;re ready to level up.
               </p>
               <div className="flex gap-1.5">
                 {["Heard Of", "Can Explain", "Can Use", "Can Teach"].map(
@@ -1011,6 +1079,119 @@ export default function LandingPage() {
                     />
                   )
                 )}
+              </div>
+            </div>
+
+            {/* AI Auto-Cards — new */}
+            <div className="reveal stagger-1 md:col-span-4 rounded-2xl border border-[var(--accent)]/20 bg-[var(--bg-surface)] p-6 spotlight-card hover:border-[var(--accent)]/40 transition-colors relative overflow-hidden">
+              <div
+                className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                style={{
+                  background:
+                    "radial-gradient(ellipse at top left, var(--accent), transparent 70%)",
+                }}
+              />
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center text-[var(--accent)]">
+                  <Zap size={20} />
+                </div>
+                <span className="text-[10px] font-mono text-[var(--accent)] border border-[var(--accent)]/30 rounded-full px-2.5 py-0.5 bg-[var(--accent)]/5">
+                  New
+                </span>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">AI Auto-Cards</h3>
+              <p className="text-sm text-[var(--text-secondary)] mb-4">
+                After every session, paste your notes. AI generates perfectly
+                worded flashcards and drops them straight into your review
+                queue — no manual card writing.
+              </p>
+              <div className="rounded-lg bg-[var(--bg-elevated)] border border-[var(--border)] p-3 space-y-2">
+                <p className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest">
+                  Generated from your TIL
+                </p>
+                {[
+                  { q: "What does useCallback prevent?", due: "2d" },
+                  { q: "When does memoization hurt perf?", due: "5d" },
+                ].map(({ q, due }) => (
+                  <div
+                    key={q}
+                    className="flex items-center justify-between gap-3 py-1.5 border-t border-[var(--border)]"
+                  >
+                    <p className="text-xs text-[var(--text-secondary)] flex-1 min-w-0 truncate">
+                      {q}
+                    </p>
+                    <span className="text-[10px] font-mono text-[var(--accent)] flex-shrink-0">
+                      due {due}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Learning Intelligence — new */}
+            <div className="reveal stagger-2 md:col-span-5 rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-6 spotlight-card hover:border-[var(--border-muted)] transition-colors">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center text-[var(--accent)]">
+                  <LineChart size={20} />
+                </div>
+                <span className="text-[10px] font-mono text-[var(--accent)] border border-[var(--accent)]/30 rounded-full px-2.5 py-0.5 bg-[var(--accent)]/5">
+                  New
+                </span>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Learning Intelligence</h3>
+              <p className="text-sm text-[var(--text-secondary)] mb-5">
+                AI analyzes your session patterns and mastery levels to predict
+                time-to-mastery, surface at-risk concepts, and recommend what
+                to focus on next. Know exactly where you stand.
+              </p>
+              <div className="space-y-3">
+                {[
+                  { label: "Mastery velocity", value: "+12% this week", color: "var(--success)" },
+                  { label: "At-risk concepts", value: "3 need review", color: "var(--warning)" },
+                  { label: "Interview readiness", value: "React: 74%", color: "var(--accent)" },
+                ].map(({ label, value, color }) => (
+                  <div
+                    key={label}
+                    className="flex items-center justify-between py-2 border-b border-[var(--border)] last:border-0"
+                  >
+                    <span className="text-xs text-[var(--text-muted)] font-mono">{label}</span>
+                    <span className="text-xs font-semibold font-mono" style={{ color }}>
+                      {value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Interview Readiness — new */}
+            <div className="reveal stagger-3 md:col-span-3 rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-6 spotlight-card hover:border-[var(--border-muted)] transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-center text-[var(--accent)] mb-4">
+                <GraduationCap size={20} />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Interview Readiness</h3>
+              <p className="text-sm text-[var(--text-secondary)] mb-4">
+                Real-time interview score per tech stack — computed from your
+                actual mastery state, not self-assessment.
+              </p>
+              <div className="space-y-2.5">
+                {[
+                  { label: "React", pct: 74 },
+                  { label: "Node.js", pct: 58 },
+                  { label: "SQL", pct: 41 },
+                ].map(({ label, pct }) => (
+                  <div key={label}>
+                    <div className="flex justify-between text-[10px] font-mono mb-1">
+                      <span className="text-[var(--text-muted)]">{label}</span>
+                      <span className="text-[var(--accent)]">{pct}%</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-[var(--bg-elevated)]">
+                      <div
+                        className="h-full rounded-full bg-[var(--accent)]"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -1076,8 +1257,8 @@ export default function LandingPage() {
       <section className="border-t border-b border-[var(--border)] bg-[var(--bg-surface)]">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--border)]">
           {[
-            { r: stat1.ref, c: stat1.count, suffix: "", label: "Learning tools in one workspace" },
-            { r: stat2.ref, c: stat2.count, suffix: " min", label: "Proven focus session length" },
+            { r: stat1.ref, c: stat1.count, suffix: "", label: "AI-powered tools in one workspace" },
+            { r: stat2.ref, c: stat2.count, suffix: " min", label: "Scientifically optimal deep work session" },
             { r: stat3.ref, c: stat3.count, suffix: "%", label: "Retention improvement with spaced repetition" },
           ].map(({ r, c, suffix, label }, i) => (
             <div
@@ -1229,46 +1410,382 @@ export default function LandingPage() {
       </section>
 
       {/* ─── FAQ ───────────────────────────────────────────────── */}
-      <section className="py-32 border-t border-[var(--border)]">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-[40fr_60fr] gap-16">
-          <div>
-            <h2 className="reveal font-display text-4xl font-bold tracking-tight">
-              Questions worth
-              <br />
-              asking.
-            </h2>
+      <section className="py-32 border-t border-[var(--border)] relative overflow-hidden">
+        {/* Dot-grid atmosphere */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, rgba(250,250,250,0.035) 1px, transparent 1px)",
+            backgroundSize: "26px 26px",
+          }}
+        />
+        {/* Accent glow top-right */}
+        <div
+          className="absolute -top-32 right-0 w-[500px] h-[500px] pointer-events-none opacity-[0.04]"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, var(--accent), transparent 70%)",
+          }}
+        />
+
+        <div className="max-w-7xl mx-auto px-6 relative">
+          {/* Heading row */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div>
+              <p className="reveal font-mono text-xs text-[var(--accent)] uppercase tracking-widest mb-5">
+                // FAQ
+              </p>
+              <h2 className="reveal stagger-1 font-display text-4xl md:text-[52px] font-bold tracking-tight leading-[1.0]">
+                Questions worth
+                <br />
+                <span className="text-[var(--accent)]">asking.</span>
+              </h2>
+            </div>
+            <p className="reveal stagger-2 text-sm text-[var(--text-muted)] leading-relaxed md:text-right max-w-xs md:pb-2">
+              Can&apos;t find what you need?{" "}
+              <a
+                href="mailto:cdg.solutionsph@gmail.com"
+                className="text-[var(--accent)] hover:underline underline-offset-2"
+              >
+                Reach out directly.
+              </a>
+            </p>
           </div>
 
-          <div className="divide-y divide-[var(--border)]">
-            {FAQS.map(({ q, a }, i) => (
-              <div key={q} className={`reveal stagger-${(i % 3) + 1}`}>
-                <button
-                  className="flex items-start justify-between w-full py-6 text-left gap-4 group"
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                >
-                  <span className="text-base font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
-                    {q}
+          {/* ── IDE Panel ─────────────────────────────────────── */}
+          <div className="reveal stagger-3 rounded-2xl border border-[var(--border)] overflow-hidden shadow-2xl shadow-black/60">
+
+            {/* Window chrome */}
+            <div className="h-10 flex items-center gap-2 px-4 bg-[var(--bg-elevated)] border-b border-[var(--border)] select-none">
+              <span className="w-[11px] h-[11px] rounded-full bg-[#FF5F57] flex-shrink-0" />
+              <span className="w-[11px] h-[11px] rounded-full bg-[#FEBC2E] flex-shrink-0" />
+              <span className="w-[11px] h-[11px] rounded-full bg-[#28C840] flex-shrink-0" />
+              <div className="flex-1 flex items-center justify-center">
+                <span className="text-[11px] font-mono text-[var(--text-muted)]">
+                  commit — faq.md
+                </span>
+              </div>
+            </div>
+
+            {/* ── Desktop split view ── */}
+            <div
+              className="hidden md:grid"
+              style={{ gridTemplateColumns: "38% 62%" }}
+            >
+              {/* Left — Question file tree */}
+              <div className="border-r border-[var(--border)] bg-[var(--bg-surface)] flex flex-col">
+                {/* File-tree header */}
+                <div className="h-8 flex items-center gap-2 px-4 border-b border-[var(--border)] bg-[var(--bg-base)]/60 select-none">
+                  <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-[0.15em]">
+                    explorer
                   </span>
-                  <ChevronDown
-                    size={18}
-                    className={`flex-shrink-0 text-[var(--text-muted)] transition-transform duration-300 ${
-                      openFaq === i ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                <div
-                  className="overflow-hidden transition-all duration-300"
-                  style={{
-                    maxHeight: openFaq === i ? "300px" : "0px",
-                    opacity: openFaq === i ? 1 : 0,
-                  }}
-                >
-                  <p className="pb-6 text-sm text-[var(--text-secondary)] leading-relaxed">
-                    {a}
-                  </p>
+                  <span className="ml-auto text-[9px] font-mono text-[var(--text-muted)]">
+                    {FAQS.length} items
+                  </span>
+                </div>
+
+                {/* Question list */}
+                <div className="flex flex-col flex-1 overflow-y-auto custom-scrollbar">
+                  {FAQS.map((faq, i) => {
+                    const showCat =
+                      i === 0 || FAQS[i - 1].category !== faq.category;
+                    return (
+                      <div key={i}>
+                        {/* Category header */}
+                        {showCat && (
+                          <div className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-base)]/70 border-b border-[var(--border)] select-none">
+                            <span className="text-[9px] font-mono text-[var(--accent)]/70 uppercase tracking-[0.18em]">
+                              ▸ {faq.category}
+                            </span>
+                          </div>
+                        )}
+                        <button
+                          onClick={() => setOpenFaq(i)}
+                          className={`group w-full text-left flex items-start gap-3 px-4 py-3.5 border-b border-[var(--border)] transition-all duration-150 outline-none border-l-2 ${
+                            openFaq === i
+                              ? "bg-[rgba(0,255,170,0.04)] border-l-[var(--accent)]"
+                              : "border-l-transparent hover:bg-[var(--bg-elevated)] hover:border-l-[var(--border-muted)]"
+                          }`}
+                        >
+                          <span
+                            className={`font-mono text-[10px] mt-[3px] flex-shrink-0 w-5 tabular-nums transition-colors ${
+                              openFaq === i
+                                ? "text-[var(--accent)]"
+                                : "text-[var(--text-muted)] group-hover:text-[var(--text-secondary)]"
+                            }`}
+                          >
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          <div className="flex items-start gap-1.5 flex-1 min-w-0">
+                            <span
+                              className={`text-[10px] mt-[3px] flex-shrink-0 transition-colors ${
+                                openFaq === i
+                                  ? "text-[var(--accent)]"
+                                  : "text-[var(--text-muted)]"
+                              }`}
+                            >
+                              {openFaq === i ? "▶" : "›"}
+                            </span>
+                            <span
+                              className={`text-[13px] leading-snug transition-colors ${
+                                openFaq === i
+                                  ? "text-[var(--text-primary)] font-medium"
+                                  : "text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]"
+                              }`}
+                            >
+                              {faq.q}
+                            </span>
+                          </div>
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            ))}
+
+              {/* Right — Answer pane */}
+              <div className="bg-[var(--bg-base)] flex flex-col min-h-[480px]">
+                {/* Tab bar */}
+                <div className="flex items-stretch border-b border-[var(--border)] h-9">
+                  {/* Active tab */}
+                  <div className="flex items-center gap-1.5 px-5 border-r border-[var(--border)] bg-[var(--bg-surface)] relative">
+                    <div
+                      className="absolute top-0 left-0 right-0 h-[2px] bg-[var(--accent)]"
+                      style={{ borderRadius: "0 0 2px 2px" }}
+                    />
+                    {openFaq !== null ? (
+                      <span className="text-[10px] font-mono text-[var(--text-muted)]">
+                        <span className="text-[var(--text-muted)]/50">
+                          {FAQS[openFaq].category
+                            .toLowerCase()
+                            .replace(" & ", "-")
+                            .replace(/ /g, "-")}{" "}
+                          /{" "}
+                        </span>
+                        q{String(openFaq + 1).padStart(2, "0")}.answer
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-mono text-[var(--text-muted)]">
+                        select.md
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1" />
+                  {/* Language indicator */}
+                  <div className="flex items-center gap-1.5 px-4 border-l border-[var(--border)]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-breathe" />
+                    <span className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-wider">
+                      md
+                    </span>
+                  </div>
+                </div>
+
+                {/* Line-number gutter + answer content */}
+                <div className="flex flex-1">
+                  {/* Gutter */}
+                  <div className="w-10 flex-shrink-0 border-r border-[var(--border)] bg-[var(--bg-surface)]/40 flex flex-col pt-7 pb-4 select-none">
+                    {Array.from({ length: 28 }).map((_, i) => (
+                      <span
+                        key={i}
+                        className="text-[10px] font-mono text-[var(--border-muted)] text-right pr-3 leading-[1.9]"
+                      >
+                        {i + 1}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 p-7 overflow-y-auto custom-scrollbar">
+                    {openFaq !== null ? (
+                      <div key={`faq-${openFaq}`} className="faq-answer-reveal flex flex-col">
+                        {/* Category breadcrumb */}
+                        <p className="font-mono text-[9px] text-[var(--text-muted)]/50 uppercase tracking-widest mb-3">
+                          {FAQS[openFaq].category}
+                        </p>
+
+                        {/* Markdown comment — question as heading */}
+                        <p className="font-mono text-[11px] text-[var(--text-muted)] mb-5 leading-relaxed">
+                          <span className="text-[var(--accent)]">#</span>{" "}
+                          {FAQS[openFaq].q}
+                        </p>
+
+                        {/* Divider */}
+                        <div className="flex items-center gap-3 mb-5">
+                          <div className="h-px flex-1 bg-[var(--border)]" />
+                          <span className="text-[9px] font-mono text-[var(--border-muted)] uppercase tracking-widest">
+                            answer
+                          </span>
+                          <div className="h-px flex-1 bg-[var(--border)]" />
+                        </div>
+
+                        {/* Answer body */}
+                        <p className="text-[14px] text-[var(--text-secondary)] leading-[1.85] mb-6">
+                          {FAQS[openFaq].a}
+                        </p>
+
+                        {/* "Why this helps developers" callout */}
+                        <div className="relative rounded-r-xl border border-[var(--accent)]/15 bg-[rgba(0,255,170,0.03)] p-4 overflow-hidden mb-8">
+                          {/* Left accent bar */}
+                          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[var(--accent)]/50 rounded-l-sm" />
+                          <p className="font-mono text-[9px] text-[var(--accent)]/80 uppercase tracking-[0.18em] mb-2 pl-1">
+                            → why this helps developers
+                          </p>
+                          <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed pl-1">
+                            {FAQS[openFaq].impact}
+                          </p>
+                        </div>
+
+                        {/* Navigation */}
+                        <div className="pt-5 border-t border-[var(--border)] flex items-center justify-between">
+                          <span className="text-[10px] font-mono text-[var(--text-muted)] tabular-nums">
+                            {openFaq + 1} / {FAQS.length}
+                          </span>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() =>
+                                setOpenFaq(Math.max(0, (openFaq ?? 0) - 1))
+                              }
+                              disabled={openFaq === 0}
+                              className="text-[11px] px-3 py-1.5 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-muted)] disabled:opacity-25 disabled:cursor-not-allowed transition-all font-mono"
+                            >
+                              ← prev
+                            </button>
+                            <button
+                              onClick={() =>
+                                setOpenFaq(
+                                  Math.min(
+                                    FAQS.length - 1,
+                                    (openFaq ?? 0) + 1
+                                  )
+                                )
+                              }
+                              disabled={openFaq === FAQS.length - 1}
+                              className="text-[11px] px-3 py-1.5 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-muted)] disabled:opacity-25 disabled:cursor-not-allowed transition-all font-mono"
+                            >
+                              next →
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="h-full flex items-center justify-center">
+                        <p className="text-sm font-mono text-[var(--text-muted)]">
+                          select a question →
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Status bar — VS Code style */}
+                <div className="h-7 flex items-center justify-between px-4 border-t border-[var(--border)] bg-[var(--accent)] select-none flex-shrink-0">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[9px] font-mono text-black font-semibold uppercase tracking-wider">
+                      COMMIT
+                    </span>
+                    <span className="text-[9px] font-mono text-black/60">
+                      faq › {openFaq !== null ? `q${String(openFaq + 1).padStart(2, "0")}` : "—"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-[9px] font-mono text-black/60">
+                      Ln {openFaq !== null ? openFaq * 6 + 1 : 1}, Col 1
+                    </span>
+                    <span className="text-[9px] font-mono text-black/60">UTF-8</span>
+                    <span className="text-[9px] font-mono text-black font-semibold">
+                      Markdown
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Mobile accordion ── */}
+            <div className="md:hidden bg-[var(--bg-surface)] divide-y divide-[var(--border)]">
+              {FAQS.map((faq, i) => {
+                const showCat =
+                  i === 0 || FAQS[i - 1].category !== faq.category;
+                return (
+                  <div key={i}>
+                    {/* Category header */}
+                    {showCat && (
+                      <div className="px-5 py-2 bg-[var(--bg-base)]/70 border-b border-[var(--border)] select-none">
+                        <span className="text-[9px] font-mono text-[var(--accent)]/70 uppercase tracking-[0.18em]">
+                          ▸ {faq.category}
+                        </span>
+                      </div>
+                    )}
+                    <button
+                      className={`group flex items-start gap-3.5 w-full px-5 py-5 text-left outline-none border-l-2 transition-all duration-150 ${
+                        openFaq === i
+                          ? "bg-[rgba(0,255,170,0.04)] border-l-[var(--accent)]"
+                          : "border-l-transparent hover:bg-[var(--bg-elevated)]"
+                      }`}
+                      onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    >
+                      <span
+                        className={`font-mono text-[10px] mt-0.5 flex-shrink-0 tabular-nums transition-colors ${
+                          openFaq === i
+                            ? "text-[var(--accent)]"
+                            : "text-[var(--text-muted)]"
+                        }`}
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span
+                        className={`flex-1 text-sm font-medium leading-snug transition-colors ${
+                          openFaq === i
+                            ? "text-[var(--text-primary)]"
+                            : "text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]"
+                        }`}
+                      >
+                        {faq.q}
+                      </span>
+                      <ChevronDown
+                        size={15}
+                        className={`flex-shrink-0 mt-0.5 transition-all duration-300 ${
+                          openFaq === i
+                            ? "rotate-180 text-[var(--accent)]"
+                            : "text-[var(--text-muted)]"
+                        }`}
+                      />
+                    </button>
+                    <div
+                      className="overflow-hidden transition-all duration-300"
+                      style={{
+                        maxHeight: openFaq === i ? "600px" : "0px",
+                        opacity: openFaq === i ? 1 : 0,
+                      }}
+                    >
+                      <p className="px-5 pt-1 pb-4 pl-[52px] text-[13px] text-[var(--text-secondary)] leading-relaxed">
+                        {faq.a}
+                      </p>
+                      {/* Impact callout — mobile */}
+                      <div className="mx-5 mb-5 ml-[52px] relative rounded-r-lg border border-[var(--accent)]/15 bg-[rgba(0,255,170,0.03)] p-3 overflow-hidden">
+                        <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[var(--accent)]/50" />
+                        <p className="font-mono text-[8px] text-[var(--accent)]/80 uppercase tracking-[0.18em] mb-1.5 pl-1">
+                          → why this helps
+                        </p>
+                        <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed pl-1">
+                          {faq.impact}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Mobile status bar */}
+              <div className="h-8 flex items-center justify-between px-5 bg-[var(--accent)]">
+                <span className="text-[9px] font-mono text-black font-semibold uppercase tracking-wider">
+                  COMMIT
+                </span>
+                <span className="text-[9px] font-mono text-black/60">
+                  {FAQS.length} questions
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
