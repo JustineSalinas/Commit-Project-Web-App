@@ -6,20 +6,24 @@
 <title>Commit — Build Progress Report</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #09090B; color: #FAFAFA; padding: 48px 32px; max-width: 960px; margin: 0 auto; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #09090B; color: #FAFAFA; padding: 48px 32px; max-width: 1000px; margin: 0 auto; }
   @media print { body { background: #fff; color: #111; padding: 24px; } .no-print { display: none; } }
 
   h1 { font-size: 2rem; font-weight: 800; color: #00FFAA; letter-spacing: -0.02em; margin-bottom: 4px; }
-  .subtitle { color: #A1A1AA; font-size: 0.9rem; margin-bottom: 48px; }
+  .subtitle { color: #A1A1AA; font-size: 0.9rem; margin-bottom: 8px; }
   .date { color: #71717A; font-size: 0.8rem; }
 
-  h2 { font-size: 1.1rem; font-weight: 700; color: #FAFAFA; margin: 32px 0 12px; display: flex; align-items: center; gap: 8px; }
+  h2 { font-size: 1.1rem; font-weight: 700; color: #FAFAFA; margin: 32px 0 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   h2 .phase-badge { font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 99px; letter-spacing: 0.08em; text-transform: uppercase; }
-  h2 .done  { background: rgba(0,255,170,0.15); color: #00FFAA; border: 1px solid rgba(0,255,170,0.3); }
-  h2 .wip   { background: rgba(251,191,36,0.15); color: #FBBF24; border: 1px solid rgba(251,191,36,0.3); }
-  h2 .next  { background: rgba(96,165,250,0.15); color: #60A5FA; border: 1px solid rgba(96,165,250,0.3); }
+  h2 .done    { background: rgba(0,255,170,0.15); color: #00FFAA; border: 1px solid rgba(0,255,170,0.3); }
+  h2 .wip     { background: rgba(251,191,36,0.15); color: #FBBF24; border: 1px solid rgba(251,191,36,0.3); }
+  h2 .next    { background: rgba(96,165,250,0.15); color: #60A5FA; border: 1px solid rgba(96,165,250,0.3); }
+  h2 .red     { background: rgba(255,71,87,0.15); color: #FF4757; border: 1px solid rgba(255,71,87,0.3); }
+  h2 .yellow  { background: rgba(251,191,36,0.15); color: #FBBF24; border: 1px solid rgba(251,191,36,0.3); }
+  h2 .green   { background: rgba(74,222,128,0.15); color: #4ADE80; border: 1px solid rgba(74,222,128,0.3); }
 
   .summary-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin: 32px 0; }
+  @media (max-width: 680px) { .summary-grid { grid-template-columns: repeat(2,1fr); } }
   .stat-card { background: #111113; border: 1px solid #1A1A1F; border-radius: 12px; padding: 16px 20px; }
   .stat-card .num { font-size: 2rem; font-weight: 800; color: #00FFAA; font-variant-numeric: tabular-nums; }
   .stat-card .lbl { font-size: 0.75rem; color: #71717A; margin-top: 2px; }
@@ -38,18 +42,38 @@
   .badge-next    { background: rgba(96,165,250,0.12); color: #60A5FA; border: 1px solid rgba(96,165,250,0.25); }
   .badge-config  { background: rgba(217,70,239,0.12); color: #D946EF; border: 1px solid rgba(217,70,239,0.25); }
   .badge-blocker { background: rgba(255,71,87,0.12); color: #FF4757; border: 1px solid rgba(255,71,87,0.25); }
+  .badge-warn    { background: rgba(251,191,36,0.12); color: #FBBF24; border: 1px solid rgba(251,191,36,0.25); }
 
   .desc { color: #71717A; font-size: 0.78rem; }
-  .note { background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.2); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; color: #A1A1AA; margin: 8px 0 24px; line-height: 1.6; }
-  .warn { background: rgba(255,71,87,0.07); border: 1px solid rgba(255,71,87,0.2); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; color: #A1A1AA; margin: 8px 0; line-height: 1.6; }
-  .warn strong, .note strong { color: #FAFAFA; }
+  .note  { background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.2); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; color: #A1A1AA; margin: 8px 0 24px; line-height: 1.6; }
+  .warn  { background: rgba(255,71,87,0.07); border: 1px solid rgba(255,71,87,0.2); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; color: #A1A1AA; margin: 8px 0; line-height: 1.6; }
+  .caution { background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.2); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; color: #A1A1AA; margin: 8px 0; line-height: 1.6; }
+  .success { background: rgba(0,255,170,0.05); border: 1px solid rgba(0,255,170,0.2); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; color: #A1A1AA; margin: 8px 0; line-height: 1.6; }
+  .warn strong, .note strong, .caution strong, .success strong { color: #FAFAFA; }
 
   .divider { height: 1px; background: #1A1A1F; margin: 40px 0; }
 
   .env-table td:first-child { font-family: monospace; font-size: 0.78rem; color: #00FFAA; }
   .env-table td:nth-child(2) { color: #71717A; font-size: 0.78rem; }
-  .env-set { color: #00FFAA; font-weight: 700; }
+  .env-set   { color: #00FFAA; font-weight: 700; }
   .env-empty { color: #FF4757; font-weight: 700; }
+
+  /* audit rating rows */
+  .row-red    td { border-left: 3px solid #FF4757; }
+  .row-yellow td { border-left: 3px solid #FBBF24; }
+  .row-green  td { border-left: 3px solid #4ADE80; }
+
+  .rating-red    { background: rgba(255,71,87,0.12); color: #FF4757; border: 1px solid rgba(255,71,87,0.25); font-weight: 700; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; white-space: nowrap; }
+  .rating-yellow { background: rgba(251,191,36,0.12); color: #FBBF24; border: 1px solid rgba(251,191,36,0.25); font-weight: 700; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; white-space: nowrap; }
+  .rating-green  { background: rgba(74,222,128,0.12); color: #4ADE80; border: 1px solid rgba(74,222,128,0.25); font-weight: 700; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; white-space: nowrap; }
+
+  /* scalability bar */
+  .scale-bar { height: 8px; border-radius: 99px; margin: 6px 0; }
+  .scale-ok   { background: #4ADE80; }
+  .scale-warn { background: #FBBF24; }
+  .scale-crit { background: #FF4757; }
+
+  code { font-family: 'JetBrains Mono', monospace; font-size: 0.8em; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px; color: #FAFAFA; }
 
   @media print {
     body { background: #fff; color: #111; }
@@ -62,52 +86,431 @@
     .note { background: #EFF6FF; border-color: #BFDBFE; }
     .warn { background: #FEF2F2; border-color: #FECACA; }
     .file { color: #111; }
+    code { background: #f3f4f6; color: #111; }
   }
 </style>
 </head>
 <body>
 
 <h1>COMMIT_ Build Progress Report</h1>
-<p class="subtitle">Developer Learning Workspace &nbsp;·&nbsp; <span class="date">Generated: June 10, 2026</span></p>
+<p class="subtitle">Developer Learning Workspace &nbsp;·&nbsp; Comprehensive Production Audit &nbsp;·&nbsp; <span class="date">Updated: June 14, 2026</span></p>
+<p class="desc" style="margin-top:4px;">This report covers all 10 completed phases, a full production readiness audit, subscription flow analysis, and a prioritized fix roadmap for scaling 100 → 100k users.</p>
 
 <!-- SUMMARY STATS -->
 <div class="summary-grid">
-  <div class="stat-card"><div class="num">55</div><div class="lbl">Files created / modified</div></div>
-  <div class="stat-card"><div class="num">6</div><div class="lbl">API routes built</div></div>
-  <div class="stat-card"><div class="num">8</div><div class="lbl">Phases completed</div></div>
-  <div class="stat-card"><div class="num">2</div><div class="lbl">Payment providers integrated</div></div>
+  <div class="stat-card"><div class="num">62</div><div class="lbl">Files created / modified</div></div>
+  <div class="stat-card"><div class="num">10</div><div class="lbl">Phases completed</div></div>
+  <div class="stat-card"><div class="num">14</div><div class="lbl">AI-powered tools</div></div>
+  <div class="stat-card"><div class="num">2</div><div class="lbl">Payment providers</div></div>
 </div>
 
 <div class="divider"></div>
 
 <!-- ════════════════════════════════════════════════
-     SECTION 1 — COMPLETED
+     PRODUCTION READINESS AUDIT
 ══════════════════════════════════════════════════ -->
 
-<h2>Phase 0 — Landing Page <span class="phase-badge done">Complete</span></h2>
+<h2>Production Readiness Audit <span class="phase-badge yellow">Action Required</span></h2>
+
+<div class="caution">
+  <strong>Overall Rating: 65 / 100 — Not Yet Production-Safe.</strong> The feature surface is complete and impressive. However, 5 critical infrastructure bugs must be fixed before billing is safe to run at scale. The good news: none require architectural rewrites — they're targeted fixes across 3–4 files.
+</div>
 
 <table>
-  <thead><tr><th>File</th><th>What was built</th><th>Status</th></tr></thead>
+  <thead>
+    <tr>
+      <th>Area</th>
+      <th>Rating</th>
+      <th>Status</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="row-red">
+      <td><strong>Billing / Subscriptions</strong></td>
+      <td><span class="rating-red">RED — Critical</span></td>
+      <td>5 bugs</td>
+      <td>Webhook silent failures, past-due enforcement missing, PayMongo ID mismatch, no retry queue, team invite bypass</td>
+    </tr>
+    <tr class="row-red">
+      <td><strong>Database Schema</strong></td>
+      <td><span class="rating-red">RED — Critical</span></td>
+      <td>No indexes, no FK</td>
+      <td>Every userId query does a full table scan. No cascade deletes when Clerk user is removed.</td>
+    </tr>
+    <tr class="row-red">
+      <td><strong>Performance / Scale</strong></td>
+      <td><span class="rating-red">RED — Critical</span></td>
+      <td>No pagination</td>
+      <td>All content list queries fetch ALL rows — will OOM at 10k+ users. N+1 query patterns in team actions.</td>
+    </tr>
+    <tr class="row-yellow">
+      <td><strong>Auth / Onboarding</strong></td>
+      <td><span class="rating-yellow">YELLOW — Needs Work</span></td>
+      <td>Functional</td>
+      <td><code>user.deleted</code> Clerk webhook not handled. Orphaned data on account deletion.</td>
+    </tr>
+    <tr class="row-yellow">
+      <td><strong>Middleware</strong></td>
+      <td><span class="rating-yellow">YELLOW — Needs Work</span></td>
+      <td>Functional</td>
+      <td>Past-due check missing. Users with failed payments keep Pro access indefinitely.</td>
+    </tr>
+    <tr class="row-yellow">
+      <td><strong>API Routes</strong></td>
+      <td><span class="rating-yellow">YELLOW — Needs Work</span></td>
+      <td>Functional</td>
+      <td><code>/api/billing/teams/invite</code> doesn't check if calling user has Pro/Teams plan.</td>
+    </tr>
+    <tr class="row-yellow">
+      <td><strong>Feature Gating</strong></td>
+      <td><span class="rating-yellow">YELLOW — Needs Work</span></td>
+      <td>Mostly correct</td>
+      <td>Team CRUD actions (<code>createTeam</code>, <code>inviteTeamMember</code>, <code>getTeam</code>) don't verify team subscriptionStatus.</td>
+    </tr>
+    <tr class="row-green">
+      <td><strong>Auth Flow (Clerk)</strong></td>
+      <td><span class="rating-green">GREEN — Good</span></td>
+      <td>Solid</td>
+      <td>clerkMiddleware correctly protects all dashboard routes. New users get free plan by default via webhook.</td>
+    </tr>
+    <tr class="row-green">
+      <td><strong>Environment Config</strong></td>
+      <td><span class="rating-green">GREEN — Good</span></td>
+      <td>Documented</td>
+      <td>All env vars documented in .env.example. Clerk + Supabase keys set. Payment keys pending.</td>
+    </tr>
+    <tr class="row-green">
+      <td><strong>Public Pages</strong></td>
+      <td><span class="rating-green">GREEN — Good</span></td>
+      <td>Production-ready</td>
+      <td>Landing, Privacy, Terms all complete with correct design system, contact, and attribution.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════
+     SUBSCRIPTION FLOW ANALYSIS
+══════════════════════════════════════════════════ -->
+
+<h2>Subscription Flow Analysis <span class="phase-badge yellow">Partially Working</span></h2>
+
+<div class="success">
+  <strong>Free tier is correct.</strong> New user signs up → Clerk webhook fires <code>user.created</code> → profile row inserted with <code>plan: 'free'</code>, <code>subscriptionStatus: 'free'</code> as DB defaults. Free users see only free-tier features. ✓
+</div>
+
+<table style="margin-top:16px;">
+  <thead>
+    <tr><th>Tier</th><th>Monthly</th><th>Annual</th><th>Access</th><th>Flow Status</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Free</strong></td>
+      <td>₱0</td>
+      <td>₱0</td>
+      <td>All tools, limits apply (50 snippets, 15 milestones, basic AI)</td>
+      <td><span class="badge badge-done">Working</span></td>
+    </tr>
+    <tr>
+      <td><strong>Pro</strong></td>
+      <td>₱899</td>
+      <td>₱719/mo</td>
+      <td>Unlimited everything + Advanced/Expert AI depth</td>
+      <td><span class="badge badge-warn">Has Bugs</span></td>
+    </tr>
+    <tr>
+      <td><strong>Teams</strong></td>
+      <td>₱4,499</td>
+      <td>₱3,599/mo</td>
+      <td>Pro access + team workspace with up to 10 members</td>
+      <td><span class="badge badge-warn">Has Bugs</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="desc" style="margin-top:12px;margin-bottom:8px;"><strong style="color:#FAFAFA;">Known subscription bugs (must fix before launch):</strong></p>
+
+<table>
+  <thead><tr><th>#</th><th>Bug</th><th>Risk</th><th>Location</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>B1</td>
+      <td><strong>Webhook silent failure — no retry.</strong> If the DB write fails after PayMongo/Stripe sends the payment confirmation, the subscription is never activated. The user paid but gets stuck on Free. Inngest is installed in package.json but never integrated.</td>
+      <td><span class="rating-red">P0 — Revenue Loss</span></td>
+      <td><code>api/webhooks/paymongo/route.ts</code>, <code>api/webhooks/stripe/route.ts</code></td>
+    </tr>
+    <tr>
+      <td>B2</td>
+      <td><strong>Past-due payments not enforced.</strong> <code>invoice.payment_failed</code> sets <code>subscriptionStatus: 'past_due'</code> in the DB but middleware never checks it. Users with failed payments keep full Pro access.</td>
+      <td><span class="rating-red">P0 — Revenue Leak</span></td>
+      <td><code>middleware.ts</code>, <code>app/(dashboard)/layout.tsx</code></td>
+    </tr>
+    <tr>
+      <td>B3</td>
+      <td><strong>PayMongo stores wrong ID.</strong> The webhook stores the checkout <em>session</em> ID as <code>paymongoCustomerId</code> instead of the subscription ID. Future cancellation webhook events can't be matched to any user.</td>
+      <td><span class="rating-red">P0 — Cancellations Broken</span></td>
+      <td><code>api/webhooks/paymongo/route.ts</code></td>
+    </tr>
+    <tr>
+      <td>B4</td>
+      <td><strong>Team invite bypasses subscription check.</strong> <code>/api/billing/teams/invite</code> does not verify the calling user's plan before allowing invites. Anyone can POST to it.</td>
+      <td><span class="rating-yellow">P1 — Access Control</span></td>
+      <td><code>app/api/billing/teams/invite/route.ts</code></td>
+    </tr>
+    <tr>
+      <td>B5</td>
+      <td><strong>Team CRUD has no subscription gate.</strong> <code>createTeam()</code>, <code>inviteTeamMember()</code>, <code>getTeam()</code> in crud.ts don't verify <code>team.subscriptionStatus === 'active'</code>. A cancelled Teams subscriber still controls a team.</td>
+      <td><span class="rating-yellow">P1 — Access Control</span></td>
+      <td><code>app/actions/crud.ts</code></td>
+    </tr>
+    <tr>
+      <td>B6</td>
+      <td><strong>No <code>user.deleted</code> Clerk webhook handler.</strong> Deleting a Clerk account leaves all user content (TILs, flashcards, snippets, etc.) orphaned in the DB forever.</td>
+      <td><span class="rating-yellow">P1 — Data Hygiene</span></td>
+      <td><code>app/api/webhooks/clerk/route.ts</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="desc" style="margin-top:12px;"><strong style="color:#FAFAFA;">Teams feature gaps (functional but incomplete):</strong></p>
+<ul style="color:#A1A1AA;font-size:0.82rem;padding-left:1.5rem;line-height:1.9;margin-top:8px;">
+  <li>No email notification to invited member — they must log in to discover they joined a team</li>
+  <li>Hard 1-team-per-user limit with no clear error message shown to the user</li>
+  <li>No <code>deleteTeam()</code> function — owner cannot disband a team</li>
+  <li>Team data is not shared — each member sees only their own workspace data, not aggregated team data</li>
+  <li>No privacy toggle for the shared roadmap public page</li>
+</ul>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════
+     SCALABILITY ANALYSIS
+══════════════════════════════════════════════════ -->
+
+<h2>Scalability Analysis <span class="phase-badge yellow">Ceiling: ~1,000 Users</span></h2>
+
+<div class="warn">
+  <strong>Current ceiling is approximately 1,000 concurrent active users</strong> before query performance degrades noticeably. The system will not survive 10k+ without the fixes below.
+</div>
+
+<table style="margin-top:16px;">
+  <thead><tr><th>User Count</th><th>Status</th><th>Bottleneck</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>100 users</strong></td>
+      <td>
+        <div class="scale-bar scale-ok" style="width:100%;"></div>
+        <span style="color:#4ADE80;font-size:0.78rem;">✓ Fine</span>
+      </td>
+      <td>No issues. Supabase free tier + Vercel hobby handles this easily.</td>
+    </tr>
+    <tr>
+      <td><strong>1,000 users</strong></td>
+      <td>
+        <div class="scale-bar scale-warn" style="width:75%;"></div>
+        <span style="color:#FBBF24;font-size:0.78rem;">⚠ Degrading</span>
+      </td>
+      <td>Full table scans on userId queries begin to show latency. List pages (TILs, snippets, bugs) load slowly for power users with 200+ entries.</td>
+    </tr>
+    <tr>
+      <td><strong>10,000 users</strong></td>
+      <td>
+        <div class="scale-bar scale-crit" style="width:40%;"></div>
+        <span style="color:#FF4757;font-size:0.78rem;">✗ Painful</span>
+      </td>
+      <td>No pagination means <code>getTils()</code>, <code>getBugs()</code>, <code>getSnippets()</code> fetch ALL rows into memory. OOM risk. Full table scans at scale cause multi-second queries. Supabase free tier connection pool exhaustion.</td>
+    </tr>
+    <tr>
+      <td><strong>100,000 users</strong></td>
+      <td>
+        <div class="scale-bar scale-crit" style="width:10%;"></div>
+        <span style="color:#FF4757;font-size:0.78rem;">✗ System fails</span>
+      </td>
+      <td>Without indexes, pagination, caching, and connection pooling at Supabase Pro level, the system would fall over. Vercel serverless functions would timeout under load from slow DB queries.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="desc" style="margin-top:16px;margin-bottom:8px;"><strong style="color:#FAFAFA;">Root causes of scalability ceiling:</strong></p>
+
+<table>
+  <thead><tr><th>Issue</th><th>Impact</th><th>Fix</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>No DB indexes on userId</strong></td>
+      <td>Every user query does a full table scan across ALL users' data</td>
+      <td>Add index on <code>userId</code> on every content table (tils, bugs, snippets, flashcards, journals, roadmaps, session_logs)</td>
+    </tr>
+    <tr>
+      <td><strong>No pagination</strong></td>
+      <td>List pages fetch every single row a user has ever created — unbounded memory</td>
+      <td>Add <code>limit</code> + <code>offset</code> (or cursor) to all <code>get*</code> functions in crud.ts</td>
+    </tr>
+    <tr>
+      <td><strong>N+1 queries in teams</strong></td>
+      <td><code>getTeam()</code> runs 1 + N queries (one per member) instead of a single JOIN</td>
+      <td>Rewrite to JOIN <code>teamMembers</code> ← <code>profiles</code> in one query</td>
+    </tr>
+    <tr>
+      <td><strong>N+5 queries in inviteTeamMember()</strong></td>
+      <td>5 sequential queries run for every invite (membership check, team lookup, seat count, invitee lookup, duplicate check)</td>
+      <td>Combine into 2–3 queries with WHERE + COUNT in SQL</td>
+    </tr>
+    <tr>
+      <td><strong>No FK constraints</strong></td>
+      <td>Deleting a Clerk user leaves orphaned rows in all tables — grows indefinitely</td>
+      <td>Add FK constraints with <code>ON DELETE CASCADE</code> from profiles to all content tables</td>
+    </tr>
+    <tr>
+      <td><strong>No composite indexes</strong></td>
+      <td>Heatmap and session analytics queries hit <code>session_logs</code> without a <code>(userId, timestamp)</code> index</td>
+      <td>Add composite index <code>(userId, startedAt)</code> on session_logs</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════
+     PRIORITIZED FIX ROADMAP
+══════════════════════════════════════════════════ -->
+
+<h2>Prioritized Fix Roadmap <span class="phase-badge next">Before Launch</span></h2>
+
+<table>
+  <thead><tr><th>Priority</th><th>Fix</th><th>Effort</th><th>Files</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="badge badge-blocker">P0 · Now</span></td>
+      <td><strong>Add PayMongo &amp; Stripe keys + test full payment flow end-to-end.</strong> Use test keys only. Run <code>stripe listen --forward-to localhost:3000/api/webhooks/stripe</code> during local testing. Verify <code>profiles.plan</code> updates to <code>'pro'</code> in Supabase after successful checkout.</td>
+      <td>Config only (30 min)</td>
+      <td><code>.env.local</code></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-blocker">P0 · Now</span></td>
+      <td><strong>Fix PayMongo ID mismatch.</strong> Store the actual subscription/customer ID from the PayMongo event payload, not the checkout session ID. Check the <code>checkout_session.payment.paid</code> event schema — the <code>data.attributes.payment_intent.id</code> or <code>data.id</code> is the stable ID to persist.</td>
+      <td>Small (1–2 hours)</td>
+      <td><code>api/webhooks/paymongo/route.ts</code></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-blocker">P0 · Now</span></td>
+      <td><strong>Add past-due enforcement in middleware/dashboard layout.</strong> Read <code>subscriptionStatus</code> from the DB on each request. If <code>past_due</code>, redirect to <code>/settings?tab=billing</code> with a banner explaining payment failed. Do not cut Pro access immediately — give a 3-day grace period.</td>
+      <td>Small (2–3 hours)</td>
+      <td><code>middleware.ts</code> or <code>app/(dashboard)/layout.tsx</code></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-blocker">P0 · Before 1k users</span></td>
+      <td><strong>Add DB indexes on userId.</strong> Run ALTER TABLE statements (consistent with the self-healing migration pattern already used) to add indexes on all content tables. Critical for query performance.</td>
+      <td>Small (1 hour)</td>
+      <td><code>app/actions/crud.ts</code> → <code>ensureTablesExist()</code></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-blocker">P0 · Before 1k users</span></td>
+      <td><strong>Add pagination to all list queries.</strong> All <code>get*</code> CRUD functions need <code>limit</code> + <code>offset</code> parameters defaulting to 50 records. Update UI components to show a "Load more" button or infinite scroll.</td>
+      <td>Medium (4–6 hours)</td>
+      <td><code>app/actions/crud.ts</code> + list page client components</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-next">P1 · Soon</span></td>
+      <td><strong>Fix team invite API — add Pro tier check.</strong> <code>/api/billing/teams/invite</code> must verify the authenticated user has <code>plan === 'teams'</code> before processing the invite. Add <code>isTeams(userId)</code> check at the top of the handler.</td>
+      <td>Tiny (30 min)</td>
+      <td><code>app/api/billing/teams/invite/route.ts</code></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-next">P1 · Soon</span></td>
+      <td><strong>Add <code>user.deleted</code> Clerk webhook handler.</strong> When a Clerk user deletes their account, cascade-delete their profile and all content. Either use DB-level FK CASCADE (preferred) or a webhook handler that calls <code>db.delete()</code> across all tables.</td>
+      <td>Small (2 hours)</td>
+      <td><code>app/api/webhooks/clerk/route.ts</code></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-next">P1 · Soon</span></td>
+      <td><strong>Gate team CRUD on active subscriptionStatus.</strong> Add a check in <code>createTeam()</code>, <code>inviteTeamMember()</code>, <code>removeTeamMember()</code> that the team's <code>subscriptionStatus === 'active'</code>. Return <code>{ error: 'subscription_inactive' }</code> if not, and show an upgrade prompt in the UI.</td>
+      <td>Small (2 hours)</td>
+      <td><code>app/actions/crud.ts</code></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-next">P1 · Soon</span></td>
+      <td><strong>Refactor N+1 queries in team actions.</strong> Rewrite <code>getTeam()</code> to join teamMembers ← profiles in a single query. Simplify <code>inviteTeamMember()</code> to use fewer sequential DB calls.</td>
+      <td>Small (2–3 hours)</td>
+      <td><code>app/actions/crud.ts</code></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-partial">P2 · Future</span></td>
+      <td><strong>Implement Inngest for webhook retry queue.</strong> Inngest is already installed (<code>package.json</code>) but never integrated. Wrap billing webhook handlers to emit Inngest events. On DB failure, Inngest retries automatically — eliminating silent failures that leave users on Free after paying.</td>
+      <td>Medium (4–6 hours)</td>
+      <td><code>lib/inngest.ts</code> (new), both webhook routes</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-partial">P2 · Future</span></td>
+      <td><strong>Team auto-create on Teams subscription.</strong> When Stripe webhook confirms a Teams plan purchase, auto-create a team for the user if they don't have one. Currently requires the user to manually create a team on <code>/team</code> after upgrading.</td>
+      <td>Small (1–2 hours)</td>
+      <td><code>api/webhooks/stripe/route.ts</code></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-partial">P2 · Future</span></td>
+      <td><strong>PDF Export (jsPDF).</strong> jsPDF v4.2.1 is already installed. Add PDF export button alongside existing Markdown export in journal and roadmap pages. Use dynamic import inside click handler — never server-side.</td>
+      <td>Medium (2–3 hours)</td>
+      <td><code>app/(dashboard)/journal/page.tsx</code>, <code>roadmap/RoadmapClient.tsx</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════
+     COMPLETED PHASES
+══════════════════════════════════════════════════ -->
+
+<h2>Phase 0 — Landing Page <span class="phase-badge done">Complete (Updated)</span></h2>
+
+<table>
+  <thead><tr><th>File</th><th>What was built / updated</th><th>Status</th></tr></thead>
   <tbody>
     <tr>
       <td class="file">app/page.tsx</td>
-      <td>Full 11-section marketing landing page: Navbar (glassmorphism, hamburger), Hero (animated dashboard mock, CTA), Problem section, Features grid (all 11 tools), How It Works (3-step flow), Feature deep-dives (alternating layout), Stats grid, Pricing (PHP default, USD conversion, annual toggle), FAQ accordion, Final CTA, Footer</td>
+      <td>
+        Full 14-section marketing page. <strong>Updated June 2026:</strong> Hero badge updated to "14 AI-powered tools. One workspace." Features section heading updated to AI-era positioning. AI Code Explainer upgraded to <strong>AI Code Intelligence</strong> card with gap detection mock. Added 3 new bento cards: <strong>AI Auto-Cards</strong>, <strong>Learning Intelligence</strong>, <strong>Interview Readiness</strong>. Stats updated. FAQ section completely redesigned as VS Code IDE panel with 12 questions across 4 categories (Getting Started, Learning &amp; Retention, AI Features, Pricing &amp; Account) with impact callouts, keyboard nav, and category breadcrumbs. Contact email updated to <code>cdg.solutionsph@gmail.com</code>. Attribution updated to "CDG Philippines".
+      </td>
       <td><span class="badge badge-done">Done</span></td>
     </tr>
     <tr>
       <td class="file">app/globals.css</td>
-      <td>Hero entrance animations (@keyframes heroSlideUp, .hero-enter .hero-dX classes), cellPop heatmap animation, fillProgress, timerPulse, scroll reveal system (.animations-loaded + .is-visible), reduced-motion support</td>
+      <td>Hero entrance animations, scroll reveal, heatmap cellPop, fillProgress, timerPulse, reduced-motion support. <strong>Added June 2026:</strong> <code>@keyframes faqReveal</code> + <code>.faq-answer-reveal</code> class for IDE panel FAQ answer transitions.</td>
       <td><span class="badge badge-done">Done</span></td>
     </tr>
     <tr>
       <td class="file">middleware.ts</td>
-      <td>Made / a public route so landing page is accessible without auth</td>
+      <td>Made <code>/</code>, <code>/privacy</code>, <code>/terms</code> public routes accessible without auth.</td>
       <td><span class="badge badge-done">Done</span></td>
     </tr>
   </tbody>
 </table>
 
 <p class="desc" style="margin-bottom:24px;">Pricing: ₱899/mo Pro (₱719/mo annual), ₱4,499/mo Teams (₱3,599/mo annual). PHP default with ~$USD conversion shown. No toLocaleString hydration bugs — uses regex formatter.</p>
+
+<h2>Phase 9 — Legal Pages <span class="phase-badge done">Complete</span></h2>
+
+<table>
+  <thead><tr><th>File</th><th>What was built</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="file">app/privacy/page.tsx</td>
+      <td>
+        Full Privacy Policy page matching dark design system. 10 sections: Overview (no data selling), Information We Collect (account/content/usage/payment/technical), How We Use Data, Data Sharing table (Clerk/Supabase/Anthropic/PayMongo/Paddle/Vercel), Data Retention (30-day deletion), Your Rights (access/correction/deletion/portability/opt-out), Cookies &amp; Tracking (first-party only, no ad trackers), Data Security (HTTPS, RLS, Clerk hashing, 72-hour breach notice), Children's Privacy (13+), Contact. Server component, sticky navbar, ← Back to home link. Philippine jurisdiction.
+      </td>
+      <td><span class="badge badge-done">Done</span></td>
+    </tr>
+    <tr>
+      <td class="file">app/terms/page.tsx</td>
+      <td>
+        Full Terms of Service page. 13 sections: Overview, The Service (14 tools listed), Accounts (13+ age, single account, no sharing), Your Content (you own it, no AI training without consent), AI Features (Anthropic usage policies, accuracy disclaimer), Payments &amp; Subscriptions (PayMongo PH / Paddle international, 7-day refund, cancellation at period end, no prorated refunds, 30-day price change notice), Acceptable Use (9 prohibitions), Intellectual Property, Availability &amp; Warranties (AS IS), Limitation of Liability (12-month cap), Termination (24-month inactive clause for Free), Governing Law (Republic of the Philippines, Manila courts), Changes (14-day notice for material changes), Contact.
+      </td>
+      <td><span class="badge badge-done">Done</span></td>
+    </tr>
+  </tbody>
+</table>
 
 <h2>Phase 1 — Database &amp; Foundation <span class="phase-badge done">Complete</span></h2>
 
@@ -130,7 +533,7 @@
         Self-healing migrations for all 10 new columns (ALTER TABLE IF NOT EXISTS)<br>
         CREATE TABLE IF NOT EXISTS for teams and team_members<br>
         New actions: getBillingInfo, cancelMySubscription, exportJournalMarkdown, exportRoadmapMarkdown, createTeam, getTeam, inviteTeamMember, removeTeamMember, reviewFlashcard (SM-2)<br>
-        Feature gate on addSnippet (50 limit for free tier)<br>
+        Feature gate on addSnippet (50 limit for free tier), addRoadmapMilestone (15 limit for free tier)<br>
         getFlashcards now orders by dueDate ASC
       </td>
       <td><span class="badge badge-done">Done</span></td>
@@ -184,8 +587,8 @@
     <tr>
       <td class="file">api/webhooks/paymongo</td>
       <td>POST</td>
-      <td>Handles checkout_session.payment.paid. Verifies HMAC-SHA256 signature (t={timestamp},te={hash} header format). Reads metadata.clerkId + planKey from event, calls activateSubscription(). Requires PAYMONGO_WEBHOOK_SECRET.</td>
-      <td><span class="badge badge-done">Done</span></td>
+      <td>Handles checkout_session.payment.paid. Verifies HMAC-SHA256 signature (t={timestamp},te={hash} header format). Reads metadata.clerkId + planKey from event, calls activateSubscription(). <strong>⚠ Bug B3:</strong> stores checkout session ID instead of subscription ID.</td>
+      <td><span class="badge badge-warn">Bug B3</span></td>
     </tr>
     <tr>
       <td class="file">api/webhooks/stripe</td>
@@ -196,8 +599,8 @@
     <tr>
       <td class="file">api/billing/teams/invite</td>
       <td>POST</td>
-      <td>Thin route wrapper around inviteTeamMember() server action. Accepts { email }.</td>
-      <td><span class="badge badge-done">Done</span></td>
+      <td>Thin route wrapper around inviteTeamMember() server action. Accepts { email }. <strong>⚠ Bug B4:</strong> no Pro tier check on calling user.</td>
+      <td><span class="badge badge-warn">Bug B4</span></td>
     </tr>
   </tbody>
 </table>
@@ -237,7 +640,7 @@
   <tbody>
     <tr>
       <td class="file">app/(dashboard)/flashcards/FlashcardsClient.tsx</td>
-      <td>Replaced 2-button (Forgot/Remembered) with full SM-2 4-button review: <strong>Again</strong> (red, &lt;1d), <strong>Hard</strong> (orange, ~1d), <strong>Good</strong> (blue, ~3d), <strong>Easy</strong> (mint, ~1w). Shows EF (ease factor), interval, and review count per card. Calls reviewFlashcard() server action instead of updateFlashcardScore().</td>
+      <td>Replaced 2-button (Forgot/Remembered) with full SM-2 4-button review: <strong>Again</strong> (red, &lt;1d), <strong>Hard</strong> (orange, ~1d), <strong>Good</strong> (blue, ~3d), <strong>Easy</strong> (mint, ~1w). Shows EF (ease factor), interval, and review count per card. Calls reviewFlashcard() server action.</td>
       <td><span class="badge badge-done">Done</span></td>
     </tr>
     <tr>
@@ -247,7 +650,7 @@
     </tr>
     <tr>
       <td class="file">app/(dashboard)/journal/page.tsx</td>
-      <td>Added Export Markdown button in header. Calls exportJournalMarkdown() server action → triggers browser download of journal-export.md. Disabled when no entries exist.</td>
+      <td>Added Export Markdown button. Calls exportJournalMarkdown() server action → triggers browser download of journal-export.md. Disabled when no entries exist.</td>
       <td><span class="badge badge-done">Done</span></td>
     </tr>
     <tr>
@@ -258,7 +661,7 @@
   </tbody>
 </table>
 
-<h2>Phase 5 — Teams <span class="phase-badge done">Complete</span></h2>
+<h2>Phase 5 — Teams <span class="phase-badge done">Complete (Has Bugs)</span></h2>
 
 <table>
   <thead><tr><th>File</th><th>What was built</th><th>Status</th></tr></thead>
@@ -284,6 +687,7 @@
     </tr>
   </tbody>
 </table>
+<div class="caution" style="margin-top:8px;"><strong>Audit flags:</strong> Team CRUD has no subscription gate (Bug B5). Invite API has no plan check (Bug B4). N+1 query pattern in getTeam() and inviteTeamMember(). No deleteTeam() function. Members don't receive email notifications on invite.</div>
 
 <h2>Phase 6 — Security &amp; Plan Gates <span class="phase-badge done">Complete</span></h2>
 
@@ -297,17 +701,17 @@
     </tr>
     <tr>
       <td class="file">app/actions/crud.ts</td>
-      <td><code>addRoadmapMilestone()</code> — free-tier gate at 15 milestones. Returns <code>{ error: 'upgrade_required' }</code> if limit exceeded and user is not Pro.</td>
+      <td><code>addRoadmapMilestone()</code> — free-tier gate at 15 milestones. <code>addSnippet()</code> — free-tier gate at 50 snippets. Both return <code>{ error: 'upgrade_required' }</code> if limit exceeded.</td>
       <td><span class="badge badge-done">Done</span></td>
     </tr>
     <tr>
       <td class="file">app/(dashboard)/roadmap/RoadmapClient.tsx</td>
-      <td>Catches <code>upgrade_required</code> from <code>addRoadmapMilestone()</code> and shows <code>UpgradePrompt</code> modal instead of generic error.</td>
+      <td>Catches <code>upgrade_required</code> from <code>addRoadmapMilestone()</code> and shows <code>UpgradePrompt</code> modal.</td>
       <td><span class="badge badge-done">Done</span></td>
     </tr>
     <tr>
       <td class="file">app/(dashboard)/snippets/SnippetsClient.tsx</td>
-      <td>Catches <code>upgrade_required</code> from <code>addSnippet()</code> (50-snippet free limit already in CRUD) and shows <code>UpgradePrompt</code> modal.</td>
+      <td>Catches <code>upgrade_required</code> from <code>addSnippet()</code> and shows <code>UpgradePrompt</code> modal.</td>
       <td><span class="badge badge-done">Done</span></td>
     </tr>
   </tbody>
@@ -320,22 +724,22 @@
   <tbody>
     <tr>
       <td class="file">app/(dashboard)/settings/page.tsx</td>
-      <td>Replaced <code>window.location.search</code> SSR workaround with <code>useSearchParams()</code> from <code>next/navigation</code>, wrapped in <code>&lt;Suspense&gt;</code>. Billing tab auto-activates reliably after payment redirect in all environments.</td>
+      <td>Replaced <code>window.location.search</code> SSR workaround with <code>useSearchParams()</code> from <code>next/navigation</code>, wrapped in <code>&lt;Suspense&gt;</code>. Billing tab auto-activates reliably after payment redirect.</td>
       <td><span class="badge badge-done">Done</span></td>
     </tr>
     <tr>
       <td class="file">components/onboarding/OnboardingModal.tsx</td>
-      <td>Expanded from 3 → 5 steps. Added Step 3 <strong>Learning Track</strong> (Web Dev / Backend / CS Fundamentals / Mobile / Data) and Step 4 <strong>Primary Goal</strong> (Get a job / Build a project / Pass a bootcamp / Learn for fun). Both saved into <code>preferences</code> JSON in profiles. Continue is disabled until a selection is made.</td>
+      <td>Expanded from 3 → 5 steps. Added Step 3 <strong>Learning Track</strong> (Web Dev / Backend / CS Fundamentals / Mobile / Data) and Step 4 <strong>Primary Goal</strong> (Get a job / Build a project / Pass a bootcamp / Learn for fun). Both saved into <code>preferences</code> JSON in profiles.</td>
       <td><span class="badge badge-done">Done</span></td>
     </tr>
     <tr>
       <td class="file">app/actions/crud.ts + app/(dashboard)/heatmap/page.tsx</td>
-      <td><code>getHeatmapData()</code> now aggregates all 6 sources (focus sessions, TILs, journals, bugs, snippets, roadmap) via <code>Promise.all</code>. Heatmap page uses <code>getHeatmapData()</code> directly. Tooltip changed from "sessions" → "activities". Legend caption lists all tracked sources.</td>
+      <td><code>getHeatmapData()</code> aggregates all 6 sources (focus sessions, TILs, journals, bugs, snippets, roadmap) via <code>Promise.all</code>. Tooltip changed from "sessions" → "activities".</td>
       <td><span class="badge badge-done">Done</span></td>
     </tr>
     <tr>
       <td class="file">app/(dashboard)/profile/page.tsx</td>
-      <td>Calls <code>getBillingInfo()</code> in parallel with <code>getProfileData()</code>. <code>PlanBadge</code> shown inline next to display name. Free users see a mint "Upgrade to Pro" nudge below their bio linking to <code>/settings?tab=billing</code>.</td>
+      <td>Calls <code>getBillingInfo()</code> in parallel. <code>PlanBadge</code> shown inline next to display name. Free users see mint "Upgrade to Pro" nudge below their bio.</td>
       <td><span class="badge badge-done">Done</span></td>
     </tr>
   </tbody>
@@ -353,24 +757,22 @@
     </tr>
     <tr>
       <td class="file">app/(auth)/sign-in/.../page.tsx<br>app/(auth)/sign-up/.../page.tsx</td>
-      <td>Added <code>fallbackRedirectUrl="/dashboard"</code> to <code>&lt;SignIn&gt;</code> and <code>&lt;SignUp&gt;</code> components — Clerk v5 modern API. Fixes the <code>afterSignInUrl is deprecated</code> console warning seen in Playwright logs.</td>
+      <td>Added <code>fallbackRedirectUrl="/dashboard"</code> to <code>&lt;SignIn&gt;</code> and <code>&lt;SignUp&gt;</code>. Clerk v5 modern API. Fixes the <code>afterSignInUrl is deprecated</code> console warning.</td>
       <td><span class="badge badge-done">Done</span></td>
     </tr>
   </tbody>
 </table>
 
-<p class="desc" style="margin-bottom:24px;">Remaining production checklist (manual steps — no code needed): switch Clerk/PayMongo/Stripe to live keys, update <code>NEXT_PUBLIC_APP_URL</code> to production domain, register webhooks on production URLs in both dashboards.</p>
-
 <div class="divider"></div>
 
 <!-- ════════════════════════════════════════════════
-     SECTION 2 — ENV VARS STATUS
+     ENV VARS STATUS
 ══════════════════════════════════════════════════ -->
 
-<h2>Environment Variables Status <span class="phase-badge config">Config Needed</span></h2>
+<h2>Environment Variables Status <span class="phase-badge wip">Config Needed</span></h2>
 
 <div class="warn">
-  <strong>Action required before billing works.</strong> The billing infrastructure is fully built but inactive until these keys are added to <code>.env.local</code>.
+  <strong>Action required before billing works.</strong> The billing infrastructure is fully built but inactive until payment keys are added.
 </div>
 
 <table class="env-table" style="margin-top:12px;">
@@ -378,11 +780,12 @@
   <tbody>
     <tr><td>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</td><td class="env-set">✓ Set</td><td>Clerk Dashboard</td></tr>
     <tr><td>CLERK_SECRET_KEY</td><td class="env-set">✓ Set</td><td>Clerk Dashboard</td></tr>
-    <tr><td>DATABASE_URL</td><td class="env-set">✓ Set</td><td>Supabase → Settings → Database</td></tr>
+    <tr><td>CLERK_WEBHOOK_SECRET</td><td class="env-set">✓ Set</td><td>Clerk Dashboard → Webhooks</td></tr>
+    <tr><td>DATABASE_URL</td><td class="env-set">✓ Set</td><td>Supabase → Settings → Database → Transaction Pooler</td></tr>
     <tr><td>GEMINI_API_KEY</td><td class="env-set">✓ Set</td><td>Google AI Studio</td></tr>
     <tr><td>NEXT_PUBLIC_APP_URL</td><td class="env-set">✓ Set</td><td>http://localhost:3000 (update for production)</td></tr>
     <tr><td>PAYMONGO_SECRET_KEY</td><td class="env-empty">✗ Empty</td><td>dashboard.paymongo.com → Developers → API Keys</td></tr>
-    <tr><td>PAYMONGO_WEBHOOK_SECRET</td><td class="env-empty">✗ Empty</td><td>PayMongo Dashboard → Webhooks → Create webhook for checkout_session.payment.paid. Copy signing secret.</td></tr>
+    <tr><td>PAYMONGO_WEBHOOK_SECRET</td><td class="env-empty">✗ Empty</td><td>PayMongo Dashboard → Webhooks → Create webhook for checkout_session.payment.paid</td></tr>
     <tr><td>STRIPE_SECRET_KEY</td><td class="env-empty">✗ Empty</td><td>dashboard.stripe.com → Developers → API Keys</td></tr>
     <tr><td>STRIPE_WEBHOOK_SECRET</td><td class="env-empty">✗ Empty</td><td>Stripe CLI: <code>stripe listen --forward-to localhost:3000/api/webhooks/stripe</code></td></tr>
   </tbody>
@@ -391,52 +794,13 @@
 <div class="divider"></div>
 
 <!-- ════════════════════════════════════════════════
-     SECTION 3 — WHAT'S NEXT
-══════════════════════════════════════════════════ -->
-
-<h2>Next Priority Tasks <span class="phase-badge next">Upcoming</span></h2>
-
-<div class="note" style="margin-bottom:16px;">
-  <strong>8 of 11 original tasks are complete.</strong> 3 tasks remain: one is config-only (you add the keys), two are medium-complexity code tasks.
-</div>
-
-<table>
-  <thead><tr><th>#</th><th>Task</th><th>Priority</th><th>Complexity</th><th>Notes</th></tr></thead>
-  <tbody>
-    <tr>
-      <td>1</td>
-      <td><strong>Add PayMongo &amp; Stripe keys + test payment flow</strong></td>
-      <td><span class="badge badge-blocker">P0 Blocker</span></td>
-      <td>Low (config only)</td>
-      <td>Use PayMongo test keys (<code>pk_test_...</code>, <code>sk_test_...</code>) and Stripe test mode. Run <code>stripe listen --forward-to localhost:3000/api/webhooks/stripe</code> during local testing. After a successful checkout, verify <code>profiles.plan</code> updates to <code>'pro'</code> in Supabase. See <code>.env.example</code> for all required vars and where to get them.</td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td><strong>Team subscription lifecycle</strong></td>
-      <td><span class="badge badge-next">P2</span></td>
-      <td>Medium (2-3 files)</td>
-      <td>When a user upgrades to Teams plan via Stripe webhook, auto-create a team for them if one doesn't exist. Currently the team must be created manually on <code>/team</code> after upgrading. The webhook handler in <code>api/webhooks/stripe/route.ts</code> should call <code>createTeam()</code> if <code>plan === 'teams'</code> and the user has no existing team. Also handle PayMongo webhook for the same case.</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td><strong>PDF Export (jsPDF)</strong></td>
-      <td><span class="badge badge-next">P2</span></td>
-      <td>Medium (2–3 files)</td>
-      <td>jsPDF is already installed (v4.2.1). Pattern: server action returns the existing markdown string → client component imports jsPDF dynamically, generates PDF in browser, triggers download. Add a PDF button alongside the existing Markdown export button in both journal and roadmap pages. <strong>Critical:</strong> jsPDF must only run in the browser — never import it in server actions or API routes. Use <code>await import('jspdf')</code> inside a click handler.</td>
-    </tr>
-  </tbody>
-</table>
-
-<div class="divider"></div>
-
-<!-- ════════════════════════════════════════════════
-     SECTION 4 — TECHNICAL NOTES
+     TECHNICAL NOTES
 ══════════════════════════════════════════════════ -->
 
 <h2>Important Technical Notes</h2>
 
 <div class="note">
-  <strong>Self-Healing DB Pattern:</strong> All schema changes use <code>ALTER TABLE "table" ADD COLUMN IF NOT EXISTS ...</code> inside <code>ensureTablesExist()</code>. This function runs once per server process (singleton promise pattern). New columns are safe to add — they run on first request after deploy. Never use drizzle-kit push/migrate commands on this project.
+  <strong>Self-Healing DB Pattern:</strong> All schema changes use <code>ALTER TABLE "table" ADD COLUMN IF NOT EXISTS ...</code> inside <code>ensureTablesExist()</code>. This function runs once per server process (singleton promise pattern). New columns are safe to add — they run on first request after deploy. DB indexes should also be added here using <code>CREATE INDEX IF NOT EXISTS</code>. Never use drizzle-kit push/migrate commands on this project.
 </div>
 
 <div class="note">
@@ -444,7 +808,7 @@
 </div>
 
 <div class="note">
-  <strong>PayMongo Webhook Verification:</strong> Header format: <code>t=&lt;unix_timestamp&gt;,te=&lt;hex_hash&gt;</code>. Signature: <code>HMAC-SHA256(webhook_secret, "&lt;t&gt;.&lt;rawBody&gt;")</code>. Must read request as raw text (not JSON) before verification. Implemented in <code>app/api/webhooks/paymongo/route.ts</code>.
+  <strong>PayMongo Webhook Verification:</strong> Header format: <code>t=&lt;unix_timestamp&gt;,te=&lt;hex_hash&gt;</code>. Signature: <code>HMAC-SHA256(webhook_secret, "&lt;t&gt;.&lt;rawBody&gt;")</code>. Must read request as raw text (not JSON) before verification. Bug B3: currently stores checkout session ID — should store subscription/customer ID for lifecycle management.
 </div>
 
 <div class="note">
@@ -452,26 +816,30 @@
 </div>
 
 <div class="note">
-  <strong>jsPDF — Browser Only:</strong> jsPDF is installed but only works in the browser. Server actions return string content; the client component handles the download. Never import jsPDF in server actions or API routes.
+  <strong>Plan Inheritance for Teams:</strong> <code>isPro()</code> checks the user's own <code>profiles.plan</code> first. If 'free', it then checks <code>team_members JOIN teams</code> — if a team's subscriptionStatus is 'active', the member gets Pro-level access. Team subscriptionStatus is only set when the team owner pays for the Teams plan.
 </div>
 
 <div class="note">
-  <strong>Plan Inheritance for Teams:</strong> isPro() checks the user's own <code>profiles.plan</code> first. If 'free', it then checks <code>team_members JOIN teams</code> — if a team's subscriptionStatus is 'active', the member gets Pro-level access. Team subscriptionStatus is only set when the team owner pays for the Teams plan.
+  <strong>jsPDF — Browser Only:</strong> jsPDF v4.2.1 is installed but only works in the browser. Use <code>await import('jspdf')</code> inside a click handler. Never import in server actions or API routes.
+</div>
+
+<div class="note">
+  <strong>Onboarding Preferences Schema:</strong> <code>profiles.preferences</code> is a JSON column. Shape: <code>{ preferredIDE, languages[], workflow, learningTrack, primaryGoal }</code>. learningTrack values: <code>web-dev | backend | cs-fundamentals | mobile | data</code>. primaryGoal values: <code>get-a-job | build-project | pass-bootcamp | learn-for-fun</code>. Can power roadmap template auto-selection.
+</div>
+
+<div class="note">
+  <strong>Inngest (installed, not integrated):</strong> Inngest is in <code>package.json</code> but zero functions are wired. It's the correct tool for webhook retry queues and post-session notifications (SM-2 reminders). Integration is a P2 priority — it would eliminate Bug B1 (webhook silent failures) entirely.
 </div>
 
 <div class="note">
   <strong>Stale .next Cache:</strong> If the app returns 500 with "React Client Manifest" errors after code changes, delete the <code>.next</code> folder and restart the dev server. This is a Turbopack known issue with certain file structure changes.
 </div>
 
-<div class="note">
-  <strong>Onboarding Preferences Schema:</strong> <code>profiles.preferences</code> is a JSON column. After Phase 7, the shape is <code>{ preferredIDE, languages[], workflow, learningTrack, primaryGoal }</code>. <code>learningTrack</code> values: <code>web-dev | backend | cs-fundamentals | mobile | data</code>. <code>primaryGoal</code> values: <code>get-a-job | build-project | pass-bootcamp | learn-for-fun</code>. These can power roadmap template auto-selection in a future update.
-</div>
-
-<div class="note">
-  <strong>Clerk v5 Redirect API:</strong> <code>afterSignInUrl</code> / <code>afterSignUpUrl</code> props are deprecated in Clerk v5. Use <code>fallbackRedirectUrl</code> (redirects only if no other redirect is pending) or <code>forceRedirectUrl</code> (always redirects). Both <code>&lt;SignIn&gt;</code> and <code>&lt;SignUp&gt;</code> now use <code>fallbackRedirectUrl="/dashboard"</code>. The env vars <code>NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL</code> are the v5 equivalents of the old <code>NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL</code>.
-</div>
-
 <div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════
+     ARCHITECTURE
+══════════════════════════════════════════════════ -->
 
 <h2>Architecture Summary</h2>
 
@@ -479,24 +847,110 @@
   <thead><tr><th>Layer</th><th>Technology</th><th>Role</th></tr></thead>
   <tbody>
     <tr><td>Framework</td><td>Next.js 15.5 App Router + Turbopack</td><td>SSR, routing, API routes, Server Actions</td></tr>
-    <tr><td>Auth</td><td>Clerk (v5)</td><td>Sign-up/in, sessions, webhooks for user sync</td></tr>
-    <tr><td>Database</td><td>Supabase PostgreSQL + Drizzle ORM</td><td>All persistent data. Self-healing migrations (no drizzle-kit)</td></tr>
+    <tr><td>Auth</td><td>Clerk v6</td><td>Sign-up/in, sessions, webhooks for user sync (user.created handled; user.deleted pending)</td></tr>
+    <tr><td>Database</td><td>Supabase PostgreSQL + Drizzle ORM</td><td>All persistent data. Self-healing migrations (no drizzle-kit). No indexes yet — P0 fix needed.</td></tr>
     <tr><td>Styling</td><td>Tailwind CSS v4 + CSS variables</td><td>Design tokens in :root, Tailwind for utilities</td></tr>
     <tr><td>Fonts</td><td>Bricolage Grotesque (display) + JetBrains Mono</td><td>Both loaded via next/font/google</td></tr>
-    <tr><td>PHP Payments</td><td>PayMongo (raw fetch)</td><td>GCash, Maya, Philippine credit cards</td></tr>
+    <tr><td>PHP Payments</td><td>PayMongo (raw fetch)</td><td>GCash, Maya, Philippine credit cards. Bug B3 in webhook ID storage.</td></tr>
     <tr><td>USD Payments</td><td>Stripe SDK (v22)</td><td>International card payments</td></tr>
-    <tr><td>AI</td><td>Google Gemini API</td><td>/api/chat endpoint, depth toggle (basic/advanced/expert)</td></tr>
-    <tr><td>Background Jobs</td><td>Inngest (installed, keys pending)</td><td>SM-2 scheduling, post-session reminders</td></tr>
+    <tr><td>AI</td><td>Google Gemini API</td><td>/api/chat endpoint, depth toggle (basic/advanced/expert), server-side plan gate</td></tr>
+    <tr><td>Background Jobs</td><td>Inngest (installed, not integrated)</td><td>Intended for SM-2 scheduling, post-session reminders, webhook retry queue</td></tr>
     <tr><td>State</td><td>Zustand (useSettingsStore, usePomodoroStore)</td><td>Client-side settings, timer state</td></tr>
     <tr><td>Toasts</td><td>Sonner</td><td>Success/error notifications</td></tr>
-    <tr><td>PDF Export</td><td>jsPDF v4 (installed, not yet wired)</td><td>Client-side PDF generation from markdown</td></tr>
+    <tr><td>PDF Export</td><td>jsPDF v4 (installed, not yet wired)</td><td>Client-side PDF generation from markdown — P2 task</td></tr>
+  </tbody>
+</table>
+
+<div class="divider"></div>
+
+<!-- LAUNCH CHECKLIST -->
+<h2>Launch Readiness Checklist</h2>
+
+<table>
+  <thead><tr><th>Item</th><th>Status</th><th>Action</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Free tier works end-to-end</td>
+      <td><span class="badge badge-done">Ready</span></td>
+      <td>No action needed</td>
+    </tr>
+    <tr>
+      <td>Landing + Privacy + Terms pages</td>
+      <td><span class="badge badge-done">Ready</span></td>
+      <td>No action needed</td>
+    </tr>
+    <tr>
+      <td>Auth (sign-up, sign-in, onboarding)</td>
+      <td><span class="badge badge-done">Ready</span></td>
+      <td>No action needed</td>
+    </tr>
+    <tr>
+      <td>All 14 dashboard features</td>
+      <td><span class="badge badge-done">Ready</span></td>
+      <td>No action needed</td>
+    </tr>
+    <tr>
+      <td>PayMongo + Stripe API keys</td>
+      <td><span class="badge badge-blocker">Blocking</span></td>
+      <td>Add keys to .env.local, test checkout flow</td>
+    </tr>
+    <tr>
+      <td>PayMongo webhook ID bug (B3)</td>
+      <td><span class="badge badge-blocker">Blocking</span></td>
+      <td>Fix route to store correct subscription ID</td>
+    </tr>
+    <tr>
+      <td>Past-due enforcement (B2)</td>
+      <td><span class="badge badge-blocker">Blocking</span></td>
+      <td>Add middleware check for past_due status</td>
+    </tr>
+    <tr>
+      <td>DB indexes on userId</td>
+      <td><span class="badge badge-blocker">Blocking (1k+ users)</span></td>
+      <td>Add CREATE INDEX IF NOT EXISTS in ensureTablesExist()</td>
+    </tr>
+    <tr>
+      <td>Pagination on list queries</td>
+      <td><span class="badge badge-blocker">Blocking (1k+ users)</span></td>
+      <td>Add limit/offset to all get* CRUD functions</td>
+    </tr>
+    <tr>
+      <td>Switch Clerk to production mode</td>
+      <td><span class="badge badge-next">Pre-launch</span></td>
+      <td>Clerk Dashboard → switch to production instance</td>
+    </tr>
+    <tr>
+      <td>Update NEXT_PUBLIC_APP_URL to prod domain</td>
+      <td><span class="badge badge-next">Pre-launch</span></td>
+      <td>Vercel env vars → set production URL</td>
+    </tr>
+    <tr>
+      <td>Register webhooks on production URLs</td>
+      <td><span class="badge badge-next">Pre-launch</span></td>
+      <td>PayMongo + Stripe dashboards → add production webhook endpoints</td>
+    </tr>
+    <tr>
+      <td>Switch payment providers to live keys</td>
+      <td><span class="badge badge-next">Pre-launch</span></td>
+      <td>Replace sk_test_... with sk_live_... in Vercel env vars</td>
+    </tr>
+    <tr>
+      <td>Team invite plan check (B4)</td>
+      <td><span class="badge badge-partial">Before launch</span></td>
+      <td>Add isPro check to /api/billing/teams/invite route</td>
+    </tr>
+    <tr>
+      <td>user.deleted webhook handler (B6)</td>
+      <td><span class="badge badge-partial">Before launch</span></td>
+      <td>Add Clerk user.deleted handler to cascade-delete user data</td>
+    </tr>
   </tbody>
 </table>
 
 <div class="divider"></div>
 
 <p style="color:#71717A;font-size:0.75rem;text-align:center;padding-top:8px;">
-  Commit — Developer Learning Workspace &nbsp;·&nbsp; Built by Adrian Salinas &nbsp;·&nbsp; Report generated June 10, 2026
+  Commit — Developer Learning Workspace &nbsp;·&nbsp; Built by Adrian Salinas &nbsp;·&nbsp; CDG Philippines &nbsp;·&nbsp; Audit generated June 14, 2026
 </p>
 
 <div class="no-print" style="margin-top:32px;text-align:center;">
