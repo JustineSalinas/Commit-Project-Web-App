@@ -43,3 +43,6 @@ next-env.d.ts
 # clerk configuration (can include secrets)
 /.clerk/
 .gstack/
+
+# MCP config (may contain personal access tokens)
+.mcp.json

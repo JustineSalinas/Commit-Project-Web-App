@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  activateSubscription,
-  cancelSubscriptionByStripeCustomer,
-  handlePastDue,
-} from "@/lib/billing/subscriptions";
-import { db } from "@/db";
-import { profiles } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { inngest } from "@/lib/inngest";
 
 export async function POST(req: NextRequest) {
   const rawBody = Buffer.from(await req.arrayBuffer());
@@ -35,29 +28,27 @@ export async function POST(req: NextRequest) {
       const { clerkId, planKey } = session.metadata || {};
       if (clerkId && planKey) {
         const plan = String(planKey).startsWith("teams") ? "teams" : "pro";
-        await activateSubscription(
-          clerkId,
-          plan as "pro" | "teams",
-          "stripe",
-          session.customer as string,
-          session.subscription as string
-        );
+        await inngest.send({
+          name: "billing/subscription.activate",
+          data: { clerkId, plan, provider: "stripe", customerId: session.customer, subscriptionId: session.subscription },
+        });
       }
       break;
     }
-
     case "customer.subscription.deleted": {
       const sub = event.data.object;
-      await cancelSubscriptionByStripeCustomer(sub.customer as string);
+      await inngest.send({
+        name: "billing/subscription.cancel",
+        data: { stripeCustomerId: sub.customer },
+      });
       break;
     }
-
     case "invoice.payment_failed": {
       const invoice = event.data.object;
-      const profile = await db.query.profiles.findFirst({
-        where: eq(profiles.stripeCustomerId, invoice.customer as string),
+      await inngest.send({
+        name: "billing/subscription.past-due",
+        data: { stripeCustomerId: invoice.customer },
       });
-      if (profile) await handlePastDue(profile.clerkId);
       break;
     }
   }

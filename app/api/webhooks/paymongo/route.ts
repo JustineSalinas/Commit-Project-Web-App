@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { activateSubscription } from "@/lib/billing/subscriptions";
+import { inngest } from "@/lib/inngest";
 
 function verifySignature(rawBody: string, header: string, secret: string): boolean {
   const tPart = header.split(",").find(p => p.startsWith("t="));
@@ -38,19 +38,20 @@ export async function POST(req: NextRequest) {
   const type = event?.data?.attributes?.type;
 
   if (type === "checkout_session.payment.paid") {
-    const sessionAttrs = event?.data?.attributes?.data?.attributes || {};
+    const sessionData = event?.data?.attributes?.data || {};
+    const sessionAttrs = sessionData?.attributes || {};
     const metadata = sessionAttrs.metadata || {};
     const { clerkId, planKey } = metadata;
 
     if (clerkId && planKey) {
       const plan = String(planKey).startsWith("teams") ? "teams" : "pro";
-      await activateSubscription(
-        clerkId,
-        plan as "pro" | "teams",
-        "paymongo",
-        event.data.id,
-        event.data.id
-      );
+      // B3 fix: store the stable payment_intent_id as customerId, checkout session id as subscriptionId
+      const checkoutSessionId = sessionData?.id ?? event?.data?.id;
+      const paymentIntentId = sessionAttrs?.payment_intent_id ?? checkoutSessionId;
+      await inngest.send({
+        name: "billing/subscription.activate",
+        data: { clerkId, plan, provider: "paymongo", customerId: paymentIntentId, subscriptionId: checkoutSessionId },
+      });
     }
   }
 

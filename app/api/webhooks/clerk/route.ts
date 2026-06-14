@@ -2,7 +2,7 @@ import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { db } from '@/db'
-import { profiles } from '@/db/schema'
+import { profiles, tils, bugs, snippets, flashcards, roadmap, journals, focusSessions, tasks, sessionLogs, distractions, mastery, teamMembers } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 
 export async function POST(req: Request) {
@@ -80,6 +80,33 @@ export async function POST(req: Request) {
         }
       } catch (dbError) {
         console.error('Failed to sync user to database:', dbError);
+        return new Response('Database Error', { status: 500 });
+      }
+    }
+  }
+
+  if (eventType === 'user.deleted') {
+    const { id } = evt.data;
+    if (id) {
+      try {
+        await Promise.all([
+          db.delete(tils).where(eq(tils.userId, id)),
+          db.delete(bugs).where(eq(bugs.userId, id)),
+          db.delete(snippets).where(eq(snippets.userId, id)),
+          db.delete(flashcards).where(eq(flashcards.userId, id)),
+          db.delete(roadmap).where(eq(roadmap.userId, id)),
+          db.delete(journals).where(eq(journals.userId, id)),
+          db.delete(focusSessions).where(eq(focusSessions.userId, id)),
+          db.delete(tasks).where(eq(tasks.userId, id)),
+          db.delete(sessionLogs).where(eq(sessionLogs.userId, id)),
+          db.delete(distractions).where(eq(distractions.userId, id)),
+          db.delete(mastery).where(eq(mastery.userId, id)),
+          db.delete(teamMembers).where(eq(teamMembers.clerkId, id)),
+        ]);
+        await db.delete(profiles).where(eq(profiles.clerkId, id));
+        console.log(`Deleted all data for user ${id}`);
+      } catch (err) {
+        console.error('Failed to delete user data:', err);
         return new Response('Database Error', { status: 500 });
       }
     }

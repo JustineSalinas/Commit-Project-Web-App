@@ -101,11 +101,11 @@ export async function completeOnboarding(preferences: any) {
 }
 
 // --- TILs Actions ---
-export async function getTils() {
+export async function getTils({ limit = 100, offset = 0 }: { limit?: number; offset?: number } = {}) {
   const userId = await getUserId();
   try {
     await ensureTablesExist();
-    return await db.query.tils.findMany({ where: eq(tils.userId, userId), orderBy: (t, { desc }) => [desc(t.createdAt)] });
+    return await db.query.tils.findMany({ where: eq(tils.userId, userId), orderBy: (t, { desc }) => [desc(t.createdAt)], limit, offset });
   } catch (error) {
     console.error("Failed to fetch TILs:", error);
     return [];
@@ -125,11 +125,11 @@ export async function addTil(data: { title: string; content: string; tags: strin
 }
 
 // --- Bugs Actions ---
-export async function getBugs() {
+export async function getBugs({ limit = 100, offset = 0 }: { limit?: number; offset?: number } = {}) {
   const userId = await getUserId();
   try {
     await ensureTablesExist();
-    return await db.query.bugs.findMany({ where: eq(bugs.userId, userId), orderBy: (b, { desc }) => [desc(b.createdAt)] });
+    return await db.query.bugs.findMany({ where: eq(bugs.userId, userId), orderBy: (b, { desc }) => [desc(b.createdAt)], limit, offset });
   } catch (error) {
     console.error("Failed to fetch Bugs:", error);
     return [];
@@ -159,11 +159,11 @@ export async function resolveBug(id: number) {
 }
 
 // --- Snippets Actions ---
-export async function getSnippets() {
+export async function getSnippets({ limit = 100, offset = 0 }: { limit?: number; offset?: number } = {}) {
   const userId = await getUserId();
   try {
     await ensureTablesExist();
-    return await db.query.snippets.findMany({ where: eq(snippets.userId, userId), orderBy: (s, { desc }) => [desc(s.createdAt)] });
+    return await db.query.snippets.findMany({ where: eq(snippets.userId, userId), orderBy: (s, { desc }) => [desc(s.createdAt)], limit, offset });
   } catch (error) {
     console.error("Failed to fetch Snippets:", error);
     return [];
@@ -173,9 +173,9 @@ export async function addSnippet(data: { title: string; code: string; language: 
   try {
     const userId = await getUserId();
     await ensureTablesExist();
-    // Free tier: 50 snippet limit
-    const existing = await db.query.snippets.findMany({ where: eq(snippets.userId, userId) });
-    if (existing.length >= 50) {
+    // Free tier: 50 snippet limit — use COUNT to avoid fetching all rows
+    const [{ count: snippetCount }] = await db.select({ count: sql<number>`COUNT(*)::int` }).from(snippets).where(eq(snippets.userId, userId));
+    if (snippetCount >= 50) {
       const { isPro } = await import("@/lib/plans");
       const pro = await isPro(userId);
       if (!pro) return { success: false, error: 'upgrade_required' };
@@ -190,13 +190,15 @@ export async function addSnippet(data: { title: string; code: string; language: 
 }
 
 // --- Flashcards Actions ---
-export async function getFlashcards() {
+export async function getFlashcards({ limit = 100, offset = 0 }: { limit?: number; offset?: number } = {}) {
   const userId = await getUserId();
   try {
     await ensureTablesExist();
     return await db.query.flashcards.findMany({
       where: eq(flashcards.userId, userId),
       orderBy: (f, { asc }) => [asc(f.dueDate)],
+      limit,
+      offset,
     });
   } catch (error) {
     console.error("Failed to fetch Flashcards:", error);
@@ -286,10 +288,10 @@ export async function reviewFlashcard(id: number, rating: 'again' | 'hard' | 'go
 }
 
 // --- Roadmap Actions ---
-export async function getRoadmap() {
+export async function getRoadmap({ limit = 200, offset = 0 }: { limit?: number; offset?: number } = {}) {
   const userId = await getUserId();
   try {
-    return await db.query.roadmap.findMany({ where: eq(roadmap.userId, userId), orderBy: (r, { asc }) => [asc(r.createdAt)] });
+    return await db.query.roadmap.findMany({ where: eq(roadmap.userId, userId), orderBy: (r, { asc }) => [asc(r.createdAt)], limit, offset });
   } catch (error) {
     console.error("Failed to fetch Roadmap:", error);
     return [];
@@ -300,8 +302,8 @@ export async function addRoadmapMilestone(data: { title: string; description?: s
     const userId = await getUserId();
     await ensureTablesExist();
 
-    const existing = await db.query.roadmap.findMany({ where: eq(roadmap.userId, userId) });
-    if (existing.length >= 15) {
+    const [{ count: milestoneCount }] = await db.select({ count: sql<number>`COUNT(*)::int` }).from(roadmap).where(eq(roadmap.userId, userId));
+    if (milestoneCount >= 15) {
       const { isPro } = await import("@/lib/plans");
       const pro = await isPro(userId);
       if (!pro) return { success: false, error: 'upgrade_required' };
@@ -363,13 +365,15 @@ export async function markRoadmapStatus(id: number, status: 'pending' | 'in-prog
   }
 }
 // --- Journal Actions ---
-export async function getJournals() {
+export async function getJournals({ limit = 100, offset = 0 }: { limit?: number; offset?: number } = {}) {
   const userId = await getUserId();
   try {
     await ensureTablesExist();
-    return await db.query.journals.findMany({ 
-      where: eq(journals.userId, userId), 
-      orderBy: (j, { desc }) => [desc(j.createdAt)] 
+    return await db.query.journals.findMany({
+      where: eq(journals.userId, userId),
+      orderBy: (j, { desc }) => [desc(j.createdAt)],
+      limit,
+      offset,
     });
   } catch (error) {
     console.error("Failed to fetch Journals:", error);
@@ -598,6 +602,28 @@ async function ensureTablesExist() {
       for (const m of migrations) {
         try { await db.execute(m); } catch { /* column already exists */ }
       }
+
+      // Performance indexes — idempotent, safe to run on every cold start
+      const indexes = [
+        sql`CREATE INDEX IF NOT EXISTS idx_tils_user_id ON tils(user_id)`,
+        sql`CREATE INDEX IF NOT EXISTS idx_bugs_user_id ON bugs(user_id)`,
+        sql`CREATE INDEX IF NOT EXISTS idx_snippets_user_id ON snippets(user_id)`,
+        sql`CREATE INDEX IF NOT EXISTS idx_flashcards_user_id ON flashcards(user_id)`,
+        sql`CREATE INDEX IF NOT EXISTS idx_journals_user_id ON journals(user_id)`,
+        sql`CREATE INDEX IF NOT EXISTS idx_roadmap_user_id ON roadmap(user_id)`,
+        sql`CREATE INDEX IF NOT EXISTS idx_focus_sessions_user_id ON focus_sessions(user_id)`,
+        sql`CREATE INDEX IF NOT EXISTS idx_tasks_user_id ON tasks(user_id)`,
+        sql`CREATE INDEX IF NOT EXISTS idx_session_logs_user_id ON session_logs(user_id)`,
+        sql`CREATE INDEX IF NOT EXISTS idx_distractions_user_id ON distractions(user_id)`,
+        sql`CREATE INDEX IF NOT EXISTS idx_mastery_user_id ON mastery(user_id)`,
+        sql`CREATE INDEX IF NOT EXISTS idx_team_members_clerk_id ON team_members(clerk_id)`,
+        sql`CREATE INDEX IF NOT EXISTS idx_session_logs_user_ts ON session_logs(user_id, timestamp)`,
+        sql`CREATE INDEX IF NOT EXISTS idx_flashcards_user_due ON flashcards(user_id, due_date)`,
+      ];
+      for (const idx of indexes) {
+        try { await db.execute(idx); } catch { /* already exists */ }
+      }
+
       console.log("Database tables verified.");
     } catch (error) {
       console.error("Database initialization failed or timed out:", error);
@@ -766,11 +792,11 @@ export async function getProfileData() {
 }
 
 // --- TASKS ACTIONS ---
-export async function getTasks() {
+export async function getTasks({ limit = 100, offset = 0 }: { limit?: number; offset?: number } = {}) {
   const userId = await getUserId();
   try {
     await ensureTablesExist();
-    return await db.query.tasks.findMany({ where: eq(tasks.userId, userId), orderBy: (t, { desc }) => [desc(t.createdAt)] });
+    return await db.query.tasks.findMany({ where: eq(tasks.userId, userId), orderBy: (t, { desc }) => [desc(t.createdAt)], limit, offset });
   } catch (error) {
     console.error("Failed to fetch Tasks:", error);
     return [];
@@ -833,11 +859,11 @@ export async function deleteTask(id: string) {
 }
 
 // --- SESSION LOGS ACTIONS ---
-export async function getSessionLogs() {
+export async function getSessionLogs({ limit = 100, offset = 0 }: { limit?: number; offset?: number } = {}) {
   const userId = await getUserId();
   try {
     await ensureTablesExist();
-    return await db.query.sessionLogs.findMany({ where: eq(sessionLogs.userId, userId), orderBy: (s, { desc }) => [desc(s.timestamp)] });
+    return await db.query.sessionLogs.findMany({ where: eq(sessionLogs.userId, userId), orderBy: (s, { desc }) => [desc(s.timestamp)], limit, offset });
   } catch (error) {
     console.error("Failed to fetch Session Logs:", error);
     return [];
@@ -864,14 +890,15 @@ export async function createSessionLog(data: { id: string; taskId?: string; task
 }
 
 // --- DISTRACTION ACTIONS ---
-export async function getDistractions() {
+export async function getDistractions({ limit = 100, offset = 0 }: { limit?: number; offset?: number } = {}) {
   const userId = await getUserId();
   try {
     await ensureTablesExist();
-    // Return unresolved first
-    return await db.query.distractions.findMany({ 
+    return await db.query.distractions.findMany({
       where: eq(distractions.userId, userId),
-      orderBy: (d, { asc, desc }) => [asc(d.resolved), desc(d.timestamp)]
+      orderBy: (d, { asc, desc }) => [asc(d.resolved), desc(d.timestamp)],
+      limit,
+      offset,
     });
   } catch (error) {
     console.error("Failed to fetch Distractions:", error);
@@ -915,13 +942,15 @@ export async function deleteDistraction(id: string) {
 }
 
 // --- MASTERY ACTIONS ---
-export async function getSkills() {
+export async function getSkills({ limit = 200, offset = 0 }: { limit?: number; offset?: number } = {}) {
   const userId = await getUserId();
   try {
     await ensureTablesExist();
-    return await db.query.mastery.findMany({ 
+    return await db.query.mastery.findMany({
       where: eq(mastery.userId, userId),
-      orderBy: (m, { desc }) => [desc(m.createdAt)]
+      orderBy: (m, { desc }) => [desc(m.createdAt)],
+      limit,
+      offset,
     });
   } catch (error) {
     console.error("Failed to fetch Skills:", error);
@@ -1038,6 +1067,8 @@ export async function createTeam(name: string) {
   const userId = await getUserId();
   try {
     await ensureTablesExist();
+    const { isTeams } = await import("@/lib/plans");
+    if (!(await isTeams(userId))) return { success: false, error: 'upgrade_required' };
     const [team] = await db.insert(teams).values({ name, ownerId: userId }).returning();
     await db.insert(teamMembers).values({ teamId: team.id, clerkId: userId, role: 'owner' });
     revalidatePath('/team');
@@ -1055,14 +1086,21 @@ export async function getTeam() {
     if (!membership) return null;
     const team = await db.query.teams.findFirst({ where: eq(teams.id, membership.teamId) });
     if (!team) return null;
-    const members = await db.query.teamMembers.findMany({ where: eq(teamMembers.teamId, team.id) });
-    // Get profile names for each member
-    const memberProfiles = await Promise.all(
-      members.map(async m => {
-        const p = await db.query.profiles.findFirst({ where: eq(profiles.clerkId, m.clerkId) });
-        return { ...m, name: p?.name || 'Unknown', email: p?.email || '' };
+    // Single JOIN replaces N individual profile lookups
+    const rows = await db
+      .select({
+        id: teamMembers.id,
+        teamId: teamMembers.teamId,
+        clerkId: teamMembers.clerkId,
+        role: teamMembers.role,
+        joinedAt: teamMembers.joinedAt,
+        name: profiles.name,
+        email: profiles.email,
       })
-    );
+      .from(teamMembers)
+      .leftJoin(profiles, eq(profiles.clerkId, teamMembers.clerkId))
+      .where(eq(teamMembers.teamId, team.id));
+    const memberProfiles = rows.map(m => ({ ...m, name: m.name || 'Unknown', email: m.email || '' }));
     return { team, members: memberProfiles, role: membership.role };
   } catch {
     return null;
@@ -1073,26 +1111,64 @@ export async function inviteTeamMember(email: string) {
   const userId = await getUserId();
   try {
     await ensureTablesExist();
-    const myMembership = await db.query.teamMembers.findFirst({ where: eq(teamMembers.clerkId, userId) });
-    if (!myMembership || myMembership.role !== 'owner') {
+
+    // Query 1: caller's membership + team details in one JOIN (replaces 2 queries)
+    const [callerData] = await db
+      .select({
+        role: teamMembers.role,
+        teamId: teamMembers.teamId,
+        teamSubscriptionStatus: teams.subscriptionStatus,
+      })
+      .from(teamMembers)
+      .innerJoin(teams, eq(teams.id, teamMembers.teamId))
+      .where(eq(teamMembers.clerkId, userId))
+      .limit(1);
+
+    if (!callerData || callerData.role !== 'owner') {
       return { success: false, error: 'Only team owners can invite members' };
     }
-    const team = await db.query.teams.findFirst({ where: eq(teams.id, myMembership.teamId) });
-    if (!team) return { success: false, error: 'Team not found' };
+    if (callerData.teamSubscriptionStatus !== 'active') {
+      return { success: false, error: 'subscription_inactive' };
+    }
 
-    // Check member limit (Teams plan: up to 10 seats)
-    const currentMembers = await db.query.teamMembers.findMany({ where: eq(teamMembers.teamId, team.id) });
-    if (currentMembers.length >= 10) {
+    // Query 2: count members with SQL COUNT instead of fetching all rows
+    const [{ count: memberCount }] = await db
+      .select({ count: sql<number>`COUNT(*)::int` })
+      .from(teamMembers)
+      .where(eq(teamMembers.teamId, callerData.teamId));
+    if (memberCount >= 10) {
       return { success: false, error: 'Team is full (10 seats maximum)' };
     }
 
-    const invitee = await db.query.profiles.findFirst({ where: eq(profiles.email, email) });
+    // Query 3: find invitee + check existing membership in one LEFT JOIN (replaces 2 queries)
+    const [invitee] = await db
+      .select({ clerkId: profiles.clerkId, existingTeamId: teamMembers.teamId })
+      .from(profiles)
+      .leftJoin(teamMembers, eq(teamMembers.clerkId, profiles.clerkId))
+      .where(eq(profiles.email, email))
+      .limit(1);
+
     if (!invitee) return { success: false, error: 'No Commit account found with that email' };
+    if (invitee.existingTeamId !== null) return { success: false, error: 'User is already in a team' };
 
-    const alreadyMember = await db.query.teamMembers.findFirst({ where: eq(teamMembers.clerkId, invitee.clerkId) });
-    if (alreadyMember) return { success: false, error: 'User is already in a team' };
+    await db.insert(teamMembers).values({ teamId: callerData.teamId, clerkId: invitee.clerkId, role: 'member' });
+    revalidatePath('/team');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
 
-    await db.insert(teamMembers).values({ teamId: team.id, clerkId: invitee.clerkId, role: 'member' });
+export async function deleteTeam() {
+  const userId = await getUserId();
+  try {
+    await ensureTablesExist();
+    const membership = await db.query.teamMembers.findFirst({ where: eq(teamMembers.clerkId, userId) });
+    if (!membership || membership.role !== 'owner') {
+      return { success: false, error: 'Only the team owner can delete a team' };
+    }
+    await db.delete(teamMembers).where(eq(teamMembers.teamId, membership.teamId));
+    await db.delete(teams).where(eq(teams.id, membership.teamId));
     revalidatePath('/team');
     return { success: true };
   } catch (error: any) {
@@ -1125,13 +1201,16 @@ export async function getHeatmapData() {
   try {
     await ensureTablesExist();
 
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
     const [sessionsData, tilsData, journalsData, bugsData, snippetsData, roadmapData] = await Promise.all([
-      db.query.focusSessions.findMany({ where: eq(focusSessions.userId, userId), columns: { createdAt: true } }),
-      db.query.tils.findMany({ where: eq(tils.userId, userId), columns: { createdAt: true } }),
-      db.query.journals.findMany({ where: eq(journals.userId, userId), columns: { createdAt: true } }),
-      db.query.bugs.findMany({ where: eq(bugs.userId, userId), columns: { createdAt: true } }),
-      db.query.snippets.findMany({ where: eq(snippets.userId, userId), columns: { createdAt: true } }),
-      db.query.roadmap.findMany({ where: eq(roadmap.userId, userId), columns: { createdAt: true } }),
+      db.query.focusSessions.findMany({ where: sql`${focusSessions.userId} = ${userId} AND ${focusSessions.createdAt} >= ${oneYearAgo}`, columns: { createdAt: true } }),
+      db.query.tils.findMany({ where: sql`${tils.userId} = ${userId} AND ${tils.createdAt} >= ${oneYearAgo}`, columns: { createdAt: true } }),
+      db.query.journals.findMany({ where: sql`${journals.userId} = ${userId} AND ${journals.createdAt} >= ${oneYearAgo}`, columns: { createdAt: true } }),
+      db.query.bugs.findMany({ where: sql`${bugs.userId} = ${userId} AND ${bugs.createdAt} >= ${oneYearAgo}`, columns: { createdAt: true } }),
+      db.query.snippets.findMany({ where: sql`${snippets.userId} = ${userId} AND ${snippets.createdAt} >= ${oneYearAgo}`, columns: { createdAt: true } }),
+      db.query.roadmap.findMany({ where: sql`${roadmap.userId} = ${userId} AND ${roadmap.createdAt} >= ${oneYearAgo}`, columns: { createdAt: true } }),
     ]);
 
     const map: Record<string, number> = {};

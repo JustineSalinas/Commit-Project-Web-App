@@ -30,6 +30,47 @@ export default function JournalPage() {
     }
   };
 
+  const handleExportPdf = async () => {
+    if (entries.length === 0) return;
+    setIsExporting(true);
+    try {
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF();
+      let y = 20;
+      doc.setFontSize(16);
+      doc.setTextColor(30);
+      doc.text("Developer Journal", 20, y);
+      y += 10;
+      doc.setFontSize(9);
+      doc.setTextColor(120);
+      doc.text(`Exported ${new Date().toLocaleDateString()}`, 20, y);
+      y += 14;
+      for (const entry of entries) {
+        if (y > 260) { doc.addPage(); y = 20; }
+        doc.setFontSize(13);
+        doc.setTextColor(30);
+        doc.text(entry.title, 20, y);
+        y += 7;
+        doc.setFontSize(9);
+        doc.setTextColor(110);
+        doc.text(new Date(entry.createdAt).toLocaleDateString(), 20, y);
+        y += 7;
+        doc.setFontSize(10);
+        doc.setTextColor(60);
+        const lines = doc.splitTextToSize(entry.content || "", 170);
+        for (const line of lines) {
+          if (y > 270) { doc.addPage(); y = 20; }
+          doc.text(line, 20, y);
+          y += 5.5;
+        }
+        y += 8;
+      }
+      doc.save("journal-export.pdf");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const activeEntry = entries.find(e => e.id === activeId);
 
   useEffect(() => {
@@ -127,7 +168,16 @@ export default function JournalPage() {
             title="Export as Markdown"
           >
             {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-            Export
+            .md
+          </button>
+          <button
+            onClick={handleExportPdf}
+            disabled={isExporting || entries.length === 0}
+            className="flex items-center gap-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-3 py-2 rounded-lg font-bold hover:border-[var(--border-muted)] transition-all disabled:opacity-40"
+            title="Export as PDF"
+          >
+            <Download className="w-4 h-4" />
+            PDF
           </button>
           <button
             onClick={handleNewEntry}

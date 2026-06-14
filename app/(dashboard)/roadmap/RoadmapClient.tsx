@@ -32,6 +32,46 @@ export default function RoadmapClient({ initialRoadmap, userId }: { initialRoadm
     }
   };
 
+  const handleExportPdf = async () => {
+    if (initialRoadmap.length === 0) return;
+    setExporting(true);
+    try {
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF();
+      let y = 20;
+      doc.setFontSize(16);
+      doc.setTextColor(30);
+      doc.text("Learning Roadmap", 20, y);
+      y += 10;
+      doc.setFontSize(9);
+      doc.setTextColor(120);
+      doc.text(`Exported ${new Date().toLocaleDateString()}`, 20, y);
+      y += 14;
+      for (const item of initialRoadmap) {
+        if (y > 260) { doc.addPage(); y = 20; }
+        const symbol = item.status === "complete" ? "[x]" : item.status === "in-progress" ? "[>]" : "[ ]";
+        doc.setFontSize(12);
+        doc.setTextColor(30);
+        doc.text(`${symbol}  ${item.title}`, 20, y);
+        y += 7;
+        if (item.description) {
+          doc.setFontSize(9);
+          doc.setTextColor(100);
+          const lines = doc.splitTextToSize(item.description, 165);
+          for (const line of lines) {
+            if (y > 270) { doc.addPage(); y = 20; }
+            doc.text(line, 26, y);
+            y += 5;
+          }
+        }
+        y += 5;
+      }
+      doc.save("roadmap-export.pdf");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || saving) return;
@@ -104,7 +144,16 @@ export default function RoadmapClient({ initialRoadmap, userId }: { initialRoadm
             title="Export as Markdown"
           >
             {exporting ? <span className="w-4 h-4 border-2 border-[var(--text-muted)] border-t-transparent rounded-full animate-spin inline-block" /> : <Download className="w-4 h-4" />}
-            Export
+            .md
+          </button>
+          <button
+            onClick={handleExportPdf}
+            disabled={exporting || initialRoadmap.length === 0}
+            className="flex items-center gap-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-3 py-1.5 rounded-lg font-bold transition-all flex-shrink-0 disabled:opacity-40"
+            title="Export as PDF"
+          >
+            <Download className="w-4 h-4" />
+            PDF
           </button>
           {userId && (
             <button

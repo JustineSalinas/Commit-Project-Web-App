@@ -18,6 +18,7 @@ import {
   Monitor,
   Sparkles,
   CreditCard,
+  AlertTriangle,
 } from "lucide-react";
 import { BillingTab } from "@/components/settings/BillingTab";
 
@@ -491,6 +492,7 @@ function ReposTab() {
 function SettingsContent() {
   const searchParams = useSearchParams();
   const initialTab = (searchParams.get("tab") as SettingsTab | null) || "profile";
+  const alert = searchParams.get("alert");
   const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
 
   const renderTabContent = () => {
@@ -507,6 +509,19 @@ function SettingsContent() {
 
   return (
     <div className="space-y-6">
+      {alert === "past_due" && (
+        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-red-400">Payment Failed — Action Required</p>
+            <p className="text-xs text-[var(--text-secondary)] mt-1">
+              Your last payment failed. Update your payment method below to keep Pro access.
+              If not resolved, your account will be downgraded to Free within 3 days.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div>
         <h1 className="text-2xl font-bold text-[var(--text-primary)]">Settings</h1>
         <p className="text-[var(--text-secondary)] text-sm mt-1">
