@@ -1,4 +1,4 @@
-## Full-Stack Developer - Adrian Justin J. Salinas
+## Full-Stack Developer — Adrian Justin J. Salinas
 
 # Commit — The Developer Learning Workspace
 
@@ -7,8 +7,8 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green?logo=supabase)](https://supabase.com/)
-[![Clerk](https://img.shields.io/badge/Auth-Clerk-purple?logo=clerk)](https://clerk.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-cyan?logo=tailwindcss)](https://tailwindcss.com/)
+[![Clerk](https://img.shields.io/badge/Auth-Clerk_v6-purple?logo=clerk)](https://clerk.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-cyan?logo=tailwindcss)](https://tailwindcss.com/)
 [![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://vercel.com/)
 
 ---
@@ -38,12 +38,12 @@ Every Pomodoro session ends with a **Commit Prompt**: _"What did you learn today
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                                                             │
-│  FOCUS           DOCUMENT             RETAIN                │
+│  FOCUS            DOCUMENT              RETAIN              │
 │                                                             │
-│  Pomodoro +      Code Journal         Flashcards (SM-2)     │
-│  Roadmap Tasks   TIL Daily Log        Concept Mastery       │
-│  Distraction     Bug Journal          Productivity Heatmap  │
-│  Dump            Snippet Library                            │
+│  Pomodoro +       Code Journal          Flashcards (SM-2)   │
+│  Roadmap Tasks    TIL Daily Log         Concept Mastery     │
+│  Distraction      Bug Journal           Productivity        │
+│  Dump             Snippet Library       Heatmap             │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -52,41 +52,58 @@ Every Pomodoro session ends with a **Commit Prompt**: _"What did you learn today
 
 ## Features
 
-| #   | Feature                          | Description                                                                                |
-| --- | -------------------------------- | ------------------------------------------------------------------------------------------ |
-| 1   | **Pomodoro Focus Timer**         | 25-min sessions with break management, roadmap-linked tasks, and session counters          |
-| 2   | **Code Journal**                 | Split-pane Markdown editor with live preview, Shiki syntax highlighting, milestone linking |
-| 3   | **Distraction & Bug Dump**       | Floating side panel to capture interrupting thoughts without breaking focus                |
-| 4   | **Productivity Heatmap**         | GitHub-style annual contribution heatmap with streaks, hover tooltips, and PNG export      |
-| 5   | **Roadmap Tracker**              | Structured learning paths with milestones, progress bars, and pre-built templates          |
-| 6   | **Spaced Repetition Flashcards** | SM-2 algorithm scheduling built from journal notes and TIL logs                            |
-| 7   | **TIL Daily Log**                | Auto-prompted after each Pomodoro session, searchable knowledge base                       |
-| 8   | **Bug & Error Journal**          | Structured error tracking: message → root cause → fix → concept tag                        |
-| 9   | **Concept Mastery Tracker**      | 4-level self-assessment: Heard of It → Can Explain → Can Use → Can Teach                   |
-| 10  | **Code Snippet Library**         | Personal, searchable, tagged snippet collection built from journal sessions                |
-| 11  | **AI Code Explainer**            | Anthropic Claude API, roadmap-aware explanations with "Simpler/Deeper" controls            |
+| #   | Feature                          | Description                                                                                    |
+| --- | -------------------------------- | ---------------------------------------------------------------------------------------------- |
+| 1   | **Pomodoro Focus Timer**         | 25-min sessions with break management, roadmap-linked tasks, and end-of-session Commit Prompt  |
+| 2   | **Code Journal**                 | Tiptap rich editor with Markdown support, Shiki syntax highlighting, and PDF / `.md` export    |
+| 3   | **Roadmap Tracker**              | Learning paths with milestones, progress bars, pre-built templates, and PDF export             |
+| 4   | **Spaced Repetition Flashcards** | SM-2 algorithm scheduling — Again / Hard / Good / Easy review buttons, due-card badge          |
+| 5   | **TIL Daily Log**                | Auto-prompted after each Pomodoro session; builds a searchable personal knowledge base         |
+| 6   | **Bug & Error Journal**          | Structured error tracking: message → root cause → fix → concept tag                           |
+| 7   | **Concept Mastery Tracker**      | 4-level self-assessment: Heard of It → Can Explain → Can Use → Can Teach                      |
+| 8   | **Code Snippet Library**         | Personal, tagged, searchable snippet collection (free tier: 50 snippets)                      |
+| 9   | **Productivity Heatmap**         | GitHub-style annual contribution heatmap aggregating 6 activity sources, with PNG export       |
+| 10  | **Task Manager**                 | Roadmap-linked tasks with completion tracking inside focus sessions                           |
+| 11  | **AI Code Explainer**            | Google Gemini with Basic / Advanced / Expert depth toggle (Advanced/Expert requires Pro+)     |
+| 12  | **Teams Workspace**              | Shared team environment, member management, owner controls (Teams plan, up to 10 members)     |
+
+---
+
+## Subscription Tiers
+
+| Plan      | Price        | Access                                                            |
+| --------- | ------------ | ----------------------------------------------------------------- |
+| **Free**  | ₱0           | All 12 tools with limits (50 snippets, 15 milestones, Basic AI)  |
+| **Pro**   | ₱899 / mo    | Unlimited everything + Advanced & Expert AI depth                 |
+| **Teams** | ₱4,499 / mo  | Pro access + shared team workspace for up to 10 members           |
+
+Payments via **PayMongo** (GCash, Maya, Philippine cards) and **Stripe** (USD, international cards).
 
 ---
 
 ## Tech Stack
 
-| Layer            | Technology                    | Purpose                                              |
-| ---------------- | ----------------------------- | ---------------------------------------------------- |
-| Framework        | **Next.js 15** (App Router)   | Full-stack React with server components & API routes |
-| Language         | **TypeScript 5**              | Type-safe development across frontend and backend    |
-| Authentication   | **Clerk**                     | User accounts, Google/GitHub OAuth                   |
-| Database         | **Supabase** (PostgreSQL)     | Primary cloud database with RLS per user             |
-| ORM              | **Drizzle ORM**               | Type-safe, lightweight query layer                   |
-| Real-time        | **Supabase Realtime**         | Live syncing of entries and session state            |
-| AI / LLM         | **Gemini API**                | Context-aware AI Code Explainer (Claude Sonnet)      |
-| Rich Editor      | **Tiptap**                    | Markdown + syntax-highlighted code editing           |
-| Syntax Highlight | **Shiki**                     | VS Code-quality code highlighting                    |
-| Styling          | **Tailwind CSS + shadcn/ui**  | Utility-first CSS with accessible components         |
-| State / Cache    | **Zustand + TanStack Query**  | Client state & server data caching                   |
-| Background Jobs  | **Inngest**                   | SM-2 spaced repetition scheduling                    |
-| File Storage     | **Supabase Storage**          | Heatmap PNG exports & attachment uploads             |
-| Deployment       | **Vercel (Pro)**              | Edge-optimized global hosting with CI/CD             |
-| Monitoring       | **Sentry + Vercel Analytics** | Error tracking and performance monitoring            |
+| Layer            | Technology                             | Purpose                                                                    |
+| ---------------- | -------------------------------------- | -------------------------------------------------------------------------- |
+| Framework        | **Next.js 15** (App Router + Turbopack)| SSR, Server Actions, API routes, streaming                                 |
+| Language         | **TypeScript 5** / React 19            | Type-safe full-stack development                                           |
+| Authentication   | **Clerk v6**                           | Sign-up/in, Google OAuth, webhooks (`user.created`, `user.deleted`)        |
+| Database         | **Supabase** (PostgreSQL)              | Primary database — self-healing migrations, 14 indexes, paginated queries  |
+| ORM              | **Drizzle ORM**                        | Type-safe queries, LEFT JOINs, `COUNT(*)` for tier gates                   |
+| Styling          | **Tailwind CSS v4**                    | CSS-variable design tokens + utility classes                               |
+| Rich Editor      | **Tiptap v2**                          | Code Journal editor with syntax-highlighted code blocks                    |
+| Syntax Highlight | **Shiki v3**                           | VS Code-quality highlighting in rendered journal output                    |
+| AI / LLM         | **Google Gemini API**                  | AI Code Explainer with depth toggle; Anthropic SDK available as fallback   |
+| PHP Payments     | **PayMongo** (raw fetch)               | GCash, Maya, Philippine credit/debit cards                                 |
+| USD Payments     | **Stripe v22**                         | International card payments, subscription management                       |
+| Background Jobs  | **Inngest v4**                         | Billing retry queue — 5× retries on activation, 3× on cancel/past-due     |
+| State            | **Zustand v5**                         | Pomodoro timer, settings, client-side UI state                             |
+| Server Cache     | **TanStack Query v5**                  | Server state caching and revalidation                                      |
+| PDF Export       | **jsPDF v4**                           | Client-side PDF export for journal entries and roadmap milestones          |
+| Charts           | **Recharts**                           | Dashboard statistics visualization                                         |
+| Toasts           | **Sonner v2**                          | Success / error notifications                                              |
+| Webhook Verify   | **Svix**                               | Clerk webhook signature verification                                       |
+| Deployment       | **Vercel**                             | Edge-optimized global hosting with CI/CD                                   |
 
 ---
 
@@ -94,149 +111,60 @@ Every Pomodoro session ends with a **Commit Prompt**: _"What did you learn today
 
 ```
 commit-projectv2/
-├── app/                          # Next.js 15 App Router
-│   ├── (auth)/                   # Authentication routes (Clerk)
-│   │   ├── sign-in/
-│   │   └── sign-up/
-│   ├── (dashboard)/              # Protected workspace routes
-│   │   ├── layout.tsx            # Dashboard shell with sidebar
-│   │   ├── page.tsx              # Main dashboard / overview
+├── app/
+│   ├── (auth)/                   # Clerk sign-in / sign-up pages
+│   ├── (dashboard)/              # Protected workspace (requires auth)
+│   │   ├── layout.tsx            # Sidebar + TopBar shell; past-due redirect
+│   │   ├── page.tsx              # Dashboard overview
 │   │   ├── focus/                # Pomodoro Focus Timer
-│   │   ├── journal/              # Code Journal (Tiptap editor)
-│   │   ├── roadmap/              # Roadmap Tracker
-│   │   ├── flashcards/           # Spaced Repetition Flashcards
-│   │   ├── til/                  # Today I Learned Daily Log
+│   │   ├── journal/              # Code Journal (Tiptap, PDF + .md export)
+│   │   ├── roadmap/              # Roadmap Tracker (PDF + .md export)
+│   │   ├── flashcards/           # SM-2 Spaced Repetition
+│   │   ├── til/                  # Today I Learned log
 │   │   ├── bugs/                 # Bug & Error Journal
 │   │   ├── mastery/              # Concept Mastery Tracker
 │   │   ├── snippets/             # Code Snippet Library
 │   │   ├── heatmap/              # Productivity Heatmap
-│   │   └── ai/                   # AI Code Explainer
-│   ├── api/                      # API Route Handlers
-│   │   ├── ai/                   # Claude AI explainer endpoint
-│   │   ├── flashcards/           # SM-2 scheduling & review
-│   │   ├── heatmap/              # Session data aggregation
-│   │   ├── inngest/              # Inngest background job handler
-│   │   ├── journal/              # Journal CRUD operations
-│   │   ├── pomodoro/             # Session tracking & stats
-│   │   ├── roadmap/              # Roadmap & milestone management
-│   │   ├── snippets/             # Snippet library CRUD
-│   │   ├── til/                  # TIL log operations
-│   │   └── bugs/                 # Bug journal CRUD
-│   ├── globals.css               # Global styles & CSS variables
-│   ├── layout.tsx                # Root layout (fonts, providers)
-│   └── not-found.tsx             # Custom 404 page
+│   │   ├── tasks/                # Task Manager
+│   │   ├── ai/                   # AI Code Explainer
+│   │   ├── team/                 # Teams Workspace (Teams plan only)
+│   │   ├── profile/              # User profile
+│   │   └── settings/             # Account + Billing settings
+│   ├── api/
+│   │   ├── chat/                 # AI endpoint (Gemini, rate-limited 20 req/min)
+│   │   ├── billing/              # Checkout + portal routes (PayMongo, Stripe)
+│   │   ├── inngest/              # Inngest serve handler
+│   │   └── webhooks/
+│   │       ├── clerk/            # user.created + user.deleted cascade-delete
+│   │       ├── stripe/           # Stripe event dispatcher → Inngest
+│   │       └── paymongo/         # PayMongo event dispatcher → Inngest
+│   ├── actions/
+│   │   └── crud.ts               # All Server Actions (paginated, indexed, plan-gated)
+│   └── page.tsx                  # Public landing page
 │
-├── components/                   # Reusable React components
-│   ├── ui/                       # shadcn/ui base components
-│   ├── layout/                   # Layout-level components
-│   │   ├── Sidebar.tsx
-│   │   ├── TopBar.tsx
-│   │   └── MobileNav.tsx
-│   ├── focus/                    # Pomodoro Timer components
-│   │   ├── PomodoroTimer.tsx
-│   │   ├── SessionCounter.tsx
-│   │   ├── DistractionDump.tsx
-│   │   └── TimerControls.tsx
-│   ├── journal/                  # Code Journal components
-│   │   ├── JournalEditor.tsx     # Tiptap rich editor
-│   │   ├── JournalPreview.tsx    # Rendered markdown preview
-│   │   ├── JournalEntry.tsx
-│   │   └── EntryList.tsx
-│   ├── roadmap/                  # Roadmap components
-│   │   ├── RoadmapBoard.tsx
-│   │   ├── MilestoneCard.tsx
-│   │   ├── MilestoneDetail.tsx
-│   │   ├── ProgressBar.tsx
-│   │   └── TemplateSelector.tsx
-│   ├── flashcards/               # Spaced Repetition components
-│   │   ├── FlashcardDeck.tsx
-│   │   ├── FlashcardReview.tsx
-│   │   ├── FlashcardCreator.tsx
-│   │   └── DueCardBadge.tsx
-│   ├── til/                      # TIL components
-│   │   ├── TILPrompt.tsx
-│   │   ├── TILEntry.tsx
-│   │   └── TILFeed.tsx
-│   ├── bugs/                     # Bug Journal components
-│   │   ├── BugForm.tsx
-│   │   ├── BugEntry.tsx
-│   │   └── BugList.tsx
-│   ├── mastery/                  # Concept Mastery components
-│   │   ├── MasteryCard.tsx
-│   │   ├── MasteryLevel.tsx
-│   │   └── MasteryDashboard.tsx
-│   ├── snippets/                 # Snippet Library components
-│   │   ├── SnippetCard.tsx
-│   │   ├── SnippetEditor.tsx
-│   │   └── SnippetSearch.tsx
-│   ├── heatmap/                  # Productivity Heatmap components
-│   │   ├── ActivityHeatmap.tsx
-│   │   ├── HeatmapTooltip.tsx
-│   │   ├── StreakCounter.tsx
-│   │   └── WeeklySummary.tsx
-│   ├── ai/                       # AI Code Explainer components
-│   │   ├── AIExplainer.tsx
-│   │   ├── AIChat.tsx
-│   │   └── DepthControls.tsx
-│   └── dashboard/                # Dashboard overview components
-│       ├── DashboardHeader.tsx
-│       ├── QuickStats.tsx
-│       ├── TodaySchedule.tsx
-│       └── RecentActivity.tsx
+├── components/
+│   ├── layout/                   # Sidebar, TopBar, SyncQueueProvider
+│   ├── focus/                    # PomodoroTimer, CommitModal, DistractionDump
+│   ├── billing/                  # PlanBadge, UpgradePrompt, BillingTab
+│   ├── onboarding/               # 5-step onboarding flow
+│   └── ...                       # Feature-specific components per route
 │
-├── lib/                          # Utilities & service clients
-│   ├── supabase/                 # Supabase client setup
-│   │   ├── client.ts             # Browser client
-│   │   ├── server.ts             # Server client (RSC/API)
-│   │   └── middleware.ts         # Auth middleware helper
-│   ├── drizzle/                  # Drizzle ORM setup
-│   │   ├── schema/               # Database schema definitions
-│   │   │   ├── index.ts
-│   │   │   ├── users.ts
-│   │   │   ├── journal.ts
-│   │   │   ├── roadmap.ts
-│   │   │   ├── flashcards.ts
-│   │   │   ├── til.ts
-│   │   │   ├── bugs.ts
-│   │   │   ├── snippets.ts
-│   │   │   ├── mastery.ts
-│   │   │   └── sessions.ts
-│   │   ├── migrations/           # Auto-generated SQL migrations
-│   │   └── db.ts                 # DB connection instance
-│   ├── ai/                       # Gemini integration
-│   │   ├── client.ts
-│   │   └── prompts.ts
-│   ├── inngest/                  # Background job functions
-│   │   ├── client.ts
-│   │   ├── sm2.ts                # SM-2 algorithm implementation
-│   │   └── notifications.ts
-│   ├── zustand/                  # Global client state stores
-│   │   ├── pomodoroStore.ts
-│   │   ├── journalStore.ts
-│   │   └── uiStore.ts
-│   ├── hooks/                    # Custom React hooks
-│   │   ├── usePomodoro.ts
-│   │   ├── useFlashcards.ts
-│   │   ├── useRoadmap.ts
-│   │   ├── useJournal.ts
-│   │   └── useHeatmap.ts
-│   └── utils.ts                  # Shared utility functions
+├── lib/
+│   ├── billing/
+│   │   └── subscriptions.ts      # activateSubscription, cancelSubscription, handlePastDue
+│   ├── inngest.ts                # Inngest client
+│   ├── inngest/
+│   │   └── functions.ts          # 3 billing functions with step.run() and retries
+│   ├── plans.ts                  # getUserPlan(), isPro(), isTeams()
+│   └── rate-limit.ts             # In-memory sliding window rate limiter
 │
-├── types/                        # Global TypeScript types
-│   ├── database.ts               # Drizzle-inferred DB types
-│   ├── api.ts                    # API request/response types
-│   └── index.ts                  # Re-exports
+├── db/
+│   ├── schema.ts                 # All Drizzle table definitions
+│   └── index.ts                  # DB connection (postgres + drizzle)
 │
-├── middleware.ts                  # Next.js middleware (Clerk auth)
-├── next.config.ts                # Next.js configuration
-├── tailwind.config.ts            # Tailwind CSS configuration
-├── drizzle.config.ts             # Drizzle ORM configuration
-├── components.json               # shadcn/ui configuration
-├── .env.local                    # Local environment variables
-├── .env.example                  # Environment variable template
-├── package.json
-├── tsconfig.json
-└── README.md
+├── middleware.ts                  # clerkMiddleware — protects /dashboard routes
+├── .env.example                   # All required env vars with inline docs
+└── PROGRESS_REPORT.html           # Internal build progress audit
 ```
 
 ---
@@ -246,16 +174,16 @@ commit-projectv2/
 ### Prerequisites
 
 - Node.js 20+
-- A [Supabase](https://supabase.com) project
+- A [Supabase](https://supabase.com) project (free tier works)
 - A [Clerk](https://clerk.com) application
-- An [Gemini](https://gemini.com) API key
-- An [Inngest](https://inngest.com) account
+- A [Google AI Studio](https://aistudio.google.com/app/apikey) API key (Gemini)
+- PayMongo + Stripe accounts for billing (optional for local dev)
 
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/yourusername/commit-projectv2.git
-cd commit-projectv2
+git clone https://github.com/JustineSalinas/Commit-Project-Web-App.git
+cd Commit-Project-Web-App
 npm install
 ```
 
@@ -268,52 +196,64 @@ cp .env.example .env.local
 Fill in `.env.local`:
 
 ```env
-# Clerk Authentication
+# Clerk
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/dashboard
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/dashboard
+CLERK_WEBHOOK_SECRET=whsec_...
 
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-SUPABASE_SERVICE_ROLE_KEY=eyJ...
+# Database (Supabase — use Transaction Pooler connection string)
+DATABASE_URL=postgresql://postgres:[password]@db.[project-ref].supabase.co:5432/postgres
 
-# Drizzle
-DATABASE_URL=postgresql://postgres:[password]@db.[project].supabase.co:5432/postgres
+# AI
+GEMINI_API_KEY=AIzaSy...
 
-# Gemini
-GEMINI_API_KEY=sk-ant-...
+# Payments (optional for local dev)
+PAYMONGO_SECRET_KEY=sk_test_...
+PAYMONGO_WEBHOOK_SECRET=whsk_...
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
 
-# Inngest
+# Inngest (no keys needed in dev — just run the CLI)
+INNGEST_SIGNING_KEY=signkey-prod-...
 INNGEST_EVENT_KEY=...
-INNGEST_SIGNING_KEY=...
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-### 3. Run Database Migrations
+### 3. Start Development
 
 ```bash
-npx drizzle-kit push
-```
-
-### 4. Start Development Server
-
-```bash
+# Terminal 1 — Next.js dev server
 npm run dev
+
+# Terminal 2 — Inngest dev server (for billing background jobs)
+npx inngest-cli@latest dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+> **Database migrations run automatically** on first request via a self-healing singleton — no `drizzle-kit push` needed in production.
+
+### 4. Clerk Webhook Setup
+
+In Clerk Dashboard → Webhooks, create an endpoint pointing to `/api/webhooks/clerk` and subscribe to:
+- `user.created`
+- `user.deleted`
+
+### 5. Stripe Local Testing
+
+```bash
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
 
 ---
 
 ## Design System
 
-Commit uses a **Deep Dark Obsidian** design language inspired by premium developer tools:
+Commit uses a **Deep Dark Obsidian** design language inspired by premium developer tools.
 
 | Token        | Value       | Usage                             |
 | ------------ | ----------- | --------------------------------- |
@@ -327,6 +267,20 @@ Commit uses a **Deep Dark Obsidian** design language inspired by premium develop
 | Danger       | `#FF4757`   | Error states, destructive actions |
 | Warning      | `#FFB347`   | Warnings, streak alerts           |
 
+Fonts: **Bricolage Grotesque** (headings/UI) + **JetBrains Mono** (code), both via `next/font/google`.
+
+---
+
+## Scalability
+
+| Users          | Status       | Notes                                                                               |
+| -------------- | ------------ | ----------------------------------------------------------------------------------- |
+| 0 – 1,000      | ✅ Fine       | Supabase free tier handles this with ease                                           |
+| 1,000 – 10,000 | ✅ Fine       | 14 DB indexes + 100-row pagination eliminate full-table scan overhead               |
+| 10,000 – 50,000 | ✅ Fine      | Inngest retry queue, rate-limited AI, React.cache() billing deduplication           |
+| 50,000 – 100,000 | ⚠ Config   | Upgrade Supabase to Pro ($25/mo) for pgBouncer connection pool beyond 25 connections |
+
 ---
 
 <p align="center">Built for developers who take their learning seriously.</p>
+<p align="center">CDG Philippines &nbsp;·&nbsp; <a href="mailto:cdg.solutionsph@gmail.com">cdg.solutionsph@gmail.com</a></p>
