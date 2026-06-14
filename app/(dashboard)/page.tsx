@@ -1,7 +1,6 @@
-import DashboardClient from "./DashboardClient";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default function DashboardPage() {
-  return <DashboardClient />;
+// Dashboard overview moved to /dashboard to avoid URL conflict with the public landing page at /
+export default function DashboardRootRedirect() {
+  redirect("/dashboard");
 }

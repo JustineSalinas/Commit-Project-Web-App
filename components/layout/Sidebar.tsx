@@ -25,7 +25,7 @@ const navGroups = [
   {
     label: "General",
     items: [
-      { name: "Dashboard", href: "/", icon: Home },
+      { name: "Dashboard", href: "/dashboard", icon: Home },
       { name: "Activity", href: "/heatmap", icon: Activity },
       { name: "Team", href: "/team", icon: Users },
     ]
